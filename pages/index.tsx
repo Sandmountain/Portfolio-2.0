@@ -1,11 +1,18 @@
+import { useEffect } from "react";
+
 import type { NextPage } from "next";
 
-import styles from "../styles/Home.module.css";
+import Navbar from "../src/components/Navbar/Navbar";
+import { initContentful } from "../src/utils/contentful/contentful";
 
 const Home: NextPage = () => {
+  useEffect(() => {
+    initContentful();
+  }, []);
+
   return (
-    <div className={styles.container}>
-      <p> test </p>
+    <div>
+      <Navbar />
     </div>
   );
 };
