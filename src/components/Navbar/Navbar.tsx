@@ -5,9 +5,9 @@ import { NavbarContainer as Container } from "./Navbar.styled";
 function Navbar() {
   return (
     <Container>
-      <a>Home</a>
-      <a>Project</a>
-      <a>Blog</a>
+      <a href="#">Home</a>
+      <a href="#">News</a>
+      <a href="#">About</a>
     </Container>
   );
 }
