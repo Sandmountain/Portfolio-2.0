@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
-import { Environment, Image, MeshReflectorMaterial, Reflector, Text, useCursor, useTexture } from "@react-three/drei";
-import { Canvas, useFrame, useLoader } from "@react-three/fiber";
-import { useTheme } from "styled-components";
+import { Environment, Image, MeshReflectorMaterial, useCursor } from "@react-three/drei";
+import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { Object3D } from "three";
 import getUuid from "uuid-by-string";
