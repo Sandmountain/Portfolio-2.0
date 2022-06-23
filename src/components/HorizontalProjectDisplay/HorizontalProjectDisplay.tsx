@@ -1,19 +1,29 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { Environment, Image, MeshReflectorMaterial, useCursor } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
+import { observer } from "mobx-react";
 import * as THREE from "three";
 import { Object3D } from "three";
 import getUuid from "uuid-by-string";
 
 import { useEffect, useRef, useState } from "react";
 
-const GOLDENRATIO = 1.61803398875;
+import ProjectStore from "../../mobx/projectStore";
+import { Project } from "../../types/Project";
+
+const GOLDENRATIO = 1.68;
 
 interface HorizontalProjectDisplayProps {
   images: { position: number[]; rotation: number[]; url: string }[];
 }
 
-export const HorizontalProjectDisplay: React.FC<HorizontalProjectDisplayProps> = ({ images }) => {
+const HorizontalProjectDisplay: React.FC<HorizontalProjectDisplayProps> = ({ images }) => {
+  const [projects, setProjects] = useState<Project[]>();
+
+  useEffect(() => {
+    setProjects(ProjectStore.getProjects());
+  }, []);
+
   return (
     <Canvas camera={{ fov: 70, position: [0, 10, 15] }}>
       <color attach="background" args={["#151515"]} />
@@ -28,13 +38,21 @@ export const HorizontalProjectDisplay: React.FC<HorizontalProjectDisplayProps> =
   );
 };
 
+export default observer(HorizontalProjectDisplay);
+
 interface FramesProps {
   images: { position: number[]; rotation: number[]; url: string }[];
   q?: THREE.Quaternion;
   p?: THREE.Vector3;
+  v?: THREE.Vector3;
 }
 
-const Frames: React.FC<FramesProps> = ({ images, q = new THREE.Quaternion(), p = new THREE.Vector3() }) => {
+const Frames: React.FC<FramesProps> = ({
+  images,
+  q = new THREE.Quaternion(),
+  p = new THREE.Vector3(),
+  v = new THREE.Vector3(),
+}) => {
   const [clickedImage, setClickedImage] = useState<Object3D | null>(null);
 
   const ref = useRef(null);
@@ -47,7 +65,7 @@ const Frames: React.FC<FramesProps> = ({ images, q = new THREE.Quaternion(), p =
       clicked.current.parent.localToWorld(p.set(0, GOLDENRATIO / 2, 1.25));
       clicked.current.parent.getWorldQuaternion(q);
     } else {
-      p.set(0, 0, 6.0);
+      p.set(0, 0, 5.2);
       q.identity();
     }
   });
@@ -56,6 +74,11 @@ const Frames: React.FC<FramesProps> = ({ images, q = new THREE.Quaternion(), p =
   useFrame(state => {
     state.camera.position.lerp(p, 0.05);
     state.camera.quaternion.slerp(q, 0.05);
+
+    // Only wobble camera if a project is not in focus
+    if (!clicked.current) {
+      state.camera.position.lerp(v.set(state.mouse.x / 5, state.mouse.y / 5, p.z), 0.05);
+    }
   });
 
   return (
@@ -96,13 +119,14 @@ const Frame: React.FC<FrameProps> = ({ url, c = new THREE.Color(), ...props }) =
 
   const name = getUuid(url);
   useCursor(hovered);
-
   useFrame(state => {
     if (image?.current?.material) {
-      (image.current.material as unknown as THREE.PerspectiveCamera).zoom =
-        2 + Math.sin(rnd * 10000 + state.clock.elapsedTime / 3) / 4;
-      image.current.scale.x = THREE.MathUtils.lerp(image.current.scale.x, 0.9 * (hovered ? 0.975 : 1), 0.4);
-      image.current.scale.y = THREE.MathUtils.lerp(image.current.scale.y, 0.85 * (hovered ? 0.9505 : 1), 0.4);
+      const zoomLevel = 1.2 - Math.sin(rnd * 10000 + state.clock.elapsedTime / 2) / 7;
+
+      (image.current.material as unknown as THREE.PerspectiveCamera).zoom = zoomLevel;
+
+      image.current.scale.x = THREE.MathUtils.lerp(image.current.scale.x, 0.87 * (hovered ? 0.98 : 1), 0.4);
+      image.current.scale.y = THREE.MathUtils.lerp(image.current.scale.y, 0.87 * (hovered ? 0.98 : 1), 0.4);
     }
     if (frame.current) {
       (frame.current.material as unknown as THREE.MeshBasicMaterial).color.lerp(
@@ -118,11 +142,11 @@ const Frame: React.FC<FrameProps> = ({ url, c = new THREE.Color(), ...props }) =
         name={name}
         onPointerOver={e => (e.stopPropagation(), hover(true))}
         onPointerOut={() => hover(false)}
-        scale={[GOLDENRATIO, 1, 0.05]}
+        scale={[1, 1, 0.05]}
         position={[0, GOLDENRATIO / 2, 0]}>
         <boxGeometry />
-        <meshStandardMaterial color="#151515" metalness={0.5} roughness={0.5} envMapIntensity={2} />
-        <mesh ref={frame} raycast={() => null} scale={[0.93, 0.9, 0.9]} position={[0, 0, 0.2]}>
+        <meshStandardMaterial color="#8f8f8f" metalness={0.5} roughness={0.5} envMapIntensity={2} />
+        <mesh ref={frame} raycast={() => null} scale={[0.9, 0.9, 0.9]} position={[0, 0, 0.2]}>
           <boxGeometry />
           <meshBasicMaterial toneMapped={false} fog={false} />
         </mesh>
