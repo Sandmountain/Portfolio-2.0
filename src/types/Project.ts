@@ -15,6 +15,18 @@ export interface Project {
   languages: ContentfulLanguageType[];
 }
 
+export interface ContentfulResponse {
+  items: {
+    metadata: { tags: string[] };
+    fields: Project;
+    sys: {
+      contentType: { sys: { id: string } };
+      createdAt: string;
+      updatedAt: string;
+    };
+  }[];
+}
+
 export interface ContentfulLanguageType {
   fields: { name: string; icon?: string; image?: ContentfulImageType };
 }

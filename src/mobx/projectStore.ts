@@ -1,6 +1,6 @@
 import { makeAutoObservable, toJS } from "mobx";
 
-import { Project } from "../types/Project";
+import { ContentfulResponse, Project } from "../types/Project";
 
 class ProjectStore {
   projects: Project[] = [];
@@ -9,8 +9,8 @@ class ProjectStore {
     makeAutoObservable(this);
   }
 
-  setProjects(projects: Project[]) {
-    this.projects = projects;
+  setProjects(projects: ContentfulResponse) {
+    this.projects = this.formatProjects(projects);
   }
 
   getProjects() {
@@ -20,6 +20,10 @@ class ProjectStore {
   // Might not filter, but scroll to that idx instead
   filterProjects(title: string) {
     this.projects = this.projects.filter(project => project.title === title);
+  }
+
+  private formatProjects(projects: ContentfulResponse) {
+    return projects.items.map(projectResponse => projectResponse.fields);
   }
 }
 

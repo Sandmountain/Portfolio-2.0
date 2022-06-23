@@ -1,7 +1,7 @@
 import { createClient } from "contentful";
 
 import ProjectStore from "../../mobx/projectStore";
-import { Project } from "../../types/Project";
+import { ContentfulResponse } from "../../types/Project";
 
 export const initContentful = async () => {
   // init contentful
@@ -15,5 +15,5 @@ export const initContentful = async () => {
     content_type: "project",
   });
 
-  ProjectStore.setProjects(projects as unknown as Project[]);
+  ProjectStore.setProjects(projects as unknown as ContentfulResponse);
 };
