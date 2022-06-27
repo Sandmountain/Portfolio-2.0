@@ -1,43 +1,53 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import type { NextPage } from "next";
 
-import { HorizontalProjectDisplay } from "../src/components/HorizontalProjectDisplay/HorizontalProjectDisplay";
+import getUuid from "uuid-by-string";
+
+import HorizontalProjectDisplay from "../src/components/HorizontalProjectDisplay/HorizontalProjectDisplay";
+import { getImages } from "../src/components/HorizontalProjectDisplay/handleProjects";
 import Navbar from "../src/components/Navbar/Navbar";
-import VerticalProjectDisplay from "../src/components/VerticalProjectsDisplay/VerticalProjectDisplay";
+import { useProjectStore } from "../src/mobx/projectStore";
+import { Project, ProjectImageType } from "../src/types/Project";
 import { initContentful } from "../src/utils/contentful/contentful";
 
-const pexel = (id: number) =>
-  `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260`;
-const images = [
-  // Front
-  { position: [0, 0.0, 4], rotation: [0, 0, 0], url: pexel(1103970) },
+const Home: NextPage<{ projects: Project[]; projectImages: ProjectImageType[] }> = ({ projects, projectImages }) => {
+  const projectStore = useProjectStore();
 
-  // Right
-  { position: [2.2, 0, 3], rotation: [0, 0, 0], url: pexel(310452) },
-  { position: [4.0, 0, 3], rotation: [0, 0, 0], url: pexel(227675) },
-  { position: [5.8, 0, 3], rotation: [0, 0, 0], url: pexel(911738) },
+  const [loadedProjects] = useState<Project[]>(projects);
 
-  // Left
-  { position: [-2.2, 0, 3], rotation: [0, 0, 0], url: pexel(416430) },
-  { position: [-4.0, 0, 3], rotation: [0, 0, 0], url: pexel(327482) },
-  { position: [-5.8, 0, 3], rotation: [0, 0, 0], url: pexel(325185) },
-];
-
-const Home: NextPage = () => {
   useEffect(() => {
-    initContentful();
-  }, []);
+    // Set projects in the store
+    projectStore.setProjects(projects);
+  }, [projectStore, projects]);
 
   return (
     <div style={{ height: "100%" }}>
       <Navbar />
-      {/* <VerticalProjectDisplay /> */}
-      <div style={{ height: "350px", margin: "0px 20px", border: "4px solid white" }}>
-        <HorizontalProjectDisplay images={images} />
+
+      <div style={{ height: "450px", background: "black", color: "white" }}>
+        {loadedProjects && <HorizontalProjectDisplay images={projectImages} />}
       </div>
     </div>
   );
 };
+
+export async function getStaticProps() {
+  const response = await initContentful();
+
+  const projects = response.items.map(projectResponse => ({
+    ...projectResponse.fields,
+    uuid: getUuid(projectResponse.fields.title),
+  }));
+
+  const projectImages = getImages(projects);
+
+  return {
+    props: {
+      projects,
+      projectImages,
+    },
+  };
+}
 
 export default Home;

@@ -1,9 +1,8 @@
 import { createClient } from "contentful";
 
-import ProjectStore from "../../mobx/projectStore";
 import { ContentfulResponse } from "../../types/Project";
 
-export const initContentful = async () => {
+export const initContentful = async (): Promise<ContentfulResponse> => {
   // init contentful
   const client = createClient({
     // This is the space ID. A space is like a project folder in Contentful terms
@@ -13,7 +12,8 @@ export const initContentful = async () => {
   });
   const projects = await client.getEntries({
     content_type: "project",
+    order: "-sys.createdAt",
   });
 
-  ProjectStore.setProjects(projects as unknown as ContentfulResponse);
+  return projects as unknown as ContentfulResponse;
 };
