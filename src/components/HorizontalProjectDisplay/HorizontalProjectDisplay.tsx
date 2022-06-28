@@ -89,9 +89,14 @@ const Frames: React.FC<FramesProps> = ({
   }, [clickedImage, p, q]);
 
   useEffect(() => {
-    if (snap.currentProject !== null && snap.currentProject.id !== clickedImage?.name) {
+    if (snap.currentProject?.id !== clickedImage?.name) {
       const groupRef = (ref.current ?? null) as unknown as Object3D<Event>;
-      setClickedImage(groupRef.getObjectByName(snap.currentProject.id) ?? null);
+      if (snap.currentProject?.id) {
+        setClickedImage(groupRef.getObjectByName(snap.currentProject.id) ?? null);
+      } else {
+        // reset if arrow selection goes out of bounds
+        setClickedImage(null);
+      }
     }
   }, [clickedImage?.name, snap.currentProject]);
 
@@ -107,10 +112,10 @@ const Frames: React.FC<FramesProps> = ({
   });
 
   const handleOnClick = (target: ThreeEvent<MouseEvent> | null) => {
-    if (!target) {
+    // if clicked outside or clicked on the same project, reset
+    if (!target || target.object.name === clickedImage?.name) {
       setClickedImage(null);
       state.currentProject = null;
-
       return;
     }
 
