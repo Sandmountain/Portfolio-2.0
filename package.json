@@ -20,7 +20,8 @@
         "styled-components": "^5.3.5",
         "three": "^0.141.0",
         "three.js": "^0.77.1",
-        "uuid-by-string": "^3.0.7"
+        "uuid-by-string": "^3.0.7",
+        "valtio": "^1.6.1"
     },
     "devDependencies": {
         "@trivago/prettier-plugin-sort-imports": "^3.2.0",

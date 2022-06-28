@@ -13,6 +13,15 @@ export interface Project {
   thumbnail: ContentfulImageType;
   title: string;
   languages: ContentfulLanguageType[];
+  uuid: string;
+}
+
+export interface ProjectImageType {
+  position: number[];
+  rotation: number[];
+  url: string;
+  id: string;
+  title: string;
 }
 
 export interface ContentfulResponse {
