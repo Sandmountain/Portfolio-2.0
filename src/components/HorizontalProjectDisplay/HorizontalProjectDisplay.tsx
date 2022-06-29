@@ -1,13 +1,14 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { useEffect, useRef, useState } from "react";
 
-import { Environment, MeshReflectorMaterial, useCursor } from "@react-three/drei";
-import { Canvas, ThreeEvent, useFrame, useLoader } from "@react-three/fiber";
+import { Environment, MeshReflectorMaterial, useCamera, useCursor } from "@react-three/drei";
+import { Canvas, ThreeEvent, useFrame, useLoader, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { Object3D } from "three";
 import { proxy, useSnapshot } from "valtio";
 
 import { ProjectImageType } from "../../types/Project";
+import { moveProjectFramesOnFocus, resetProjectsPosition } from "./handleProjects";
 
 const GOLDENRATIO = 16 / 9;
 
@@ -67,12 +68,13 @@ const Frames: React.FC<FramesProps> = ({
   v = new THREE.Vector3(),
 }) => {
   const [clickedImage, setClickedImage] = useState<Object3D | null>(null);
-  const snap = useSnapshot(state);
 
+  const snap = useSnapshot(state);
+  const camera = useThree(state => state.camera);
   // get current viewport
   // const { width, height } = useThree(state => state.viewport);
 
-  const ref = useRef(null);
+  const ref = useRef<THREE.Group>(null);
   const clicked = useRef<Object3D | null>(null);
 
   useEffect(() => {
@@ -80,25 +82,41 @@ const Frames: React.FC<FramesProps> = ({
 
     if (clicked?.current?.parent) {
       clicked.current.parent.updateWorldMatrix(true, true);
-      clicked.current.parent.localToWorld(p.set(0, GOLDENRATIO / 2, 1.5));
+      clicked.current.parent.localToWorld(p.set(0, GOLDENRATIO / 2, 3));
       clicked.current.parent.getWorldQuaternion(q);
+
+      if (ref.current && ref.current?.children) {
+        // A project is enlarged when focused, other projects needs to move a tad.
+        moveProjectFramesOnFocus(images, ref.current.children, clickedImage?.name ?? "");
+      }
     } else {
       p.set(0, 0, 5.7);
       q.identity();
+
+      if (ref.current && ref.current?.children) {
+        // A project is enlarged when focused, other projects needs to move a tad.
+
+        resetProjectsPosition(images, ref.current.children);
+      }
     }
-  }, [clickedImage, p, q]);
+  }, [camera, clickedImage, images, p, q]);
 
   useEffect(() => {
     if (snap.currentProject?.id !== clickedImage?.name) {
       const groupRef = (ref.current ?? null) as unknown as Object3D<Event>;
+
       if (snap.currentProject?.id) {
+        // Reset positions before moving focus
+        if (ref.current && ref.current?.children) {
+          resetProjectsPosition(images, ref.current.children);
+        }
         setClickedImage(groupRef.getObjectByName(snap.currentProject.id) ?? null);
       } else {
         // reset if arrow selection goes out of bounds
         setClickedImage(null);
       }
     }
-  }, [clickedImage?.name, snap.currentProject]);
+  }, [clickedImage?.name, images, snap.currentProject]);
 
   // Animate camera on load and on new focus animation
   useFrame(state => {
@@ -137,8 +155,8 @@ const Frames: React.FC<FramesProps> = ({
       onPointerMissed={() => {
         handleOnClick(null);
       }}>
-      {images.map((props, index) => (
-        <Frame focused={clickedImage?.name === props.id || !index} key={props.url} {...props} />
+      {images.map(props => (
+        <Frame focused={clickedImage?.name === props.id} key={props.url} {...props} />
       ))}
     </group>
   );
@@ -157,6 +175,7 @@ const Frame: React.FC<FrameProps> = ({ url, id, focused, c = new THREE.Color(), 
 
   const image = useRef<THREE.Mesh<THREE.BufferGeometry, THREE.Material | THREE.Material[]>>(null);
   const frame = useRef<THREE.Mesh<THREE.BufferGeometry, THREE.Material | THREE.Material[]>>(null);
+  const project = useRef<THREE.Mesh<THREE.BufferGeometry, THREE.Material | THREE.Material[]>>(null);
 
   const imageTexture = useLoader(THREE.TextureLoader, url);
 
@@ -168,6 +187,12 @@ const Frame: React.FC<FrameProps> = ({ url, id, focused, c = new THREE.Color(), 
       image.current.scale.x = THREE.MathUtils.lerp(image.current.scale.x, GOLDENRATIO * (hovered ? 0.99 : 1), 0.4);
       image.current.scale.y = THREE.MathUtils.lerp(image.current.scale.y, 1 * (hovered ? 0.98 : 1), 0.4);
     }
+
+    if (project?.current?.scale) {
+      project.current.scale.x = THREE.MathUtils.lerp(project.current.scale.x, focused ? 1.2 : 1, 0.4);
+      project.current.scale.y = THREE.MathUtils.lerp(project.current.scale.y, focused ? 1.2 : 1, 0.4);
+    }
+
     if (frame.current) {
       (frame.current.material as unknown as THREE.MeshBasicMaterial).color.lerp(
         c.set(hovered ? "#00A6FB" : "white"),
@@ -178,28 +203,30 @@ const Frame: React.FC<FrameProps> = ({ url, id, focused, c = new THREE.Color(), 
 
   return (
     <group {...props}>
-      <mesh
-        name={id}
-        onPointerOver={e => (e.stopPropagation(), setHovered(true))}
-        onPointerOut={() => setHovered(false)}
-        scale={[1.05 * GOLDENRATIO, 1.075, 0.05]}
-        position={[0, GOLDENRATIO / 2, 0.66]}>
-        <boxGeometry />
-        <meshStandardMaterial color="#8f8f8f" metalness={0.5} roughness={0.5} envMapIntensity={2} />
-      </mesh>
+      <mesh ref={project}>
+        <mesh
+          name={id}
+          onPointerOver={e => (e.stopPropagation(), setHovered(true))}
+          onPointerOut={() => setHovered(false)}
+          scale={[1.05 * GOLDENRATIO, 1.075, 0.05]}
+          position={[0, GOLDENRATIO / 2, 0.67]}>
+          <boxGeometry />
+          <meshStandardMaterial color="#8f8f8f" metalness={0.5} roughness={0.5} envMapIntensity={2} />
+        </mesh>
 
-      <mesh ref={image} raycast={() => null} scale={[GOLDENRATIO, 1, 0.6]} position={[0, GOLDENRATIO / 2, 0.7]}>
-        <planeBufferGeometry attach="geometry" />
-        <meshBasicMaterial attach="material" map={imageTexture} fog={false} />
-      </mesh>
+        <mesh ref={image} raycast={() => null} scale={[GOLDENRATIO, 1, 0.6]} position={[0, GOLDENRATIO / 2, 0.7]}>
+          <planeBufferGeometry attach="geometry" />
+          <meshBasicMaterial attach="material" map={imageTexture} fog={false} />
+        </mesh>
 
-      <mesh
-        ref={frame}
-        raycast={() => null}
-        scale={[1.05 * GOLDENRATIO, 1.075, 0]}
-        position={[0, GOLDENRATIO / 2, 0.699]}>
-        <boxGeometry />
-        <meshBasicMaterial toneMapped={false} fog={false} />
+        <mesh
+          ref={frame}
+          raycast={() => null}
+          scale={[1.05 * GOLDENRATIO, 1.075, 0]}
+          position={[0, GOLDENRATIO / 2, 0.699]}>
+          <boxGeometry />
+          <meshBasicMaterial toneMapped={false} fog={false} />
+        </mesh>
       </mesh>
     </group>
   );
@@ -208,7 +235,7 @@ const Frame: React.FC<FrameProps> = ({ url, id, focused, c = new THREE.Color(), 
 const Ground: React.FC = () => {
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.25, 0]}>
-      <planeGeometry args={[50, 50]} />
+      <planeGeometry args={[150, 150]} />
       <MeshReflectorMaterial
         blur={[300, 100]}
         resolution={2048}
@@ -263,8 +290,8 @@ const SwitchArrows: React.FC = () => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              width: 40,
-              height: 40,
+              width: 60,
+              height: 60,
               background: "gray",
               borderRadius: "50%",
             }}
@@ -276,8 +303,8 @@ const SwitchArrows: React.FC = () => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              width: 40,
-              height: 40,
+              width: 60,
+              height: 60,
               background: "gray",
               borderRadius: "50%",
             }}

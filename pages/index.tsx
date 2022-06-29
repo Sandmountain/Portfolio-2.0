@@ -24,8 +24,7 @@ const Home: NextPage<{ projects: Project[]; projectImages: ProjectImageType[] }>
   return (
     <div style={{ height: "100%" }}>
       <Navbar />
-
-      <div style={{ height: "450px", background: "black", color: "white" }}>
+      <div style={{ height: "calc(100vh - 50px)", background: "black", color: "white" }}>
         {loadedProjects && <HorizontalProjectDisplay images={projectImages} />}
       </div>
     </div>
