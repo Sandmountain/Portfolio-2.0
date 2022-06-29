@@ -1,11 +1,11 @@
 /* eslint-disable jsx-a11y/alt-text */
-import { useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, Suspense, useEffect, useRef, useState } from "react";
+import ReactTooltip from "react-tooltip";
 
 import { Environment, MeshReflectorMaterial, useCamera, useCursor, useScroll } from "@react-three/drei";
 import { Canvas, ThreeEvent, useFrame, useLoader, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { Object3D } from "three";
-import { damp } from "three/src/math/MathUtils";
 import { proxy, useSnapshot } from "valtio";
 
 import { ProjectImageType } from "../../types/Project";
@@ -37,19 +37,21 @@ const HorizontalProjectDisplay: React.FC<HorizontalProjectDisplayProps> = ({ ima
 
   return (
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
-      <Canvas dpr={[1, 2]} camera={{ fov: 70, position: [0, 10, 15] }}>
-        <color attach="background" args={["#151515"]} />
-        <fog attach="fog" args={["#151515", 0, 5]} />
-        <ambientLight intensity={2} />
-        <Environment preset="city" />
-        {/* Align group in center of frame */}
-        <group position={[0, -0.8, 0]}>
-          <Frames images={images} />
-          <Ground />
-        </group>
-      </Canvas>
-      <SwitchArrows />
-      <Indicators projects={images} />
+      <Suspense fallback={() => <></>}>
+        <Canvas dpr={[1, 2]} camera={{ fov: 70, position: [0, 10, 15] }}>
+          <color attach="background" args={["#151515"]} />
+          <fog attach="fog" args={["#151515", 0, 5]} />
+          <ambientLight intensity={2} />
+          <Environment preset="city" />
+          {/* Align group in center of frame */}
+          <group position={[0, -0.8, 0]}>
+            <Frames images={images} />
+            <Ground />
+          </group>
+        </Canvas>
+        <SwitchArrows />
+        <Indicators projects={images} />
+      </Suspense>
     </div>
   );
 };
@@ -242,13 +244,13 @@ const Ground: React.FC = () => {
         blur={[300, 100]}
         resolution={2048}
         mixBlur={1}
-        mixStrength={20}
+        mixStrength={2.3}
         roughness={1}
-        depthScale={1.2}
-        minDepthThreshold={0.4}
-        maxDepthThreshold={1.4}
+        depthScale={1.5}
+        minDepthThreshold={0.2}
+        maxDepthThreshold={1.5}
         color="#101010"
-        metalness={0.5}
+        metalness={0.8}
         mirror={1}
       />
     </mesh>
@@ -323,7 +325,9 @@ interface IndicatorProps {
   projects: ProjectImageType[];
 }
 const Indicators: React.FC<IndicatorProps> = ({ projects }) => {
+  const [hoveredProject, setHoveredProject] = useState<string>();
   const [focusedIdx, setFocusedIdx] = useState<number>();
+
   const snap = useSnapshot(state);
 
   useEffect(() => {
@@ -331,7 +335,12 @@ const Indicators: React.FC<IndicatorProps> = ({ projects }) => {
   }, [projects, snap.currentProject]);
 
   const onIndicatorClick = (index: number) => {
-    state.currentProject = projects[index];
+    // Reset if same project is clicked again
+    if (state.currentProject?.id === projects[index].id) {
+      state.currentProject = null;
+    } else {
+      state.currentProject = projects[index];
+    }
   };
 
   return (
@@ -342,24 +351,69 @@ const Indicators: React.FC<IndicatorProps> = ({ projects }) => {
         bottom: "10%",
         display: "flex",
         alignItems: "center",
+        justifyContent: "center",
         backgroundColor: "#cacaca20",
-        padding: 4,
+        padding: 6,
         opacity: 0.6,
         gap: 4,
+        cursor: "pointer",
       }}>
+      {hoveredProject && (
+        <div
+          style={{
+            position: "absolute",
+            pointerEvents: "none",
+            top: -30,
+            whiteSpace: "nowrap",
+          }}>
+          <p style={{ fontSize: "0.8rem" }}>{hoveredProject}</p>
+        </div>
+      )}
       {projects.map((proj, idx) => {
         return (
-          <div
-            onClick={() => onIndicatorClick(idx)}
-            key={proj.id}
-            style={{
-              width: focusedIdx === idx ? 16 : 11,
-              height: focusedIdx === idx ? 9 : 7,
-              border: focusedIdx !== idx ? "1px solid white" : "none",
-              backgroundColor: focusedIdx === idx ? "white" : "transparent",
-            }}></div>
+          <IndicatorItem
+            key={idx}
+            project={proj}
+            focused={focusedIdx === idx}
+            index={idx}
+            onIndicatorClick={onIndicatorClick}
+            setHoveredProject={setHoveredProject}
+          />
         );
       })}
     </div>
+  );
+};
+
+interface IndicatorItemProps {
+  project: ProjectImageType;
+  focused: boolean;
+  index: number;
+  onIndicatorClick: (index: number) => void;
+  setHoveredProject: Dispatch<SetStateAction<string | undefined>>;
+}
+
+const IndicatorItem: React.FC<IndicatorItemProps> = ({
+  project,
+  focused,
+  index,
+  onIndicatorClick,
+  setHoveredProject,
+}) => {
+  /* Add hover effect when creating SC of this */
+
+  return (
+    <div
+      onMouseEnter={() => setHoveredProject(project.title)}
+      onMouseLeave={() => setHoveredProject(undefined)}
+      onClick={() => onIndicatorClick(index)}
+      key={project.id}
+      style={{
+        width: 11,
+        height: 7,
+        border: focused ? "none" : "1px solid white",
+        backgroundColor: focused ? "white" : "transparent",
+      }}
+    />
   );
 };
