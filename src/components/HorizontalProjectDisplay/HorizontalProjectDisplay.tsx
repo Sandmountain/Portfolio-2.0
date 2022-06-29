@@ -1,10 +1,11 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { useEffect, useRef, useState } from "react";
 
-import { Environment, MeshReflectorMaterial, useCamera, useCursor } from "@react-three/drei";
+import { Environment, MeshReflectorMaterial, useCamera, useCursor, useScroll } from "@react-three/drei";
 import { Canvas, ThreeEvent, useFrame, useLoader, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { Object3D } from "three";
+import { damp } from "three/src/math/MathUtils";
 import { proxy, useSnapshot } from "valtio";
 
 import { ProjectImageType } from "../../types/Project";
@@ -48,6 +49,7 @@ const HorizontalProjectDisplay: React.FC<HorizontalProjectDisplayProps> = ({ ima
         </group>
       </Canvas>
       <SwitchArrows />
+      <Indicators projects={images} />
     </div>
   );
 };
@@ -314,5 +316,50 @@ const SwitchArrows: React.FC = () => {
         </div>
       )}
     </>
+  );
+};
+
+interface IndicatorProps {
+  projects: ProjectImageType[];
+}
+const Indicators: React.FC<IndicatorProps> = ({ projects }) => {
+  const [focusedIdx, setFocusedIdx] = useState<number>();
+  const snap = useSnapshot(state);
+
+  useEffect(() => {
+    setFocusedIdx(projects.findIndex(proj => proj.id === snap.currentProject?.id));
+  }, [projects, snap.currentProject]);
+
+  const onIndicatorClick = (index: number) => {
+    state.currentProject = projects[index];
+  };
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: "50%",
+        bottom: "10%",
+        display: "flex",
+        alignItems: "center",
+        backgroundColor: "#cacaca20",
+        padding: 4,
+        opacity: 0.6,
+        gap: 4,
+      }}>
+      {projects.map((proj, idx) => {
+        return (
+          <div
+            onClick={() => onIndicatorClick(idx)}
+            key={proj.id}
+            style={{
+              width: focusedIdx === idx ? 16 : 11,
+              height: focusedIdx === idx ? 9 : 7,
+              border: focusedIdx !== idx ? "1px solid white" : "none",
+              backgroundColor: focusedIdx === idx ? "white" : "transparent",
+            }}></div>
+        );
+      })}
+    </div>
   );
 };
