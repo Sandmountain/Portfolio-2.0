@@ -4,6 +4,7 @@ import ReactTooltip from "react-tooltip";
 
 import { Environment, MeshReflectorMaterial, useCamera, useCursor, useScroll } from "@react-three/drei";
 import { Canvas, ThreeEvent, useFrame, useLoader, useThree } from "@react-three/fiber";
+import { useTheme } from "styled-components";
 import * as THREE from "three";
 import { Object3D } from "three";
 import { proxy, useSnapshot } from "valtio";
@@ -37,21 +38,19 @@ const HorizontalProjectDisplay: React.FC<HorizontalProjectDisplayProps> = ({ ima
 
   return (
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
-      <Suspense fallback={() => <></>}>
-        <Canvas dpr={[1, 2]} camera={{ fov: 70, position: [0, 10, 15] }}>
-          <color attach="background" args={["#151515"]} />
-          <fog attach="fog" args={["#151515", 0, 5]} />
-          <ambientLight intensity={2} />
-          <Environment preset="city" />
-          {/* Align group in center of frame */}
-          <group position={[0, -0.8, 0]}>
-            <Frames images={images} />
-            <Ground />
-          </group>
-        </Canvas>
-        <SwitchArrows />
-        <Indicators projects={images} />
-      </Suspense>
+      <Canvas dpr={[1, 2]} camera={{ fov: 70, position: [0, 10, 15] }}>
+        <color attach="background" args={["#151515"]} />
+        <fog attach="fog" args={["#151515", 0, 5]} />
+        <ambientLight intensity={2} />
+        <Environment preset="city" />
+        {/* Align group in center of frame */}
+        <group position={[0, -0.8, 0]}>
+          <Frames images={images} />
+          <Ground />
+        </group>
+      </Canvas>
+      <SwitchArrows />
+      <Indicators projects={images} />
     </div>
   );
 };
@@ -349,40 +348,46 @@ const Indicators: React.FC<IndicatorProps> = ({ projects }) => {
         <div
           style={{
             position: "absolute",
-            left: "50%",
+            width: "100%",
             bottom: "10%",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            backgroundColor: "#cacaca20",
-            padding: 6,
-            opacity: 0.6,
-            gap: 4,
-            cursor: "pointer",
           }}>
-          {hoveredProject && (
-            <div
-              style={{
-                position: "absolute",
-                pointerEvents: "none",
-                top: -30,
-                whiteSpace: "nowrap",
-              }}>
-              <p style={{ fontSize: "0.8rem" }}>{hoveredProject}</p>
-            </div>
-          )}
-          {projects.map((proj, idx) => {
-            return (
-              <IndicatorItem
-                key={idx}
-                project={proj}
-                focused={focusedIdx === idx}
-                index={idx}
-                onIndicatorClick={onIndicatorClick}
-                setHoveredProject={setHoveredProject}
-              />
-            );
-          })}
+          <div
+            style={{
+              padding: 6,
+              opacity: 0.6,
+              gap: 4,
+              backgroundColor: "#cacaca20",
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+            }}>
+            {hoveredProject && (
+              <div
+                style={{
+                  position: "absolute",
+                  pointerEvents: "none",
+                  top: -30,
+                  whiteSpace: "nowrap",
+                }}>
+                <p style={{ fontSize: "0.8rem" }}>{hoveredProject}</p>
+              </div>
+            )}
+            {projects.map((proj, idx) => {
+              return (
+                <IndicatorItem
+                  key={idx}
+                  project={proj}
+                  focused={focusedIdx === idx}
+                  index={idx}
+                  onIndicatorClick={onIndicatorClick}
+                  setHoveredProject={setHoveredProject}
+                />
+              );
+            })}
+          </div>
         </div>
       )}
     </>
@@ -404,6 +409,8 @@ const IndicatorItem: React.FC<IndicatorItemProps> = ({
   onIndicatorClick,
   setHoveredProject,
 }) => {
+  const theme = useTheme();
+
   /* Add hover effect when creating SC of this */
 
   return (
@@ -413,10 +420,11 @@ const IndicatorItem: React.FC<IndicatorItemProps> = ({
       onClick={() => onIndicatorClick(index)}
       key={project.id}
       style={{
+        cursor: "pointer",
         width: 11,
         height: 7,
         border: focused ? "none" : "1px solid white",
-        backgroundColor: focused ? "white" : "transparent",
+        backgroundColor: focused ? theme.palette.primary : "transparent",
       }}
     />
   );
