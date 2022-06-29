@@ -344,44 +344,48 @@ const Indicators: React.FC<IndicatorProps> = ({ projects }) => {
   };
 
   return (
-    <div
-      style={{
-        position: "absolute",
-        left: "50%",
-        bottom: "10%",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "#cacaca20",
-        padding: 6,
-        opacity: 0.6,
-        gap: 4,
-        cursor: "pointer",
-      }}>
-      {hoveredProject && (
+    <>
+      {state.currentProject && (
         <div
           style={{
             position: "absolute",
-            pointerEvents: "none",
-            top: -30,
-            whiteSpace: "nowrap",
+            left: "50%",
+            bottom: "10%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "#cacaca20",
+            padding: 6,
+            opacity: 0.6,
+            gap: 4,
+            cursor: "pointer",
           }}>
-          <p style={{ fontSize: "0.8rem" }}>{hoveredProject}</p>
+          {hoveredProject && (
+            <div
+              style={{
+                position: "absolute",
+                pointerEvents: "none",
+                top: -30,
+                whiteSpace: "nowrap",
+              }}>
+              <p style={{ fontSize: "0.8rem" }}>{hoveredProject}</p>
+            </div>
+          )}
+          {projects.map((proj, idx) => {
+            return (
+              <IndicatorItem
+                key={idx}
+                project={proj}
+                focused={focusedIdx === idx}
+                index={idx}
+                onIndicatorClick={onIndicatorClick}
+                setHoveredProject={setHoveredProject}
+              />
+            );
+          })}
         </div>
       )}
-      {projects.map((proj, idx) => {
-        return (
-          <IndicatorItem
-            key={idx}
-            project={proj}
-            focused={focusedIdx === idx}
-            index={idx}
-            onIndicatorClick={onIndicatorClick}
-            setHoveredProject={setHoveredProject}
-          />
-        );
-      })}
-    </div>
+    </>
   );
 };
 
