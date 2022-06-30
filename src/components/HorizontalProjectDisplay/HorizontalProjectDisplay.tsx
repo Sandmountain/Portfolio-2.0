@@ -1,12 +1,13 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { Dispatch, SetStateAction, Suspense, useEffect, useRef, useState } from "react";
-import ReactTooltip from "react-tooltip";
 
+import { useSpringRef, useTransition } from "@react-spring/web";
 import { Environment, MeshReflectorMaterial, useCamera, useCursor, useScroll } from "@react-three/drei";
 import { Canvas, ThreeEvent, useFrame, useLoader, useThree } from "@react-three/fiber";
+import { Box, Flex, useFlexSize } from "@react-three/flex";
 import { useTheme } from "styled-components";
 import * as THREE from "three";
-import { Object3D } from "three";
+import { Mesh, Object3D } from "three";
 import { proxy, useSnapshot } from "valtio";
 
 import { ProjectImageType } from "../../types/Project";
@@ -19,6 +20,7 @@ const GOLDENRATIO = 16 / 9;
 interface ProjectState {
   current: null | string;
   currentProject: null | ProjectImageType;
+  currentView: "horizontal" | "grid";
   allProjects: null | ProjectImageType[];
 }
 
@@ -26,6 +28,7 @@ const state = proxy<ProjectState>({
   current: null,
   currentProject: null,
   allProjects: null,
+  currentView: "grid",
 });
 
 interface HorizontalProjectDisplayProps {
@@ -33,8 +36,13 @@ interface HorizontalProjectDisplayProps {
 }
 
 const HorizontalProjectDisplay: React.FC<HorizontalProjectDisplayProps> = ({ images }) => {
-  // Set the images in the Valtio state
-  state.allProjects = images;
+  useEffect(() => {
+    state.allProjects = images;
+  }, [images]);
+
+  const changeView = (view: "horizontal" | "grid") => {
+    state.currentView = view;
+  };
 
   return (
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
@@ -45,11 +53,37 @@ const HorizontalProjectDisplay: React.FC<HorizontalProjectDisplayProps> = ({ ima
         <Environment preset="city" />
         {/* Align group in center of frame */}
         <group position={[0, -0.8, 0]}>
-          <Frames images={images} />
-          <Ground />
+          <ProjectDisplay images={images} />
         </group>
       </Canvas>
       <SwitchArrows />
+
+      <div
+        style={{
+          position: "absolute",
+          width: "100%",
+          top: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "flex-end",
+          gap: 5,
+          marginTop: 5,
+          marginRight: 5,
+        }}>
+        <div style={{ backgroundColor: "red", height: 35, width: 50, position: "relative" }}></div>
+        <div
+          style={{ backgroundColor: "red", height: 35, width: 50, position: "relative" }}
+          onClick={() => {
+            changeView("horizontal");
+          }}>
+          <p>row</p>
+        </div>
+        <div
+          style={{ backgroundColor: "red", height: 35, width: 50, position: "relative" }}
+          onClick={() => changeView("grid")}>
+          <p>grid</p>
+        </div>
+      </div>
       <Indicators projects={images} />
     </div>
   );
@@ -57,14 +91,30 @@ const HorizontalProjectDisplay: React.FC<HorizontalProjectDisplayProps> = ({ ima
 
 export default HorizontalProjectDisplay;
 
-interface FramesProps {
+interface HorizontalDisplayProps {
+  images: ProjectImageType[];
+}
+const ProjectDisplay: React.FC<HorizontalDisplayProps> = ({ images }) => {
+  const snap = useSnapshot(state);
+
+  return snap.currentView === "horizontal" ? (
+    <>
+      <HorizontalDisplay images={images} />
+      <Ground />
+    </>
+  ) : (
+    <GridDisplay images={images} />
+  );
+};
+
+interface HorizontalDisplayProps {
   images: ProjectImageType[];
   q?: THREE.Quaternion;
   p?: THREE.Vector3;
   v?: THREE.Vector3;
 }
 
-const Frames: React.FC<FramesProps> = ({
+const HorizontalDisplay: React.FC<HorizontalDisplayProps> = ({
   images,
   q = new THREE.Quaternion(),
   p = new THREE.Vector3(),
@@ -95,12 +145,10 @@ const Frames: React.FC<FramesProps> = ({
     } else {
       p.set(0, 0, 5.7);
       q.identity();
-
-      if (ref.current && ref.current?.children) {
-        // A project is enlarged when focused, other projects needs to move a tad.
-
-        resetProjectsPosition(images, ref.current.children);
-      }
+      // if (ref.current && ref.current?.children) {
+      //   // A project is enlarged when focused, other projects needs to move a tad.
+      //   resetProjectsPosition(images, ref.current.children);
+      // }
     }
   }, [camera, clickedImage, images, p, q]);
 
@@ -147,7 +195,7 @@ const Frames: React.FC<FramesProps> = ({
     setClickedImage(target.object);
     state.currentProject = project;
   };
-
+  console.log(clickedImage);
   return (
     <group
       ref={ref}
@@ -164,6 +212,118 @@ const Frames: React.FC<FramesProps> = ({
     </group>
   );
 };
+interface GridDisplayProps {
+  images: ProjectImageType[];
+  q?: THREE.Quaternion;
+  p?: THREE.Vector3;
+  v?: THREE.Vector3;
+}
+
+const GridDisplay: React.FC<GridDisplayProps> = ({
+  images,
+  q = new THREE.Quaternion(),
+  p = new THREE.Vector3(),
+  v = new THREE.Vector3(),
+}) => {
+  const [clickedImage, setClickedImage] = useState<Object3D | null>(null);
+
+  const snap = useSnapshot(state);
+
+  const ref = useRef<THREE.Group>(null);
+  const clicked = useRef<Object3D | null>(null);
+
+  useEffect(() => {
+    clicked.current = clickedImage;
+
+    if (clicked?.current?.parent) {
+      clicked.current.parent.updateWorldMatrix(true, true);
+      clicked.current.parent.localToWorld(p.set(0, GOLDENRATIO / 2, 3));
+      clicked.current.parent.getWorldQuaternion(q);
+    } else {
+      // Create a zoomLevel that works for an arbitrary amount of projects
+      const projectAmount = snap.allProjects?.length ?? 0;
+      const zoomLevel = projectAmount < 16 ? 6 : Math.floor(projectAmount / 8) + 4;
+
+      p.set(0, 0, zoomLevel);
+      q.identity();
+    }
+  }, [clickedImage, images, p, q, snap.allProjects?.length]);
+
+  // Animate camera on load and on new focus animation
+  useFrame(state => {
+    state.camera.position.lerp(p, 0.05);
+    state.camera.quaternion.slerp(q, 0.05);
+
+    // Only wobble camera if a project is not in focus
+    if (!clicked.current) {
+      state.camera.position.lerp(v.set(state.mouse.x / 4, state.mouse.y / 4, p.z), 0.05);
+    }
+  });
+
+  const handleOnClick = (target: ThreeEvent<MouseEvent> | null) => {
+    // if clicked outside or clicked on the same project, reset
+    if (!target) {
+      setClickedImage(null);
+      state.currentProject = null;
+      return;
+    }
+    console.log(target.object.name);
+    const projects = JSON.parse(JSON.stringify(snap.allProjects)) as ProjectImageType[];
+
+    const [project] = projects.filter(proj => proj.id === target.object.name);
+
+    setClickedImage(target.object);
+    state.currentProject = project;
+  };
+
+  const renderGrid = (data: ProjectImageType[]) => {
+    const perChunk = 5;
+    const result = data.reduce(
+      (resultArray, item, index) => {
+        const chunkIndex = Math.floor(index / perChunk);
+
+        if (!resultArray[chunkIndex]) {
+          resultArray[chunkIndex] = []; // start a new chunk
+        }
+
+        resultArray[chunkIndex].push(item);
+
+        return resultArray;
+      },
+      [[]] as [ProjectImageType[]],
+    );
+
+    /* margin centers the grid*/
+
+    return (
+      <Flex justifyContent="center" alignItems="center" margin={-0.36}>
+        {result.map((val, rowId) => (
+          <Box key={rowId} flexDirection="row" width="auto" height="auto" flexGrow={1}>
+            {val.map((proj, index) => (
+              <Box flexDirection="column" key={index} margin={0.04} name={proj.id}>
+                <Frame url={proj.url} focused={clickedImage?.uuid === proj.id} key={proj.id} />
+              </Box>
+            ))}
+          </Box>
+        ))}
+      </Flex>
+    );
+  };
+
+  return (
+    <group
+      ref={ref}
+      onClick={e => {
+        e.stopPropagation();
+        handleOnClick(e);
+      }}
+      onPointerMissed={() => {
+        handleOnClick(null);
+      }}>
+      {renderGrid(images)}
+    </group>
+  );
+};
 
 interface FrameProps {
   url: string;
@@ -174,8 +334,7 @@ interface FrameProps {
 
 const Frame: React.FC<FrameProps> = ({ url, id, focused, c = new THREE.Color(), ...props }) => {
   const [hovered, setHovered] = useState(false);
-  const [rnd] = useState(() => Math.random());
-
+  // const [rnd] = useState(() => Math.random());
   const image = useRef<THREE.Mesh<THREE.BufferGeometry, THREE.Material | THREE.Material[]>>(null);
   const frame = useRef<THREE.Mesh<THREE.BufferGeometry, THREE.Material | THREE.Material[]>>(null);
   const project = useRef<THREE.Mesh<THREE.BufferGeometry, THREE.Material | THREE.Material[]>>(null);
@@ -183,12 +342,13 @@ const Frame: React.FC<FrameProps> = ({ url, id, focused, c = new THREE.Color(), 
   const imageTexture = useLoader(THREE.TextureLoader, url);
 
   useCursor(hovered);
-  useFrame(state => {
+  useFrame(() => {
     if (image?.current?.material) {
-      const zoomLevel = 1.2 - Math.sin(rnd * 10000 + state.clock.elapsedTime / 6) / 7;
-      (image.current.material as unknown as THREE.PerspectiveCamera).zoom = zoomLevel;
-      image.current.scale.x = THREE.MathUtils.lerp(image.current.scale.x, GOLDENRATIO * (hovered ? 0.99 : 1), 0.4);
-      image.current.scale.y = THREE.MathUtils.lerp(image.current.scale.y, 1 * (hovered ? 0.98 : 1), 0.4);
+      // TODO: doesn't work, look into how to move the zoom level on the basic material.
+      // const zoomLevel = 1.2 - Math.sin(rnd * 10000 + state.clock.elapsedTime / 6) / 7;
+      // (image.current.material as unknown as THREE.PerspectiveCamera).zoom = zoomLevel;
+      // image.current.scale.x = THREE.MathUtils.lerp(image.current.scale.x, GOLDENRATIO * (hovered ? 0.99 : 1), 0.4);
+      // image.current.scale.y = THREE.MathUtils.lerp(image.current.scale.y, 1 * (hovered ? 0.98 : 1), 0.4);
     }
 
     if (project?.current?.scale) {
@@ -197,10 +357,13 @@ const Frame: React.FC<FrameProps> = ({ url, id, focused, c = new THREE.Color(), 
     }
 
     if (frame.current) {
-      (frame.current.material as unknown as THREE.MeshBasicMaterial).color.lerp(
-        c.set(hovered ? "#00A6FB" : "white"),
-        0.1,
-      );
+      if (focused && !hovered) {
+        (frame.current.material as unknown as THREE.MeshBasicMaterial).color.lerp(c.set("#00A6FB"), 0.1);
+      } else if (!focused && !hovered) {
+        (frame.current.material as unknown as THREE.MeshBasicMaterial).color.lerp(c.set("white"), 0.1);
+      } else {
+        (frame.current.material as unknown as THREE.MeshBasicMaterial).color.lerp(c.set("#00A6FB"), 0.1);
+      }
     }
   });
 
@@ -278,7 +441,7 @@ const SwitchArrows: React.FC = () => {
 
   return (
     <>
-      {snap.currentProject !== null && (
+      {snap.currentProject !== null && snap.currentView === "horizontal" && (
         <div
           style={{
             width: "100%",
@@ -323,6 +486,7 @@ const SwitchArrows: React.FC = () => {
 interface IndicatorProps {
   projects: ProjectImageType[];
 }
+
 const Indicators: React.FC<IndicatorProps> = ({ projects }) => {
   const [hoveredProject, setHoveredProject] = useState<string>();
   const [focusedIdx, setFocusedIdx] = useState<number>();
@@ -344,7 +508,7 @@ const Indicators: React.FC<IndicatorProps> = ({ projects }) => {
 
   return (
     <>
-      {state.currentProject && (
+      {state.currentProject && snap.currentView === "horizontal" && (
         <div
           style={{
             position: "absolute",
@@ -429,3 +593,46 @@ const IndicatorItem: React.FC<IndicatorItemProps> = ({
     />
   );
 };
+
+/* 
+
+  // TODO: Tomorrow- create a new component or update Frame to have a "grid prop". It will either render the horizonal or the grid.
+  // Keep track of the current setting in valtio. Add some tools in the top right corner or something similar, 
+  // Should have a carousel icon, a grid icon and a search. 
+  // When a project is in focus: there should be a window showing the "short text" and some other info. 
+  // Should be accompanied with a button to read the full project - similar to what was done on the old portfolio.
+  // This should route to a new page viktorsandberg.com/project/<title>
+  // Make sure this actually works.
+
+  <Flex justifyContent="center">
+        <Box flexDirection="row">
+          {images.slice(0, 3).map((props, index) => (
+            <Box flexDirection="column" key={index}>
+              <Frame url={props.url} focused={clickedImage?.name === props.id} key={props.url} />
+            </Box>
+          ))}
+        </Box>
+        <Box flexDirection="row">
+          {images.slice(3, 6).map((props, index) => (
+            <Box flexDirection="column" key={index}>
+              <Frame url={props.url} focused={clickedImage?.name === props.id} key={props.url} />
+            </Box>
+          ))}
+        </Box>
+      </Flex>
+*/
+
+/*
+Centered box
+ <div
+        style={{
+          position: "absolute",
+          width: "100%",
+          top: "50%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}>
+        <div style={{ backgroundColor: "red", height: 50, width: 50, position: "relative" }}></div>
+      </div>
+*/

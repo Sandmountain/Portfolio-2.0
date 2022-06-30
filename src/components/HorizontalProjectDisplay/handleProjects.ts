@@ -1,6 +1,6 @@
 import { Project, ProjectImageType } from "../../types/Project";
 
-const HIGHLIGHT_IDX = 3;
+// const HIGHLIGHT_IDX = 3;
 
 // 2 3 4 [ 1 ] 5 6 7
 // export const getImages = (projects: Project[]): ProjectImageType[] => {
@@ -71,7 +71,7 @@ export const getImages = (projects: Project[]): ProjectImageType[] => {
   return positions;
 };
 
-const projectOffset = 0.2;
+const projectOffset = 0.15;
 
 export const moveProjectFramesOnFocus = (
   images: ProjectImageType[],
