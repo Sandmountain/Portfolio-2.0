@@ -1,8 +1,8 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { Dispatch, SetStateAction, Suspense, useEffect, useRef, useState } from "react";
 
-import { useSpringRef, useTransition } from "@react-spring/web";
-import { Environment, MeshReflectorMaterial, useCamera, useCursor, useScroll } from "@react-three/drei";
+import { SpringValue, animated, useSpring, useTransition } from "@react-spring/three";
+import { Environment, MeshReflectorMaterial, Stars, useCamera, useCursor, useScroll } from "@react-three/drei";
 import { Canvas, ThreeEvent, useFrame, useLoader, useThree } from "@react-three/fiber";
 import { Box, Flex, useFlexSize } from "@react-three/flex";
 import { useTheme } from "styled-components";
@@ -41,6 +41,7 @@ const HorizontalProjectDisplay: React.FC<HorizontalProjectDisplayProps> = ({ ima
   }, [images]);
 
   const changeView = (view: "horizontal" | "grid") => {
+    state.currentProject = null;
     state.currentView = view;
   };
 
@@ -51,6 +52,7 @@ const HorizontalProjectDisplay: React.FC<HorizontalProjectDisplayProps> = ({ ima
         <fog attach="fog" args={["#151515", 0, 5]} />
         <ambientLight intensity={2} />
         <Environment preset="city" />
+        {/* <Stars /> */}
         {/* Align group in center of frame */}
         <group position={[0, -0.8, 0]}>
           <ProjectDisplay images={images} />
@@ -85,6 +87,18 @@ const HorizontalProjectDisplay: React.FC<HorizontalProjectDisplayProps> = ({ ima
         </div>
       </div>
       <Indicators projects={images} />
+
+      {/* <div
+        style={{
+          position: "absolute",
+          width: "100%",
+          top: "50%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}>
+        <div style={{ backgroundColor: "red", height: 50, width: 50, position: "relative" }}></div>
+      </div> */}
     </div>
   );
 };
@@ -97,14 +111,28 @@ interface HorizontalDisplayProps {
 const ProjectDisplay: React.FC<HorizontalDisplayProps> = ({ images }) => {
   const snap = useSnapshot(state);
 
-  return snap.currentView === "horizontal" ? (
+  const transition = useTransition(snap.currentView, {
+    from: { scale: 0, opacity: 0 },
+    enter: () => ({ scale: 1, opacity: 1 }),
+    leave: { scale: 0, opacity: 0 },
+    config: { mass: 100, duration: 100 },
+  });
+
+  return transition(({ scale, opacity }, view) => (
     <>
-      <HorizontalDisplay images={images} />
-      <Ground />
+      {view === "horizontal" && (
+        <animated.mesh scale={scale}>
+          <HorizontalDisplay images={images} />
+          {snap.currentView !== "grid" && <Ground opacity={opacity} />}
+        </animated.mesh>
+      )}
+      {view === "grid" && (
+        <animated.mesh scale={scale}>
+          <GridDisplay images={images} />
+        </animated.mesh>
+      )}
     </>
-  ) : (
-    <GridDisplay images={images} />
-  );
+  ));
 };
 
 interface HorizontalDisplayProps {
@@ -121,7 +149,6 @@ const HorizontalDisplay: React.FC<HorizontalDisplayProps> = ({
   v = new THREE.Vector3(),
 }) => {
   const [clickedImage, setClickedImage] = useState<Object3D | null>(null);
-
   const snap = useSnapshot(state);
   const camera = useThree(state => state.camera);
   // get current viewport
@@ -145,10 +172,11 @@ const HorizontalDisplay: React.FC<HorizontalDisplayProps> = ({
     } else {
       p.set(0, 0, 5.7);
       q.identity();
-      // if (ref.current && ref.current?.children) {
-      //   // A project is enlarged when focused, other projects needs to move a tad.
-      //   resetProjectsPosition(images, ref.current.children);
-      // }
+
+      if (ref.current && ref.current?.children) {
+        // A project is enlarged when focused, other projects needs to move a tad.
+        resetProjectsPosition(images, ref.current.children);
+      }
     }
   }, [camera, clickedImage, images, p, q]);
 
@@ -172,7 +200,7 @@ const HorizontalDisplay: React.FC<HorizontalDisplayProps> = ({
   // Animate camera on load and on new focus animation
   useFrame(state => {
     state.camera.position.lerp(p, 0.05);
-    state.camera.quaternion.slerp(q, 0.05);
+    state.camera.quaternion.slerp(q, 0.2);
 
     // Only wobble camera if a project is not in focus
     if (!clicked.current) {
@@ -195,7 +223,7 @@ const HorizontalDisplay: React.FC<HorizontalDisplayProps> = ({
     setClickedImage(target.object);
     state.currentProject = project;
   };
-  console.log(clickedImage);
+
   return (
     <group
       ref={ref}
@@ -246,28 +274,29 @@ const GridDisplay: React.FC<GridDisplayProps> = ({
 
       p.set(0, 0, zoomLevel);
       q.identity();
+      // Rotate the grid upwards instead of having same position as row
+      // .setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI / 4)
+      // .normalize();
     }
   }, [clickedImage, images, p, q, snap.allProjects?.length]);
 
   // Animate camera on load and on new focus animation
   useFrame(state => {
     state.camera.position.lerp(p, 0.05);
-    state.camera.quaternion.slerp(q, 0.05);
+    state.camera.quaternion.slerp(q, 0.1);
 
     // Only wobble camera if a project is not in focus
-    if (!clicked.current) {
-      state.camera.position.lerp(v.set(state.mouse.x / 4, state.mouse.y / 4, p.z), 0.05);
-    }
+    state.camera.position.lerp(v.set(state.mouse.x / 4, state.mouse.y / 4, p.z), 0.01);
   });
 
   const handleOnClick = (target: ThreeEvent<MouseEvent> | null) => {
     // if clicked outside or clicked on the same project, reset
-    if (!target) {
+    if (!target || target.object.name === clickedImage?.name) {
       setClickedImage(null);
       state.currentProject = null;
       return;
     }
-    console.log(target.object.name);
+
     const projects = JSON.parse(JSON.stringify(snap.allProjects)) as ProjectImageType[];
 
     const [project] = projects.filter(proj => proj.id === target.object.name);
@@ -300,8 +329,8 @@ const GridDisplay: React.FC<GridDisplayProps> = ({
         {result.map((val, rowId) => (
           <Box key={rowId} flexDirection="row" width="auto" height="auto" flexGrow={1}>
             {val.map((proj, index) => (
-              <Box flexDirection="column" key={index} margin={0.04} name={proj.id}>
-                <Frame url={proj.url} focused={clickedImage?.uuid === proj.id} key={proj.id} />
+              <Box flexDirection="column" key={index} margin={0.04}>
+                <Frame url={proj.url} focused={clickedImage?.name === proj.id} key={proj.id} id={proj.id} mode="grid" />
               </Box>
             ))}
           </Box>
@@ -312,6 +341,8 @@ const GridDisplay: React.FC<GridDisplayProps> = ({
 
   return (
     <group
+      // rotation={[Math.PI / 4, 0, 0]}
+      //position={[0, 6, 0]}
       ref={ref}
       onClick={e => {
         e.stopPropagation();
@@ -328,11 +359,12 @@ const GridDisplay: React.FC<GridDisplayProps> = ({
 interface FrameProps {
   url: string;
   focused: boolean;
-  id?: string;
+  id: string;
   c?: THREE.Color;
+  mode?: "horizontal" | "grid";
 }
 
-const Frame: React.FC<FrameProps> = ({ url, id, focused, c = new THREE.Color(), ...props }) => {
+const Frame: React.FC<FrameProps> = ({ url, id, focused, c = new THREE.Color(), mode = "horizontal", ...props }) => {
   const [hovered, setHovered] = useState(false);
   // const [rnd] = useState(() => Math.random());
   const image = useRef<THREE.Mesh<THREE.BufferGeometry, THREE.Material | THREE.Material[]>>(null);
@@ -351,7 +383,7 @@ const Frame: React.FC<FrameProps> = ({ url, id, focused, c = new THREE.Color(), 
       // image.current.scale.y = THREE.MathUtils.lerp(image.current.scale.y, 1 * (hovered ? 0.98 : 1), 0.4);
     }
 
-    if (project?.current?.scale) {
+    if (project?.current?.scale && mode !== "grid") {
       project.current.scale.x = THREE.MathUtils.lerp(project.current.scale.x, focused ? 1.2 : 1, 0.4);
       project.current.scale.y = THREE.MathUtils.lerp(project.current.scale.y, focused ? 1.2 : 1, 0.4);
     }
@@ -366,7 +398,6 @@ const Frame: React.FC<FrameProps> = ({ url, id, focused, c = new THREE.Color(), 
       }
     }
   });
-
   return (
     <group {...props}>
       <mesh ref={project}>
@@ -398,7 +429,11 @@ const Frame: React.FC<FrameProps> = ({ url, id, focused, c = new THREE.Color(), 
   );
 };
 
-const Ground: React.FC = () => {
+interface GroundProps {
+  opacity?: SpringValue<number>;
+}
+
+const Ground: React.FC<GroundProps> = ({ opacity }) => {
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.25, 0]}>
       <planeGeometry args={[150, 150]} />
@@ -414,6 +449,8 @@ const Ground: React.FC = () => {
         color="#101010"
         metalness={0.8}
         mirror={1}
+        opacity={opacity?.get() ?? 1}
+        transparent
       />
     </mesh>
   );
