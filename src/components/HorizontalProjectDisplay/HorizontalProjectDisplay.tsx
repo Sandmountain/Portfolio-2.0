@@ -1,8 +1,8 @@
 /* eslint-disable jsx-a11y/alt-text */
-import { Dispatch, LegacyRef, SetStateAction, useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { animated as a, useSpring as useSprng } from "react-spring";
 
-import { Autocomplete, Button, Paper, Popover, Popper, TextField, Typography } from "@mui/material";
+import { Autocomplete, Button, Popover, TextField } from "@mui/material";
 import { SpringValue, animated, useTransition } from "@react-spring/three";
 import { Environment, MeshReflectorMaterial, useCursor } from "@react-three/drei";
 import { Canvas, ThreeEvent, useFrame, useLoader, useThree } from "@react-three/fiber";
