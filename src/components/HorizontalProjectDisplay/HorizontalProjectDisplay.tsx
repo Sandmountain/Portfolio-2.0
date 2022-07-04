@@ -1,8 +1,8 @@
 /* eslint-disable jsx-a11y/alt-text */
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { Dispatch, LegacyRef, SetStateAction, useEffect, useRef, useState } from "react";
 import { animated as a, useSpring as useSprng } from "react-spring";
 
-import { Autocomplete, Button, Popover, TextField } from "@mui/material";
+import { Autocomplete, Button, Paper, Popover, Popper, TextField, Typography } from "@mui/material";
 import { SpringValue, animated, useTransition } from "@react-spring/three";
 import { Environment, MeshReflectorMaterial, useCursor } from "@react-three/drei";
 import { Canvas, ThreeEvent, useFrame, useLoader, useThree } from "@react-three/fiber";
@@ -12,6 +12,7 @@ import { Object3D } from "three";
 import { proxy, useSnapshot } from "valtio";
 
 import { Project, ProjectImageType } from "../../types/Project";
+import { ProjectPopper } from "./components/ProjectPopper";
 import { moveProjectFramesOnFocus, resetProjectsPosition } from "./handleProjects";
 
 const GOLDENRATIO = 16 / 9;
@@ -25,7 +26,7 @@ interface ProjectState {
   allProjects: null | ProjectImageType[];
 }
 
-const state = proxy<ProjectState>({
+export const state = proxy<ProjectState>({
   current: null,
   currentProject: null,
   allProjects: null,
@@ -49,7 +50,7 @@ const HorizontalProjectDisplay: React.FC<HorizontalProjectDisplayProps> = ({ ima
   }, [images]);
 
   return (
-    <div style={{ width: "100%", height: "100%", position: "relative" }}>
+    <div id="canvas-container" style={{ width: "100%", height: "100%", position: "relative" }}>
       <Canvas dpr={[1, 2]} camera={{ fov: 70, position: [0, 10, 15] }}>
         <color attach="background" args={["#151515"]} />
         <fog attach="fog" args={["#151515", 0, 5]} />
@@ -64,6 +65,7 @@ const HorizontalProjectDisplay: React.FC<HorizontalProjectDisplayProps> = ({ ima
       <a.div style={styles}>
         <ProjectNavigator />
       </a.div>
+      <ProjectPopper projects={projects} />
       <SwitchArrows />
       <Indicators projects={images} />
 
@@ -623,7 +625,6 @@ const ProjectNavigator: React.FC = () => {
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
-    console.log(autoCompleteRef);
   };
 
   const handleClose = () => {
@@ -644,26 +645,27 @@ const ProjectNavigator: React.FC = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "flex-end",
-        gap: 5,
-        marginTop: 5,
-        marginRight: 5,
+        gap: 8,
+        marginTop: 8,
+        paddingRight: 8,
       }}>
       <Button
+        variant="contained"
         style={{
-          backgroundColor: "gray",
           height: 35,
           width: 50,
           position: "relative",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          color: "white",
         }}
         onClick={e => handleClick(e)}>
         🔍
       </Button>
       <Button
+        variant="contained"
         style={{
-          backgroundColor: "gray",
           height: 35,
           width: 50,
           position: "relative",
@@ -678,8 +680,8 @@ const ProjectNavigator: React.FC = () => {
         <p>row</p>
       </Button>
       <Button
+        variant="contained"
         style={{
-          backgroundColor: "gray",
           height: 35,
           width: 50,
           position: "relative",
@@ -691,14 +693,13 @@ const ProjectNavigator: React.FC = () => {
         onClick={() => changeView("grid")}>
         <p>grid</p>
       </Button>
-      {/* <Popper open={openPopper} anchorEl={anchorEl}>
-        <Typography color="red">Hej!</Typography>
-      </Popper> */}
+
       <Popover
+        marginThreshold={8}
         id={id}
         open={open}
         anchorReference="anchorPosition"
-        anchorPosition={{ top: 60, left: typeof window !== "undefined" ? window?.innerWidth / 2 + 150 : 0 }}
+        anchorPosition={{ top: 100, left: typeof window !== "undefined" ? window?.innerWidth : 0 }}
         anchorOrigin={{
           vertical: "top",
           horizontal: "center",
@@ -710,7 +711,8 @@ const ProjectNavigator: React.FC = () => {
         onClose={handleClose}>
         <Autocomplete
           ref={autoCompleteRef}
-          sx={{ width: 300 }}
+          sx={{ width: 400 }}
+          size="small"
           options={[{ label: "Forrest Gump", year: 1994 }]}
           renderInput={params => (
             <TextField {...params} placeholder="Search for projects, libraries or techniques" />

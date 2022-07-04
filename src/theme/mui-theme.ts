@@ -19,6 +19,7 @@ const theme = createTheme({
       black: defaultTheme.palette.black,
     },
   },
+  spacing: 8,
 });
 
 export { theme };
