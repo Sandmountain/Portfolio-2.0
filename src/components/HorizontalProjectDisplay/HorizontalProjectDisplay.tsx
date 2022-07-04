@@ -1,16 +1,17 @@
 /* eslint-disable jsx-a11y/alt-text */
-import { Dispatch, SetStateAction, Suspense, useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { animated as a, useSpring as useSprng } from "react-spring";
 
-import { SpringValue, animated, useSpring, useTransition } from "@react-spring/three";
-import { Environment, MeshReflectorMaterial, Stars, useCamera, useCursor, useScroll } from "@react-three/drei";
+import { Autocomplete, Button, Popover, TextField } from "@mui/material";
+import { SpringValue, animated, useTransition } from "@react-spring/three";
+import { Environment, MeshReflectorMaterial, useCursor } from "@react-three/drei";
 import { Canvas, ThreeEvent, useFrame, useLoader, useThree } from "@react-three/fiber";
-import { Box, Flex, useFlexSize } from "@react-three/flex";
-import { useTheme } from "styled-components";
+import { Box, Flex } from "@react-three/flex";
 import * as THREE from "three";
-import { Mesh, Object3D } from "three";
+import { Object3D } from "three";
 import { proxy, useSnapshot } from "valtio";
 
-import { ProjectImageType } from "../../types/Project";
+import { Project, ProjectImageType } from "../../types/Project";
 import { moveProjectFramesOnFocus, resetProjectsPosition } from "./handleProjects";
 
 const GOLDENRATIO = 16 / 9;
@@ -28,22 +29,24 @@ const state = proxy<ProjectState>({
   current: null,
   currentProject: null,
   allProjects: null,
-  currentView: "grid",
+  currentView: "horizontal",
 });
 
 interface HorizontalProjectDisplayProps {
   images: ProjectImageType[];
+  projects: Project[];
 }
 
-const HorizontalProjectDisplay: React.FC<HorizontalProjectDisplayProps> = ({ images }) => {
+const HorizontalProjectDisplay: React.FC<HorizontalProjectDisplayProps> = ({ images, projects }) => {
+  const styles = useSprng({
+    to: [{ opacity: 1 }],
+    from: { opacity: 0 },
+    delay: 500,
+  });
+
   useEffect(() => {
     state.allProjects = images;
   }, [images]);
-
-  const changeView = (view: "horizontal" | "grid") => {
-    state.currentProject = null;
-    state.currentView = view;
-  };
 
   return (
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
@@ -58,34 +61,10 @@ const HorizontalProjectDisplay: React.FC<HorizontalProjectDisplayProps> = ({ ima
           <ProjectDisplay images={images} />
         </group>
       </Canvas>
+      <a.div style={styles}>
+        <ProjectNavigator />
+      </a.div>
       <SwitchArrows />
-
-      <div
-        style={{
-          position: "absolute",
-          width: "100%",
-          top: 0,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "flex-end",
-          gap: 5,
-          marginTop: 5,
-          marginRight: 5,
-        }}>
-        <div style={{ backgroundColor: "red", height: 35, width: 50, position: "relative" }}></div>
-        <div
-          style={{ backgroundColor: "red", height: 35, width: 50, position: "relative" }}
-          onClick={() => {
-            changeView("horizontal");
-          }}>
-          <p>row</p>
-        </div>
-        <div
-          style={{ backgroundColor: "red", height: 35, width: 50, position: "relative" }}
-          onClick={() => changeView("grid")}>
-          <p>grid</p>
-        </div>
-      </div>
       <Indicators projects={images} />
 
       {/* <div
@@ -200,7 +179,7 @@ const HorizontalDisplay: React.FC<HorizontalDisplayProps> = ({
   // Animate camera on load and on new focus animation
   useFrame(state => {
     state.camera.position.lerp(p, 0.05);
-    state.camera.quaternion.slerp(q, 0.2);
+    state.camera.quaternion.slerp(q, 0.1);
 
     // Only wobble camera if a project is not in focus
     if (!clicked.current) {
@@ -610,7 +589,7 @@ const IndicatorItem: React.FC<IndicatorItemProps> = ({
   onIndicatorClick,
   setHoveredProject,
 }) => {
-  const theme = useTheme();
+  // const theme = useTheme();
 
   /* Add hover effect when creating SC of this */
 
@@ -625,9 +604,119 @@ const IndicatorItem: React.FC<IndicatorItemProps> = ({
         width: 11,
         height: 7,
         border: focused ? "none" : "1px solid white",
-        backgroundColor: focused ? theme.palette.primary : "transparent",
+        backgroundColor: focused ? "#00A6FB" : "transparent",
       }}
     />
+  );
+};
+
+const ProjectNavigator: React.FC = () => {
+  const [input, setInput] = useState();
+
+  const autoCompleteRef = useRef(null);
+
+  const changeView = (view: "horizontal" | "grid") => {
+    state.currentProject = null;
+    state.currentView = view;
+  };
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+    console.log(autoCompleteRef);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? "simple-popover" : undefined;
+
+  // const filterProject = () => {};
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        width: "100%",
+        top: 0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "flex-end",
+        gap: 5,
+        marginTop: 5,
+        marginRight: 5,
+      }}>
+      <Button
+        style={{
+          backgroundColor: "gray",
+          height: 35,
+          width: 50,
+          position: "relative",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+        onClick={e => handleClick(e)}>
+        🔍
+      </Button>
+      <Button
+        style={{
+          backgroundColor: "gray",
+          height: 35,
+          width: 50,
+          position: "relative",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "white",
+        }}
+        onClick={() => {
+          changeView("horizontal");
+        }}>
+        <p>row</p>
+      </Button>
+      <Button
+        style={{
+          backgroundColor: "gray",
+          height: 35,
+          width: 50,
+          position: "relative",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "white",
+        }}
+        onClick={() => changeView("grid")}>
+        <p>grid</p>
+      </Button>
+      {/* <Popper open={openPopper} anchorEl={anchorEl}>
+        <Typography color="red">Hej!</Typography>
+      </Popper> */}
+      <Popover
+        id={id}
+        open={open}
+        anchorReference="anchorPosition"
+        anchorPosition={{ top: 60, left: typeof window !== "undefined" ? window?.innerWidth / 2 + 150 : 0 }}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        onClose={handleClose}>
+        <Autocomplete
+          ref={autoCompleteRef}
+          sx={{ width: 300 }}
+          options={[{ label: "Forrest Gump", year: 1994 }]}
+          renderInput={params => (
+            <TextField {...params} placeholder="Search for projects, libraries or techniques" />
+          )}></Autocomplete>
+      </Popover>
+    </div>
   );
 };
 
