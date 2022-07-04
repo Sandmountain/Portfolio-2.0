@@ -1,23 +1,9 @@
 export type ThemeType = typeof defaultTheme;
 
 export const defaultTheme = {
-  padding: {
-    sm: "4px",
-    md: "8px",
-    lg: "12px",
-    xl: "16px",
-  },
-  margin: {
-    sm: "4px",
-    md: "8px",
-    lg: "12px",
-    xl: "16px",
-  },
-  // https://coolors.co/ebf8ff-0582ca-da4167-f4d35e-030d12
   palette: {
     primary: "#00A6FB",
-    secondary: "#0582CA",
-    tertiary: "#F4D35E",
+    secondary: "#F24333",
     white: "#EBF8FF",
     black: "#030D12",
     shade: {
@@ -31,6 +17,13 @@ export const defaultTheme = {
         700: "#003554",
         800: "#051923",
       },
+      secondary: {
+        300: "FAB8B2",
+        500: "#F24333",
+        700: "D31E0D",
+      },
     },
   },
 };
+
+// https://coolors.co/ebf8ff-0582ca-da4167-f4d35e-030d12
