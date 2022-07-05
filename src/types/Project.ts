@@ -3,6 +3,8 @@ export interface Project {
   courseUrl: string;
   description: ContentfulMD;
   development: ContentfulMD;
+  demoUrl: string;
+  status: ProjectStatusType;
   finished: string;
   githubUrl: string;
   images: ContentfulImageType[];
@@ -15,6 +17,8 @@ export interface Project {
   languages: ContentfulLanguageType[];
   uuid: string;
 }
+
+export type ProjectStatusType = "finished" | "ongoing" | "discontinued";
 
 export interface ProjectImageType {
   position: number[];
@@ -37,7 +41,7 @@ export interface ContentfulResponse {
 }
 
 export interface ContentfulLanguageType {
-  fields: { name: string; icon?: string; image?: ContentfulImageType };
+  fields: { name: string; icon?: string; img?: ContentfulImageType };
 }
 
 export interface ContentfulImageType {

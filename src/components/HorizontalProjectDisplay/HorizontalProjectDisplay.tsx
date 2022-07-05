@@ -12,7 +12,7 @@ import { Object3D } from "three";
 import { proxy, useSnapshot } from "valtio";
 
 import { Project, ProjectImageType } from "../../types/Project";
-import { ProjectPopper } from "./components/ProjectPopper";
+import { ProjectDescription } from "./components/ProjectDescription";
 import { moveProjectFramesOnFocus, resetProjectsPosition } from "./handleProjects";
 
 const GOLDENRATIO = 16 / 9;
@@ -39,6 +39,8 @@ interface HorizontalProjectDisplayProps {
 }
 
 const HorizontalProjectDisplay: React.FC<HorizontalProjectDisplayProps> = ({ images, projects }) => {
+  const snap = useSnapshot(state);
+
   const styles = useSprng({
     to: [{ opacity: 1 }],
     from: { opacity: 0 },
@@ -65,7 +67,9 @@ const HorizontalProjectDisplay: React.FC<HorizontalProjectDisplayProps> = ({ ima
       <a.div style={styles}>
         <ProjectNavigator />
       </a.div>
-      <ProjectPopper projects={projects} />
+      {snap.currentProject && (
+        <ProjectDescription projects={projects} currentProject={snap.currentProject as ProjectImageType} />
+      )}
       <SwitchArrows />
       <Indicators projects={images} />
 
