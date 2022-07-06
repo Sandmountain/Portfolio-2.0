@@ -65,16 +65,37 @@ export interface ContentfulFile {
 }
 
 export interface ContentfulMD {
-  content: ContentfulMDcontent[];
+  content: ContentfulMDLine[];
   nodeType: string;
 }
 
-interface ContentfulMDcontent {
+export interface ContentfulMDLine extends ContentfulMDNodeType {
+  content: ContentfulMDcontent[];
+  data: unknown;
+}
+
+export interface ContentfulMDcontent {
   marks: ContentfulMDcontentMarks[];
   nodeType: string;
   value: string;
 }
 
-interface ContentfulMDcontentMarks {
-  type: "bold" | "italic" | "underline";
+export interface ContentfulMDcontentMarks {
+  type: "bold" | "italic" | "underline" | "code";
+}
+
+export interface ContentfulMDNodeType {
+  nodeType:
+    | "heading-1"
+    | "heading-2"
+    | "heading-3"
+    | "heading-4"
+    | "heading-5"
+    | "heading-6"
+    | "paragraph"
+    | "blockquote"
+    | "unordered-list"
+    | "ordered-list"
+    | "hr"
+    | "hyperlink";
 }
