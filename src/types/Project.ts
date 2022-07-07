@@ -14,6 +14,7 @@ export interface Project {
   shortDescription: string;
   thumbnail: ContentfulImageType;
   title: string;
+  urlName: string;
   languages: ContentfulLanguageType[];
   uuid: string;
 }
