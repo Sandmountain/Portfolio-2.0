@@ -2,9 +2,8 @@ import { useEffect, useState } from "react";
 
 import { useRouter } from "next/router";
 
-import { parse } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Box, Button, Dialog, IconButton, Paper, Popper, Theme, Typography, useTheme } from "@mui/material";
+import { Box, Button, Dialog, IconButton, Paper, Theme, Typography, useTheme } from "@mui/material";
 
 import {
   ContentfulLanguageType,
@@ -21,7 +20,7 @@ interface ProjectDescriptionProps {
 }
 
 export const ProjectDescription: React.FC<ProjectDescriptionProps> = ({ projects, currentProject }) => {
-  const [projectDetails, setProjectDetails] = useState<Project | undefined>(undefined);
+  const [projectDetails, setProjectDetails] = useState<ProjectType | undefined>(undefined);
   const [open, setOpen] = useState<boolean>(false);
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -41,11 +40,14 @@ export const ProjectDescription: React.FC<ProjectDescriptionProps> = ({ projects
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
+    router.push(`/portfolio`, undefined, {
+      shallow: true,
+    });
   };
 
   const onReadMore = () => {
     // Route to https://domain.com/?project=project-name without refreshing to be able to get a shareable url
-    router.push(`?project=${projectDetails?.title.toLocaleLowerCase().replaceAll(" ", "-")}`, undefined, {
+    router.push(`?name=${projectDetails?.title.toLocaleLowerCase().replaceAll(" ", "-")}`, undefined, {
       shallow: true,
     });
 
@@ -145,7 +147,7 @@ export const ProjectDescription: React.FC<ProjectDescriptionProps> = ({ projects
         </Box>
       )}
       <Dialog fullWidth={true} maxWidth="lg" open={openDialog} onClose={handleCloseDialog}>
-        <Project project={projectDetails} />
+        {projectDetails && <Project project={projectDetails} />}
       </Dialog>
     </>
   );
