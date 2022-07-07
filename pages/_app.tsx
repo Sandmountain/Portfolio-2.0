@@ -6,6 +6,7 @@ import { fab } from "@fortawesome/free-brands-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { ThemeProvider } from "@mui/material/styles";
 
+import PageLayout from "../src/layouts/PageLayout";
 import { ProjectStore, ProjectStoreProvider } from "../src/mobx/projectStore";
 import { theme } from "../src/theme/mui-theme";
 import "../styles/globals.css";
@@ -17,7 +18,9 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ThemeProvider theme={theme}>
       <ProjectStoreProvider store={projectStore}>
-        <Component {...pageProps} />
+        <PageLayout>
+          <Component {...pageProps} />
+        </PageLayout>
       </ProjectStoreProvider>
     </ThemeProvider>
   );
