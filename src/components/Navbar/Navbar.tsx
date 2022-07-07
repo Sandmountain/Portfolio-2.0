@@ -17,7 +17,7 @@ function Navbar() {
         padding: 12,
       }}>
       <div>
-        <a href="#">Home</a>
+        <a href="/portfolio">Home</a>
         <a href="#">News</a>
         <a href="#">About</a>
       </div>
