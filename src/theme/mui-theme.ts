@@ -20,8 +20,10 @@ const theme = createTheme({
     },
     text: {},
   },
-
   spacing: 8,
+  typography: {
+    fontFamily: ["Roboto", "sans-serif"].join(","),
+  },
 });
 
 const ThemeType = typeof theme;
