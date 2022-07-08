@@ -11,10 +11,11 @@ import { Box, Button, Dialog, IconButton, Paper, Theme, Typography, useTheme } f
 
 interface ProjectDescriptionProps {
   projects: ProjectType[];
-  currentProject: ProjectImageType | undefined;
+  projectId: string | undefined;
+  dialog: boolean;
 }
 
-export const ProjectDescription: React.FC<ProjectDescriptionProps> = ({ projects, currentProject }) => {
+export const ProjectDescription: React.FC<ProjectDescriptionProps> = ({ projects, projectId, dialog }) => {
   const [projectDetails, setProjectDetails] = useState<ProjectType | undefined>(undefined);
   const [open, setOpen] = useState<boolean>(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -23,15 +24,15 @@ export const ProjectDescription: React.FC<ProjectDescriptionProps> = ({ projects
   const router = useRouter();
 
   useEffect(() => {
-    if (currentProject) {
-      const [project] = projects.filter(project => project.uuid === currentProject.id);
+    if (projectId) {
+      const [project] = projects.filter(project => project.uuid === projectId);
 
       setProjectDetails(project);
       setOpen(true);
     } else {
       setOpen(false);
     }
-  }, [projects, currentProject]);
+  }, [projects, projectId]);
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
@@ -111,7 +112,7 @@ export const ProjectDescription: React.FC<ProjectDescriptionProps> = ({ projects
                   justifyContent: "space-between",
                   alignItems: "center",
                 }}>
-                <LanguageLogos languages={projectDetails?.languages} />
+                <LanguageLogos languages={projectDetails?.languages} dialog={dialog} />
                 <Box component="div" sx={{ display: "flex", gap: theme.spacing(1), alignSelf: "end" }}>
                   {projectDetails?.demoUrl && (
                     <IconButton size="small">

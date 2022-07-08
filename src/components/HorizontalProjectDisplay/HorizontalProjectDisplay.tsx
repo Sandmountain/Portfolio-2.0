@@ -69,7 +69,7 @@ const HorizontalProjectDisplay: React.FC<HorizontalProjectDisplayProps> = ({ ima
         <ProjectNavigator />
       </a.div>
       {snap.currentProject && (
-        <ProjectDescription projects={projects} currentProject={snap.currentProject as ProjectImageType} />
+        <ProjectDescription projects={projects} projectId={snap.currentProject.id} dialog={true} />
       )}
       <SwitchArrows />
       <Indicators projects={images} />
