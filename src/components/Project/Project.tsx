@@ -1,12 +1,15 @@
 import React, { LegacyRef, useRef, useState } from "react";
 
 import Image from "next/image";
+import { useRouter } from "next/router";
 
 import { Project as ProjectType } from "../../types/Project";
+import LanguageLogos from "../LanguageLogos/LanguageLogos";
 import { MDParser } from "../MDParser/MDParser";
+import ResourceLogos from "../ResourceLogos/ResourceLogos";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Box, Typography, useTheme } from "@mui/material";
+import { Box, Divider, Icon, IconButton, Typography, useTheme } from "@mui/material";
 import { Pagination } from "swiper";
 // Import Swiper styles
 import "swiper/css";
@@ -26,6 +29,7 @@ const SIZE = {
 
 const Project: React.FC<ProjectProps> = ({ project, dialog }) => {
   const [activeImage, setActiveImage] = useState(0);
+  const router = useRouter();
 
   // const calculateTimeToRead = () => {
   //   // Words per minute
@@ -56,6 +60,15 @@ const Project: React.FC<ProjectProps> = ({ project, dialog }) => {
       className="projectLayout-container"
       sx={{ background: "white", height: dialog ? "80vh" : "calc(100vh - 50px)" }}>
       <Box component="div" className="projectLayout-header">
+        {!dialog && (
+          <IconButton
+            color="primary"
+            size="small"
+            sx={{ mr: theme.spacing(1) }}
+            onClick={() => router.push("/projects")}>
+            <Icon>arrow_back</Icon>
+          </IconButton>
+        )}
         <Typography variant="h1" fontSize="2.5rem" fontWeight="bold" sx={{ color: theme.palette.primary.dark }}>
           {project.title}
         </Typography>
@@ -134,6 +147,7 @@ const Project: React.FC<ProjectProps> = ({ project, dialog }) => {
                 pagination={{
                   clickable: true,
                 }}
+                initialSlide={0}
                 slideToClickedSlide
                 onSlideChange={e => setActiveImage(e.snapIndex)}
                 modules={[Pagination]}>
@@ -181,21 +195,53 @@ const Project: React.FC<ProjectProps> = ({ project, dialog }) => {
           </Box>
         </Box>
       </Box>
-      <Box component="div" className="projectLayout-footer">
-        <Box component="div" sx={{ display: "flex", flexDirection: "column" }}>
+      <Box component="div" className="projectLayout-footer" sx={{ display: "flex", justifyContent: "center" }}>
+        <Box
+          component="div"
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            width: "50%",
+            alignItems: "center",
+            justifyContent: "center",
+          }}>
           <Typography
             variant="h3"
             fontSize="13.3px"
             fontWeight="bold"
             letterSpacing={1.5}
             sx={{
-              textAlign: "center",
               marginBottom: theme.spacing(1),
               textTransform: "uppercase",
               color: theme.palette.primary.main,
             }}>
-            Development
+            Languages Used
           </Typography>
+          <LanguageLogos languages={project.languages} dialog={dialog} />
+        </Box>
+        <Divider orientation={"vertical"} flexItem sx={{ margin: theme.spacing(1, 0) }} />
+        <Box
+          component="div"
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            width: "50%",
+            alignItems: "center",
+            justifyContent: "center",
+          }}>
+          <Typography
+            variant="h3"
+            fontSize="13.3px"
+            fontWeight="bold"
+            letterSpacing={1.5}
+            sx={{
+              marginBottom: theme.spacing(1),
+              textTransform: "uppercase",
+              color: theme.palette.primary.main,
+            }}>
+            Resources
+          </Typography>
+          <ResourceLogos project={project} />
         </Box>
       </Box>
     </Box>
