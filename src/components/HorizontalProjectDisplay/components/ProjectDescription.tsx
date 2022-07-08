@@ -2,17 +2,12 @@ import { useEffect, useState } from "react";
 
 import { useRouter } from "next/router";
 
+import { ProjectImageType, ProjectStatusType, Project as ProjectType } from "../../../types/Project";
+import LanguageLogos from "../../LanguageLogos/LanguageLogos";
+import Project from "../../Project/Project";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Box, Button, Dialog, IconButton, Paper, Theme, Typography, useTheme } from "@mui/material";
-
-import {
-  ContentfulLanguageType,
-  ProjectImageType,
-  ProjectStatusType,
-  Project as ProjectType,
-} from "../../../types/Project";
-import LanguageIcon from "../../LanguageIcon/LanguageIcon";
-import Project from "../../Project/Project";
 
 interface ProjectDescriptionProps {
   projects: ProjectType[];
@@ -79,12 +74,6 @@ export const ProjectDescription: React.FC<ProjectDescriptionProps> = ({ projects
     );
   };
 
-  const renderLogos = (languages?: ContentfulLanguageType[]) => {
-    if (languages) {
-      return languages.map((language, key) => <LanguageIcon key={key} language={language} size="small" />);
-    }
-  };
-
   return (
     <>
       {open && (
@@ -122,32 +111,28 @@ export const ProjectDescription: React.FC<ProjectDescriptionProps> = ({ projects
                   justifyContent: "space-between",
                   alignItems: "center",
                 }}>
-                <>
-                  <Box component="div" sx={{ display: "flex", gap: 2 }}>
-                    {renderLogos(projectDetails?.languages)}
-                  </Box>
-                  <Box component="div" sx={{ display: "flex", gap: theme.spacing(1), alignSelf: "end" }}>
-                    {projectDetails?.demoUrl && (
-                      <IconButton size="small">
-                        <FontAwesomeIcon
-                          color={theme.palette.primary.main}
-                          icon={"arrow-up-right-from-square"}></FontAwesomeIcon>
-                      </IconButton>
-                    )}
-                    <Button variant="contained" size="small" onClick={onReadMore}>
-                      <Typography variant="button" sx={{ color: theme.palette.common.white }}>
-                        Read More
-                      </Typography>
-                    </Button>
-                  </Box>
-                </>
+                <LanguageLogos languages={projectDetails?.languages} />
+                <Box component="div" sx={{ display: "flex", gap: theme.spacing(1), alignSelf: "end" }}>
+                  {projectDetails?.demoUrl && (
+                    <IconButton size="small">
+                      <FontAwesomeIcon
+                        color={theme.palette.primary.main}
+                        icon={"arrow-up-right-from-square"}></FontAwesomeIcon>
+                    </IconButton>
+                  )}
+                  <Button variant="contained" size="small" onClick={onReadMore}>
+                    <Typography variant="button" sx={{ color: theme.palette.common.white }}>
+                      Read More
+                    </Typography>
+                  </Button>
+                </Box>
               </Box>
             </>
           </Paper>
         </Box>
       )}
       <Dialog fullWidth={true} maxWidth="lg" open={openDialog} onClose={handleCloseDialog}>
-        {projectDetails && <Project project={projectDetails} />}
+        {projectDetails && <Project project={projectDetails} dialog={true} />}
       </Dialog>
     </>
   );
