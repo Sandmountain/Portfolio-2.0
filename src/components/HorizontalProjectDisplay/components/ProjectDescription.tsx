@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 
 import { useRouter } from "next/router";
 
-import { ProjectImageType, ProjectStatusType, Project as ProjectType } from "../../../types/Project";
+import { ProjectStatusType, Project as ProjectType } from "../../../types/Project";
+import { externalResource } from "../../../utils/url-helpers";
 import LanguageLogos from "../../LanguageLogos/LanguageLogos";
 import Project from "../../Project/Project";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { GitHub, OpenInBrowser } from "@mui/icons-material";
 import { Box, Button, Dialog, IconButton, Paper, Theme, Typography, useTheme } from "@mui/material";
 
 interface ProjectDescriptionProps {
@@ -94,9 +95,11 @@ export const ProjectDescription: React.FC<ProjectDescriptionProps> = ({ projects
             <>
               <Box component="div" sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <Typography variant="h6"> {projectDetails?.title} </Typography>
-                <IconButton size={"small"}>
-                  <FontAwesomeIcon icon={["fab", "github"]} />
-                </IconButton>
+                {projectDetails?.githubUrl && (
+                  <IconButton size={"small"} onClick={() => externalResource(projectDetails.githubUrl)}>
+                    <GitHub />
+                  </IconButton>
+                )}
               </Box>
               <Box component="div" sx={{ flexDirection: "row" }}>
                 <Typography variant="caption"> Status: </Typography>
@@ -115,10 +118,8 @@ export const ProjectDescription: React.FC<ProjectDescriptionProps> = ({ projects
                 <LanguageLogos languages={projectDetails?.languages} dialog={dialog} />
                 <Box component="div" sx={{ display: "flex", gap: theme.spacing(1), alignSelf: "end" }}>
                   {projectDetails?.demoUrl && (
-                    <IconButton size="small">
-                      <FontAwesomeIcon
-                        color={theme.palette.primary.main}
-                        icon={"arrow-up-right-from-square"}></FontAwesomeIcon>
+                    <IconButton size="small" onClick={() => externalResource(projectDetails.demoUrl)}>
+                      <OpenInBrowser />
                     </IconButton>
                   )}
                   <Button variant="contained" size="small" onClick={onReadMore}>
