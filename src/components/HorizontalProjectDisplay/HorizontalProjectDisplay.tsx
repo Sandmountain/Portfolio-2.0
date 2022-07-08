@@ -1,8 +1,13 @@
 /* eslint-disable jsx-a11y/alt-text */
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { Dispatch, MouseEventHandler, SetStateAction, useEffect, useRef, useState } from "react";
 import { animated as a, useSpring as useSprng } from "react-spring";
 
-import { Autocomplete, Button, Popover, TextField } from "@mui/material";
+import { Project, ProjectImageType } from "../../types/Project";
+import { ProjectDescription } from "./components/ProjectDescription";
+import { moveProjectFramesOnFocus, resetProjectsPosition } from "./handleProjects";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Autocomplete, Button, Icon, IconButton, Popover, TextField } from "@mui/material";
 import { SpringValue, animated, useTransition } from "@react-spring/three";
 import { Environment, MeshReflectorMaterial, useCursor } from "@react-three/drei";
 import { Canvas, ThreeEvent, useFrame, useLoader, useThree } from "@react-three/fiber";
@@ -10,10 +15,6 @@ import { Box, Flex } from "@react-three/flex";
 import * as THREE from "three";
 import { Object3D } from "three";
 import { proxy, useSnapshot } from "valtio";
-
-import { Project, ProjectImageType } from "../../types/Project";
-import { ProjectDescription } from "./components/ProjectDescription";
-import { moveProjectFramesOnFocus, resetProjectsPosition } from "./handleProjects";
 
 const GOLDENRATIO = 16 / 9;
 
@@ -72,18 +73,6 @@ const HorizontalProjectDisplay: React.FC<HorizontalProjectDisplayProps> = ({ ima
       )}
       <SwitchArrows />
       <Indicators projects={images} />
-
-      {/* <div
-        style={{
-          position: "absolute",
-          width: "100%",
-          top: "50%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}>
-        <div style={{ backgroundColor: "red", height: 50, width: 50, position: "relative" }}></div>
-      </div> */}
     </div>
   );
 };
@@ -607,10 +596,10 @@ const IndicatorItem: React.FC<IndicatorItemProps> = ({
       key={project.id}
       style={{
         cursor: "pointer",
-        width: 11,
+        width: 7,
         height: 7,
-        border: focused ? "none" : "1px solid white",
-        backgroundColor: focused ? "#00A6FB" : "transparent",
+        borderRadius: "50%",
+        backgroundColor: focused ? "#00A6FB" : "rgba(255,255,255,.3)",
       }}
     />
   );
@@ -627,7 +616,7 @@ const ProjectNavigator: React.FC = () => {
   };
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -653,50 +642,21 @@ const ProjectNavigator: React.FC = () => {
         marginTop: 8,
         paddingRight: 8,
       }}>
-      <Button
-        variant="contained"
-        style={{
-          height: 35,
-          width: 50,
-          position: "relative",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "white",
-        }}
-        onClick={e => handleClick(e)}>
-        🔍
-      </Button>
-      <Button
-        variant="contained"
-        style={{
-          height: 35,
-          width: 50,
-          position: "relative",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "white",
-        }}
+      <IconButton component="button" size="small" color="primary" onClick={(e: any) => handleClick(e)}>
+        <Icon>search_icon</Icon>
+      </IconButton>
+      <IconButton
+        component="button"
+        size="small"
+        color="primary"
         onClick={() => {
           changeView("horizontal");
         }}>
-        <p>row</p>
-      </Button>
-      <Button
-        variant="contained"
-        style={{
-          height: 35,
-          width: 50,
-          position: "relative",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "white",
-        }}
-        onClick={() => changeView("grid")}>
-        <p>grid</p>
-      </Button>
+        <Icon>view_column</Icon>
+      </IconButton>
+      <IconButton component="button" size="small" color="primary" onClick={() => changeView("grid")}>
+        <Icon>view_comfy</Icon>
+      </IconButton>
 
       <Popover
         marginThreshold={8}
