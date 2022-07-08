@@ -1,10 +1,10 @@
 import React, { ReactNode } from "react";
 
+import { ContentfulMD, ContentfulMDLine, ContentfulMDcontent } from "../../types/Project";
+
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import { BLOCKS, Block, Inline } from "@contentful/rich-text-types";
 import { Typography } from "@mui/material";
-
-import { ContentfulMD, ContentfulMDLine, ContentfulMDcontent } from "../../types/Project";
 
 const RICHTEXT_OPTIONS = {
   renderNode: {
@@ -20,7 +20,11 @@ const RICHTEXT_OPTIONS = {
           </pre>
         );
       }
-      return <Typography>{children}</Typography>;
+      return (
+        <Typography variant="body1" sx={{ fontWeight: 300 }}>
+          {children}
+        </Typography>
+      );
     },
     [BLOCKS.HEADING_1]: (node: Block | Inline, children: ReactNode) => {
       return <Typography variant="h1">{children}</Typography>;
@@ -46,11 +50,11 @@ const RICHTEXT_OPTIONS = {
     },
   },
 
-  renderText: (text: string) => {
-    return text.split("\n").reduce((children, textSegment, index) => {
-      return [...children, index > 0 && <br key={index} />, textSegment];
-    }, [] as string[]);
-  },
+  // renderText: (text: string) => {
+  //   return text.split("\n").reduce((children, textSegment, index) => {
+  //     return [...children, index > 0 && <br key={index} />, textSegment];
+  //   }, [] as string[]);
+  // },
 };
 //
 
