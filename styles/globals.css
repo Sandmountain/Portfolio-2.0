@@ -1,3 +1,7 @@
+:root {
+  --primary-color: #00a6fb;
+}
+
 html,
 body {
   padding: 0;
@@ -64,16 +68,19 @@ blockquote:before {
   grid-template-rows: 0.2fr 3fr 0.2fr;
   grid-column-gap: 0px;
   grid-row-gap: 0px;
-  height: 80vh;
 }
 
 .projectLayout-header {
+  display: flex;
+  align-items: center;
   grid-area: 1 / 1 / 2 / 2;
+  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.5);
+  padding: 12px;
 }
 
 .projectLayout-content {
   grid-area: 2 / 1 / 3 / 2;
-
+  position: relative;
   min-height: auto;
   max-height: 100%;
   overflow-y: auto;
@@ -81,4 +88,46 @@ blockquote:before {
 
 .projectLayout-footer {
   grid-area: 3 / 1 / 4 / 2;
+}
+
+.static-image-container {
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  clip-path: inset(0 0 0 0);
+  height: 150px;
+}
+
+.static-image {
+  position: fixed;
+  background-position: center;
+  top: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  opacity: 25%;
+  filter: blur(5px);
+}
+
+.zoomContent-image {
+  transition: transform 0.3s ease-in-out;
+  transform: scale(1);
+}
+.zoomContent-image:hover {
+  transform: scale(1.05);
+}
+
+/* Swiper Overrides */
+.swiper {
+  padding-top: 30px !important;
+}
+.swiper-pagination {
+  top: 0;
+  padding-top: 5px;
+  bottom: unset !important;
+}
+.swiper-pagination-bullet-active {
+  background-color: var(--primary-color) !important;
 }

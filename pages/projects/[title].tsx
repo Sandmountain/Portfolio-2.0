@@ -9,7 +9,7 @@ interface ProjectPageDetailsProps {
 }
 
 const ProjectPageDetails: React.FC<ProjectPageDetailsProps> = ({ project }) => {
-  return <Project project={project} />;
+  return <Project project={project} dialog={false} />;
 };
 
 export default ProjectPageDetails;
