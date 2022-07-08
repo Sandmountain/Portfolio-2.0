@@ -111,6 +111,26 @@ blockquote:before {
   filter: blur(5px);
 }
 
+.project-grid {
+  display: grid;
+  width: 80%;
+  overflow: hidden;
+  grid-template-columns: repeat(5, 2fr);
+  margin: 12px auto;
+  gap: 5px;
+}
+
+.project-card {
+  transition: border 0.1s ease-in-out;
+  border: 2px solid white;
+  cursor: pointer;
+  width: 100%;
+}
+
+.project-card:hover {
+  border: 4px solid var(--primary-color);
+}
+
 .zoomContent-image {
   transition: transform 0.3s ease-in-out;
   transform: scale(1);
