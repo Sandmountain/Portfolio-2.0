@@ -7,12 +7,15 @@ import { Box } from "@mui/material";
 
 interface LanguageLogosProps {
   languages: ContentfulLanguageType[] | undefined;
+  dialog: boolean;
 }
 
-const LanguageLogos: React.FC<LanguageLogosProps> = ({ languages = [] }) => {
+const LanguageLogos: React.FC<LanguageLogosProps> = ({ languages = [], dialog }) => {
   const renderLogos = (languages?: ContentfulLanguageType[]) => {
     if (languages) {
-      return languages.map((language, key) => <LanguageIcon key={key} language={language} size="small" />);
+      return languages.map((language, key) => (
+        <LanguageIcon key={key} language={language} size={dialog ? "small" : "medium"} />
+      ));
     }
   };
 
