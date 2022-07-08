@@ -4,6 +4,7 @@ export interface Project {
   description: ContentfulMD;
   development: ContentfulMD;
   demoUrl: string;
+  screencast: string;
   status: ProjectStatusType;
   finished: string;
   githubUrl: string;
