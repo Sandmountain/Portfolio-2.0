@@ -14,7 +14,9 @@ const LanguageLogos: React.FC<LanguageLogosProps> = ({ languages = [], dialog })
   const renderLogos = (languages?: ContentfulLanguageType[]) => {
     if (languages) {
       return languages.map((language, key) => (
-        <LanguageIcon key={key} language={language} size={dialog ? "small" : "medium"} />
+        <Box component="div" sx={{ padding: "5px 0px" }} key={language}>
+          <LanguageIcon key={key} language={language} size={dialog ? "small" : "medium"} />
+        </Box>
       ));
     }
   };

@@ -1,15 +1,14 @@
-import React, { LegacyRef, useRef, useState } from "react";
+import React, { useState } from "react";
 
 import Image from "next/image";
 import { useRouter } from "next/router";
 
-import { Project as ProjectType } from "../../types/Project";
+import { ContentfulImageType, Project as ProjectType } from "../../types/Project";
 import LanguageLogos from "../LanguageLogos/LanguageLogos";
 import { MDParser } from "../MDParser/MDParser";
 import ResourceLogos from "../ResourceLogos/ResourceLogos";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Box, Divider, Icon, IconButton, Typography, useTheme } from "@mui/material";
+import { Box, Dialog, Divider, Icon, IconButton, Typography, useTheme } from "@mui/material";
 import { Pagination } from "swiper";
 // Import Swiper styles
 import "swiper/css";
@@ -29,6 +28,10 @@ const SIZE = {
 
 const Project: React.FC<ProjectProps> = ({ project, dialog }) => {
   const [activeImage, setActiveImage] = useState(0);
+  const [fullScreenImage, setFullScreenImage] = useState<{ open: boolean; image: undefined | ContentfulImageType }>({
+    open: false,
+    image: undefined,
+  });
   const router = useRouter();
 
   // const calculateTimeToRead = () => {
@@ -49,8 +52,8 @@ const Project: React.FC<ProjectProps> = ({ project, dialog }) => {
   //   );
   // };
 
-  const onFocusedImageClick = (idx: number, url: string) => {
-    if (idx !== activeImage) return;
+  const onFocusedImageClick = (image: ContentfulImageType) => {
+    setFullScreenImage({ image, open: true });
   };
 
   const theme = useTheme();
@@ -103,8 +106,21 @@ const Project: React.FC<ProjectProps> = ({ project, dialog }) => {
                     <Typography variant="overline" fontSize={10} fontWeight="300" lineHeight={1.2} letterSpacing={1.1}>
                       title: {project.title}
                     </Typography>
-                    <Typography variant="overline" fontSize={10} fontWeight={300} lineHeight={1.2} letterSpacing={1.1}>
-                      <FontAwesomeIcon icon="clock" color="gray" style={{ marginRight: theme.spacing(1 / 2) }} />
+                    <Typography
+                      variant="overline"
+                      fontSize={10}
+                      fontWeight={300}
+                      lineHeight={1.2}
+                      letterSpacing={1.1}
+                      sx={{ display: "flex", alignItems: "center" }}>
+                      <Icon
+                        sx={{
+                          marginRight: theme.spacing(1 / 2),
+                          color: "rgba(0, 0, 0, 0.54)",
+                          fontSize: "10px !important",
+                        }}>
+                        watch_later
+                      </Icon>
                       {/* {calculateTimeToRead()} min read */} 0 min read
                     </Typography>
                   </Box>
@@ -139,7 +155,13 @@ const Project: React.FC<ProjectProps> = ({ project, dialog }) => {
                 {<MDParser document={project.description} />}
               </Box>
             </Box>
-            <Box component="div" sx={{ background: "lightgray", m: theme.spacing(2, 0) }}>
+            <Box
+              component="div"
+              sx={{
+                background: "lightgray",
+                m: theme.spacing(2, 0),
+                boxShadow: "inset 0px 8px 8px -8px rgb(0 0 0 / 50%), inset 0px -8px 8px -8px rgb(0 0 0 / 50%)",
+              }}>
               <Swiper
                 slidesPerView={"auto"}
                 centeredSlides={true}
@@ -157,7 +179,7 @@ const Project: React.FC<ProjectProps> = ({ project, dialog }) => {
                   return (
                     <SwiperSlide key={idx} style={{ width: "auto", height: "auto" }}>
                       <Image
-                        onClick={() => onFocusedImageClick(idx, image.fields.file.url)}
+                        onClick={() => onFocusedImageClick(image)}
                         className="zoomContent-image"
                         width="420"
                         height="180"
@@ -188,8 +210,24 @@ const Project: React.FC<ProjectProps> = ({ project, dialog }) => {
                 }}>
                 Development
               </Typography>
-              <Box component="div" sx={{ maxWidth: "80%", margin: "0 auto" }}>
+              <Box
+                component="div"
+                sx={{
+                  maxWidth: "80%",
+                  margin: "0 auto",
+                }}>
                 {<MDParser document={project.development} />}
+                <Box component="div" sx={{ mt: theme.spacing(1) }}>
+                  <Typography variant="body2">
+                    <strong>Keywords: </strong>
+                    {project.keywords.map((keyword, idx) => {
+                      if (idx < project.keywords.length - 1) {
+                        return `${keyword}, `;
+                      }
+                      return `${keyword}.`;
+                    })}
+                  </Typography>
+                </Box>
               </Box>
             </Box>
           </Box>
@@ -201,6 +239,7 @@ const Project: React.FC<ProjectProps> = ({ project, dialog }) => {
           sx={{
             display: "flex",
             flexDirection: "column",
+            height: "100%",
             width: "50%",
             alignItems: "center",
             justifyContent: "center",
@@ -214,6 +253,7 @@ const Project: React.FC<ProjectProps> = ({ project, dialog }) => {
               marginBottom: theme.spacing(1),
               textTransform: "uppercase",
               color: theme.palette.primary.main,
+              padding: "5px",
             }}>
             Languages Used
           </Typography>
@@ -225,6 +265,7 @@ const Project: React.FC<ProjectProps> = ({ project, dialog }) => {
           sx={{
             display: "flex",
             flexDirection: "column",
+
             width: "50%",
             alignItems: "center",
             justifyContent: "center",
@@ -244,6 +285,21 @@ const Project: React.FC<ProjectProps> = ({ project, dialog }) => {
           <ResourceLogos project={project} />
         </Box>
       </Box>
+      <Dialog
+        BackdropProps={{ style: { backgroundColor: "rgba(0,0,0,.8)" } }}
+        maxWidth="lg"
+        open={fullScreenImage.open}
+        onClose={() => setFullScreenImage(prev => ({ ...prev, open: false }))}>
+        <Image
+          onClick={() => setFullScreenImage(prev => ({ ...prev, open: false }))}
+          style={{ cursor: "pointer", width: "100%", height: "100%" }}
+          width={fullScreenImage.image?.fields.file.details.image.width}
+          height={fullScreenImage.image?.fields.file.details.image.height}
+          quality={100}
+          src={`http:${fullScreenImage.image?.fields.file.url}`}
+          alt={fullScreenImage.image?.fields.title}
+        />
+      </Dialog>
     </Box>
   );
 };

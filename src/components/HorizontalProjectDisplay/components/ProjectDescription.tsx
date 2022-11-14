@@ -7,7 +7,7 @@ import { externalResource } from "../../../utils/url-helpers";
 import LanguageLogos from "../../LanguageLogos/LanguageLogos";
 import Project from "../../Project/Project";
 
-import { GitHub, OpenInBrowser } from "@mui/icons-material";
+import { GitHub, OpenInBrowser, YouTube } from "@mui/icons-material";
 import { Box, Button, Dialog, IconButton, Paper, Theme, Typography, useTheme } from "@mui/material";
 
 interface ProjectDescriptionProps {
@@ -117,6 +117,11 @@ export const ProjectDescription: React.FC<ProjectDescriptionProps> = ({ projects
                 }}>
                 <LanguageLogos languages={projectDetails?.languages} dialog={dialog} />
                 <Box component="div" sx={{ display: "flex", gap: theme.spacing(1), alignSelf: "end" }}>
+                  {projectDetails?.screencast && (
+                    <IconButton size="small" onClick={() => externalResource(projectDetails.screencast)}>
+                      <YouTube />
+                    </IconButton>
+                  )}
                   {projectDetails?.demoUrl && (
                     <IconButton size="small" onClick={() => externalResource(projectDetails.demoUrl)}>
                       <OpenInBrowser />

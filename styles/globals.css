@@ -65,12 +65,14 @@ blockquote:before {
 .projectLayout-container {
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: 0.2fr 3fr 0.2fr;
+  grid-template-rows: 0.2fr 3fr 0.3fr;
   grid-column-gap: 0px;
   grid-row-gap: 0px;
 }
 
 .projectLayout-header {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   grid-area: 1 / 1 / 2 / 2;
@@ -84,10 +86,14 @@ blockquote:before {
   min-height: auto;
   max-height: 100%;
   overflow-y: auto;
+  padding-bottom: 20px;
 }
 
 .projectLayout-footer {
+  position: relative;
+  z-index: 2;
   grid-area: 3 / 1 / 4 / 2;
+  box-shadow: 0px 0px 8px rgb(0 0 0 / 50%);
 }
 
 .static-image-container {
