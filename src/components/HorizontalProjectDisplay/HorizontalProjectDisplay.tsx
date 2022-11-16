@@ -1,13 +1,8 @@
 /* eslint-disable jsx-a11y/alt-text */
-import { Dispatch, MouseEventHandler, SetStateAction, useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { animated as a, useSpring as useSprng } from "react-spring";
 
-import { Project, ProjectImageType } from "../../types/Project";
-import { ProjectDescription } from "./components/ProjectDescription";
-import { moveProjectFramesOnFocus, resetProjectsPosition } from "./handleProjects";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Autocomplete, Button, Icon, IconButton, Popover, TextField } from "@mui/material";
+import { Autocomplete, Icon, IconButton, Popover, TextField } from "@mui/material";
 import { SpringValue, animated, useTransition } from "@react-spring/three";
 import { Environment, MeshReflectorMaterial, useCursor } from "@react-three/drei";
 import { Canvas, ThreeEvent, useFrame, useLoader, useThree } from "@react-three/fiber";
@@ -15,6 +10,10 @@ import { Box, Flex } from "@react-three/flex";
 import * as THREE from "three";
 import { Object3D } from "three";
 import { proxy, useSnapshot } from "valtio";
+
+import { Project, ProjectImageType } from "../../types/Project";
+import { ProjectDescription } from "./components/ProjectDescription";
+import { moveProjectFramesOnFocus, resetProjectsPosition } from "./handleProjects";
 
 const GOLDENRATIO = 16 / 9;
 
@@ -55,7 +54,6 @@ const HorizontalProjectDisplay: React.FC<HorizontalProjectDisplayProps> = ({ ima
   return (
     <div id="canvas-container" style={{ width: "100%", height: "100%", position: "relative" }}>
       <Canvas dpr={[1, 2]} camera={{ fov: 70, position: [0, 10, 15] }}>
-        <color attach="background" args={["#151515"]} />
         <fog attach="fog" args={["#151515", 0, 5]} />
         <ambientLight intensity={2} />
         <Environment preset="city" />

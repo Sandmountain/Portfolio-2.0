@@ -3,17 +3,17 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 
-import { ContentfulImageType, Project as ProjectType } from "../../types/Project";
-import LanguageLogos from "../LanguageLogos/LanguageLogos";
-import { MDParser } from "../MDParser/MDParser";
-import ResourceLogos from "../ResourceLogos/ResourceLogos";
-
 import { Box, Dialog, Divider, Icon, IconButton, Typography, useTheme } from "@mui/material";
 import { Pagination } from "swiper";
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/pagination";
 import { Swiper, SwiperSlide } from "swiper/react";
+
+import { ContentfulImageType, Project as ProjectType } from "../../types/Project";
+import LanguageLogos from "../LanguageLogos/LanguageLogos";
+import { MDParser } from "../MDParser/MDParser";
+import ResourceLogos from "../ResourceLogos/ResourceLogos";
 
 interface ProjectProps {
   project: ProjectType;

@@ -1,3 +1,5 @@
+import React, { Suspense, useRef, useState } from "react";
+
 import {
   Environment,
   Image,
@@ -10,8 +12,6 @@ import {
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import * as THREE from "three";
 import { Group } from "three";
-
-import React, { Suspense, useRef, useState } from "react";
 
 const projectsAngle = 0; //-Math.PI / 2;
 
