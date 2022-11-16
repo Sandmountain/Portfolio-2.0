@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 
 import { useRouter } from "next/router";
 
+import { GitHub, OpenInBrowser, YouTube } from "@mui/icons-material";
+import { Box, Button, Dialog, IconButton, Paper, Theme, Typography, useTheme } from "@mui/material";
+
 import { ProjectStatusType, Project as ProjectType } from "../../../types/Project";
 import { externalResource } from "../../../utils/url-helpers";
 import LanguageLogos from "../../LanguageLogos/LanguageLogos";
 import Project from "../../Project/Project";
-
-import { GitHub, OpenInBrowser, YouTube } from "@mui/icons-material";
-import { Box, Button, Dialog, IconButton, Paper, Theme, Typography, useTheme } from "@mui/material";
+import ProjectContent from "../../Project/ProjectContent";
 
 interface ProjectDescriptionProps {
   projects: ProjectType[];
@@ -138,8 +139,8 @@ export const ProjectDescription: React.FC<ProjectDescriptionProps> = ({ projects
           </Paper>
         </Box>
       )}
-      <Dialog fullWidth={true} maxWidth="lg" open={openDialog} onClose={handleCloseDialog}>
-        {projectDetails && <Project project={projectDetails} dialog={true} />}
+      <Dialog fullWidth maxWidth={"xl"} open={openDialog} onClose={handleCloseDialog}>
+        <ProjectContent project={projectDetails} dialog />
       </Dialog>
     </>
   );

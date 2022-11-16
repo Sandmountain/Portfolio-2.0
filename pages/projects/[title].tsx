@@ -1,6 +1,6 @@
-import React from "react";
+import React, { Suspense } from "react";
 
-import Project from "../../src/components/Project/Project";
+import ProjectContent from "../../src/components/Project/ProjectContent";
 import { Project as ProjectType } from "../../src/types/Project";
 import { initContentful } from "../../src/utils/contentful/contentful";
 
@@ -9,7 +9,11 @@ interface ProjectPageDetailsProps {
 }
 
 const ProjectPageDetails: React.FC<ProjectPageDetailsProps> = ({ project }) => {
-  return <Project project={project} dialog={false} />;
+  return (
+    <Suspense fallback={null}>
+      <ProjectContent project={project} dialog={false} />
+    </Suspense>
+  );
 };
 
 export default ProjectPageDetails;
