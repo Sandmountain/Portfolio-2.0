@@ -3,13 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 import Image from "next/image";
 
-import { Pagination } from "swiper";
-// import required modules
-import "swiper/css";
-import "swiper/css/pagination";
-import { Swiper, SwiperSlide } from "swiper/react";
-
-import { ContentfulImageType, Project } from "../../../../types/Project";
+import { Project } from "../../../../types/Project";
 
 interface SlideshowProps {
   project?: Project;
@@ -17,19 +11,7 @@ interface SlideshowProps {
   setCurrentImage: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const ProjectSlideshow: React.FC<SlideshowProps> = ({ project, currentImage, setCurrentImage }) => {
-  const [images, setImages] = useState<ContentfulImageType[]>();
-  const imagesRef = useRef<HTMLImageElement>(null);
-
-  // const startSlideShow = () => {
-  //   setTimeout(startSlideShow, 2000);
-  // };
-
-  // useEffect(() => {
-  //   if (project.images.length > 0) {
-  //     startSlideShow();
-  //   }
-  // }, [project.images, startSlideShow]);
+const ProjectSlideshow: React.FC<SlideshowProps> = ({ project, currentImage }) => {
   return (
     <div style={{ userSelect: "none" }}>
       {project?.images.map((img, idx) => {
