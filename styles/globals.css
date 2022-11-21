@@ -106,8 +106,16 @@ blockquote:before {
   animation-delay: 5s;
 }
 
+.extended {
+  animation-delay: 15s;
+}
+
 .bouncing-arrow {
   animation: bounce 2s infinite;
+}
+
+.bouncing-arrow-reverse {
+  animation: bounce 2s infinite reverse;
 }
 
 .static-image-container {
@@ -152,11 +160,36 @@ blockquote:before {
 }
 
 .zoomContent-image {
-  transition: transform 0.3s ease-in-out;
+  transition: transform 0.2s ease-in-out;
   transform: scale(1);
 }
+
 .zoomContent-image:hover {
-  transform: scale(1.05);
+  transform: scale(1.01);
+}
+
+.galleryImage-highlightContainer {
+}
+
+.galleryImage-thumbnail {
+  transition: all 0.2s ease-in-out;
+  transform: scale(1);
+  border: 2px solid white !important;
+}
+
+.galleryImage-thumbnail:hover {
+  filter: grayscale(0) !important;
+  opacity: 1 !important;
+  border: 2px solid var(--primary-color) !important;
+}
+
+.galleryImage-thumbnail:not(.active) {
+  filter: grayscale(1);
+  opacity: 0.5;
+}
+.galleryImage-thumbnail:is(.active) {
+  opacity: 1 !important;
+  border: 2px solid var(--primary-color) !important;
 }
 
 /* Swiper Overrides */
