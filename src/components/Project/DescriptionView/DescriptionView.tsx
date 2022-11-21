@@ -2,12 +2,14 @@ import React, { useState } from "react";
 
 import Image from "next/image";
 
-import { KeyboardArrowUp } from "@mui/icons-material";
-import { Box, Typography } from "@mui/material";
+import { Article, KeyboardArrowUp, OpenInBrowser, YouTube } from "@mui/icons-material";
+import { Box, Divider, IconButton, Paper, Typography } from "@mui/material";
 import { SwiperProps } from "swiper/react";
 
 import { theme } from "../../../theme/mui-theme";
 import { Project } from "../../../types/Project";
+import { externalResource } from "../../../utils/url-helpers";
+import LanguageLogos from "../../LanguageLogos/LanguageLogos";
 import { MDParser } from "../../MDParser/MDParser";
 import ProjectImages from "./ProjectImages/ProjectImages";
 
@@ -39,7 +41,7 @@ const DescriptionView: React.FC<Props> = ({ project, isInView }) => {
           background: "white",
           display: "inline-flex",
           flexDirection: "column",
-          padding: theme.spacing(3),
+          padding: `${theme.spacing(1)} ${theme.spacing(2)}`,
           justifyContent: "space-between",
           gap: theme.spacing(2),
         }}>
@@ -85,26 +87,52 @@ const DescriptionView: React.FC<Props> = ({ project, isInView }) => {
             width: "100%",
             flexDirection: "row",
           }}>
-          <div style={{ display: "inline-flex", gap: 12 }}>
-            <div style={{ height: 42, width: 42, background: "black", borderRadius: 5 }}> </div>
-            <div style={{ height: 42, width: 42, background: "black", borderRadius: 5 }}> </div>
-            <div style={{ height: 42, width: 42, background: "black", borderRadius: 5 }}> </div>
-          </div>
           <Box
             component="div"
-            sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-            <Typography variant="overline" fontSize={10} fontWeight="300" lineHeight={1.2} letterSpacing={1.1}>
-              title: {project.title}
-            </Typography>
+            sx={{
+              display: "flex",
+              gap: theme.spacing(2),
+              padding: `${theme.spacing(1)}`,
+              flex: 1,
+            }}>
+            <LanguageLogos languages={project?.languages} dialog />
+          </Box>
+
+          <Box
+            component="div"
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              flex: 1,
+            }}>
+            <Box component="div" sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Typography variant="overline" fontSize={10} fontWeight="300" lineHeight={1.2} letterSpacing={1.1}>
+                title: {project.title}
+              </Typography>
+            </Box>
 
             <Typography variant="overline" fontWeight="300" fontSize={10} lineHeight={1.2} letterSpacing={1.1}>
               Project Size: {project.projectSize}
             </Typography>
           </Box>
-          <div style={{ display: "inline-flex", gap: 12 }}>
-            <div style={{ height: 42, width: 42, background: "black", borderRadius: 5 }}> </div>
-            <div style={{ height: 42, width: 42, background: "black", borderRadius: 5 }}> </div>
-            <div style={{ height: 42, width: 42, background: "black", borderRadius: 5 }}> </div>
+          <div style={{ flex: 1, display: "flex", justifyContent: "end" }}>
+            {project.screencast && (
+              <IconButton size="small" onClick={() => externalResource(project.screencast)}>
+                <YouTube />
+              </IconButton>
+            )}
+            {project.demoUrl && (
+              <IconButton size="small" onClick={() => externalResource(project.demoUrl)}>
+                <OpenInBrowser />
+              </IconButton>
+            )}
+            {project.report && (
+              <IconButton size="small" onClick={() => externalResource(project.report)}>
+                <Article />
+              </IconButton>
+            )}
           </div>
         </div>
       </Box>

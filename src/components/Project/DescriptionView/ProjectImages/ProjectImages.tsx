@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import Image from "next/image";
 
@@ -22,6 +22,10 @@ const ProjectImages: React.FC<Props> = ({ project, isExpanded, setIsExpanded }) 
   const [activeImage, setActiveImage] = useState(0);
   const [fullScreenImage, setFullScreenImage] = useState<ContentfulImageType>(project.images[0]);
   const [isFullScreenImage, setIsFullScreenImage] = useState(false);
+
+  useEffect(() => {
+    setFullScreenImage(project.images[0]);
+  }, [project]);
 
   const swiper = useSwiper();
 
@@ -127,6 +131,7 @@ const ProjectImages: React.FC<Props> = ({ project, isExpanded, setIsExpanded }) 
         <Box
           component="div"
           sx={{
+            position: "relative",
             display: "grid",
             gridTemplateColumns: "repeat(3, 1fr)",
             gap: theme.spacing(1),

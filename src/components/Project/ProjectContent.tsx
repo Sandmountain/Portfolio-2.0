@@ -4,16 +4,18 @@ import Image from "next/image";
 
 import { KeyboardArrowUp } from "@mui/icons-material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import { Box, Dialog, Typography } from "@mui/material";
+import { Box, Button, Dialog, Typography } from "@mui/material";
 // import required modules
 import { Mousewheel, Pagination } from "swiper";
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/pagination";
 import { Swiper, SwiperSlide, useSwiper, useSwiperSlide } from "swiper/react";
+import { useSnapshot } from "valtio";
 
 import { theme } from "../../theme/mui-theme";
-import { ContentfulImageType, Project } from "../../types/Project";
+import { ContentfulImageType, Project, ProjectImageType } from "../../types/Project";
+import { state } from "../HorizontalProjectDisplay/HorizontalProjectDisplay";
 import { MDParser } from "../MDParser/MDParser";
 import DescriptionView from "./DescriptionView/DescriptionView";
 import HeroView from "./HeroView/HeroView";
@@ -52,7 +54,7 @@ const ProjectContent: React.FC<Props> = ({ project, dialog = false }) => {
         onSlideChange={s => onSlideChange(s)}
         className="mySwiper">
         <SwiperSlide style={{ position: "relative", zIndex: 2 }}>
-          <HeroView project={project} isInView={isFirstSlide} />
+          <HeroView project={project} isInView={isFirstSlide} dialog />
         </SwiperSlide>
         <SwiperSlide>
           <DescriptionView project={project} isInView={isSecondSlide} />

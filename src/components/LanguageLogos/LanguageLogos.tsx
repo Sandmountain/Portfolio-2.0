@@ -2,8 +2,9 @@ import React from "react";
 
 import { Box } from "@mui/material";
 
+import { theme } from "../../theme/mui-theme";
 import { ContentfulLanguageType } from "../../types/Project";
-import LanguageIcon from "../LanguageIcon/LanguageIcon";
+import LanguageIcon from "./LanguageIcon/LanguageIcon";
 
 interface LanguageLogosProps {
   languages: ContentfulLanguageType[] | undefined;
@@ -22,7 +23,7 @@ const LanguageLogos: React.FC<LanguageLogosProps> = ({ languages = [], dialog })
   };
 
   return (
-    <Box component="div" sx={{ display: "flex", gap: 2 }}>
+    <Box component="div" sx={{ display: "flex", gap: { md: "12px", sm: "6px" } }}>
       {renderLogos(languages)}
     </Box>
   );
