@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 import Image from "next/image";
 
-import { Project } from "../../../../types/Project";
+import { Project } from "../../../../../types/Project";
 
 interface SlideshowProps {
   project?: Project;

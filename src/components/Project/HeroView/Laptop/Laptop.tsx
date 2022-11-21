@@ -8,7 +8,7 @@ import { ContactShadows, Environment, Html, OrbitControls, useGLTF } from "@reac
 import { Canvas, Vector3, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
-import { Project } from "../../../types/Project";
+import { Project } from "../../../../types/Project";
 import ProjectSlideshow from "./ProjectSlideshow/ProjectSlideshow";
 
 interface LaptopProps {
