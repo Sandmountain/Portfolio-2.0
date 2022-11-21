@@ -1,9 +1,9 @@
 import React from "react";
 
+import { Box } from "@mui/material";
+
 import { ContentfulLanguageType } from "../../types/Project";
 import LanguageIcon from "../LanguageIcon/LanguageIcon";
-
-import { Box } from "@mui/material";
 
 interface LanguageLogosProps {
   languages: ContentfulLanguageType[] | undefined;
@@ -14,7 +14,7 @@ const LanguageLogos: React.FC<LanguageLogosProps> = ({ languages = [], dialog })
   const renderLogos = (languages?: ContentfulLanguageType[]) => {
     if (languages) {
       return languages.map((language, key) => (
-        <Box component="div" sx={{ padding: "5px 0px" }} key={language}>
+        <Box component="div" key={language.fields.name} sx={{ display: "flex", alignItems: "center" }}>
           <LanguageIcon key={key} language={language} size={dialog ? "small" : "medium"} />
         </Box>
       ));
