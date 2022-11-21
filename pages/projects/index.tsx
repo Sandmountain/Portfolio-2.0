@@ -3,10 +3,10 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 
+import { Box } from "@mui/material";
+
 import { Project } from "../../src/types/Project";
 import { initContentful } from "../../src/utils/contentful/contentful";
-
-import { Box } from "@mui/material";
 
 interface ProjectsPageProps {
   projects: Project[];
