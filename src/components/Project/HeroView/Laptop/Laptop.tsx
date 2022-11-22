@@ -3,9 +3,8 @@
 import React, { Suspense, useEffect, useRef, useState } from "react";
 import YouTube from "react-youtube";
 
-import { Box } from "@mui/material";
 import { ContactShadows, Environment, Html, OrbitControls, useGLTF } from "@react-three/drei";
-import { Canvas, Vector3, useFrame, useThree } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
 import { Project } from "../../../../types/Project";
@@ -38,11 +37,10 @@ const Laptop: React.FC<LaptopProps> = ({ project }) => {
 };
 
 interface ModelProps {
-  position?: Vector3;
   project?: Project;
 }
 
-function Model({ position, project }: ModelProps) {
+function Model({ project }: ModelProps) {
   const [showEasterEgg, setShowEasterEgg] = useState(false);
   const [isTrackPadHover, setIsTrackPadHover] = useState(false);
   const [currentImage, setCurrentImage] = useState(0);

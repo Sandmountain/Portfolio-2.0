@@ -2,15 +2,11 @@ import React, { useEffect, useState } from "react";
 
 import Image from "next/image";
 
-import { FullscreenSharp, KeyboardDoubleArrowLeft, KeyboardDoubleArrowRight } from "@mui/icons-material";
-import { Box, Button, Dialog, IconButton, Paper, Typography, makeStyles } from "@mui/material";
-import { Pagination } from "swiper";
-import "swiper/css";
-import "swiper/css/pagination";
-import { Swiper, SwiperProps, SwiperSlide, useSwiper } from "swiper/react";
+import { KeyboardDoubleArrowLeft, KeyboardDoubleArrowRight } from "@mui/icons-material";
+import { Box, Dialog, IconButton, Paper, Typography } from "@mui/material";
+import { useSwiper } from "swiper/react";
 
 import { theme } from "../../../../theme/mui-theme";
-import { defaultTheme } from "../../../../theme/theme";
 import { ContentfulImageType, Project } from "../../../../types/Project";
 
 interface Props {

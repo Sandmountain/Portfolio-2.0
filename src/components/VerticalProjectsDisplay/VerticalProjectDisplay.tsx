@@ -1,14 +1,6 @@
-import React, { Suspense, useRef, useState } from "react";
+import React, { Suspense, useRef } from "react";
 
-import {
-  Environment,
-  Image,
-  Merged,
-  MeshReflectorMaterial,
-  RoundedBox,
-  ScrollControls,
-  useScroll,
-} from "@react-three/drei";
+import { Environment, MeshReflectorMaterial, RoundedBox, ScrollControls, useScroll } from "@react-three/drei";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import * as THREE from "three";
 import { Group } from "three";
@@ -67,6 +59,7 @@ const ProjectPedestal: React.FC<ProjectIndex> = ({ index }) => {
           mixStrength={10}
           minDepthThreshold={0.4}
           maxDepthThreshold={3}
+          mirror={0}
         />
       </RoundedBox>
     </mesh>
@@ -125,6 +118,7 @@ const VerticalProjectDisplay = () => {
                 color="#151515"
                 metalness={0.7}
                 roughness={1}
+                mirror={0}
               />
             </mesh>
           </group>

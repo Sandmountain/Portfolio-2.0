@@ -174,8 +174,6 @@ const Project: React.FC<ProjectProps> = ({ project, dialog }) => {
                 onSlideChange={e => setActiveImage(e.snapIndex)}
                 modules={[Pagination]}>
                 {project.images.map((image, idx) => {
-                  const square = image.metadata.tags.length > 0;
-
                   return (
                     <SwiperSlide key={idx} style={{ width: "auto", height: "auto" }}>
                       <Image

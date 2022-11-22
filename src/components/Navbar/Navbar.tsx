@@ -39,9 +39,9 @@ function Navbar() {
         </Box>
       </Link>
       <Box component="div" sx={{ display: "flex", gap: 2 }}>
-        <a href="/portfolio">Home</a>
-        <a href="#">News</a>
-        <a href="#">About</a>
+        <Link href="/portfolio">Home</Link>
+        <Link href="#">News</Link>
+        <Link href="#">About</Link>
       </Box>
     </div>
   );

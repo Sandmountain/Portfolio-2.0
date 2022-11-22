@@ -2,7 +2,6 @@ import React from "react";
 
 import { Box } from "@mui/material";
 
-import { theme } from "../../theme/mui-theme";
 import { ContentfulLanguageType } from "../../types/Project";
 import LanguageIcon from "./LanguageIcon/LanguageIcon";
 

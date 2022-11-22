@@ -8,7 +8,6 @@ import { Box, Button, Dialog, IconButton, Paper, Theme, Typography, useTheme } f
 import { ProjectStatusType, Project as ProjectType } from "../../../types/Project";
 import { externalResource } from "../../../utils/url-helpers";
 import LanguageLogos from "../../LanguageLogos/LanguageLogos";
-import Project from "../../Project/Project";
 import ProjectContent from "../../Project/ProjectContent";
 
 interface ProjectDescriptionProps {

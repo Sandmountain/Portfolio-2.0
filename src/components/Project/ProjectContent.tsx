@@ -1,27 +1,16 @@
 import React, { Suspense, useRef, useState } from "react";
 
-import Image from "next/image";
-
-import { KeyboardArrowUp } from "@mui/icons-material";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import { Box, Button, CircularProgress, Dialog, Typography } from "@mui/material";
-// import required modules
-import { Mousewheel, Pagination, Swiper as SwiperType } from "swiper";
-// Import Swiper styles
+import { Box } from "@mui/material";
+import { Pagination, Swiper as SwiperType } from "swiper";
 import "swiper/css";
 import "swiper/css/pagination";
-import { Swiper, SwiperSlide, useSwiper, useSwiperSlide } from "swiper/react";
+import { Swiper, SwiperSlide } from "swiper/react";
 import { useSnapshot } from "valtio";
 
-import { theme } from "../../theme/mui-theme";
-import { defaultTheme } from "../../theme/theme";
-import { ContentfulImageType, Project, ProjectImageType } from "../../types/Project";
+import { Project } from "../../types/Project";
 import { state } from "../HorizontalProjectDisplay/HorizontalProjectDisplay";
-import { MDParser } from "../MDParser/MDParser";
-import ThreeLoader from "../ThreeLoader/ThreeLoader";
 import DescriptionView from "./DescriptionView/DescriptionView";
 import HeroView from "./HeroView/HeroView";
-import Laptop from "./HeroView/Laptop/Laptop";
 
 interface Props {
   project?: Project;
@@ -41,8 +30,6 @@ const ProjectContent: React.FC<Props> = ({ project, dialog = false, projects }) 
   const swiperRef = useRef<SwiperType>();
 
   if (!project) return <></>;
-
-  console.log(project);
 
   const onNestedSlideChange = (s: SwiperType) => {
     if (s.activeIndex === 0) {

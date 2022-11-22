@@ -1,25 +1,14 @@
 import React from "react";
 
-import {
-  ArrowLeft,
-  ArrowRight,
-  Article,
-  DocumentScannerRounded,
-  OpenInBrowser,
-  PictureAsPdf,
-  YouTube,
-} from "@mui/icons-material";
+import { Article, OpenInBrowser, YouTube } from "@mui/icons-material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import { Box, Button, Divider, IconButton, Paper, Typography } from "@mui/material";
-import { useSnapshot } from "valtio";
+import { Box, Divider, IconButton, Paper, Typography } from "@mui/material";
 
 import { theme } from "../../../theme/mui-theme";
 import { defaultTheme } from "../../../theme/theme";
-import { Project, ProjectImageType } from "../../../types/Project";
+import { Project } from "../../../types/Project";
 import { externalResource } from "../../../utils/url-helpers";
-import { state } from "../../HorizontalProjectDisplay/HorizontalProjectDisplay";
 import LanguageLogos from "../../LanguageLogos/LanguageLogos";
-import ThreeLoader from "../../ThreeLoader/ThreeLoader";
 import Laptop from "./Laptop/Laptop";
 
 interface Props {

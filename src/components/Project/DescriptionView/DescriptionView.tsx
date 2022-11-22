@@ -1,10 +1,7 @@
 import React, { useState } from "react";
 
-import Image from "next/image";
-
 import { Article, KeyboardArrowUp, OpenInBrowser, YouTube } from "@mui/icons-material";
-import { Box, Divider, IconButton, Paper, Typography } from "@mui/material";
-import { SwiperProps } from "swiper/react";
+import { Box, IconButton, Typography } from "@mui/material";
 
 import { theme } from "../../../theme/mui-theme";
 import { defaultTheme } from "../../../theme/theme";

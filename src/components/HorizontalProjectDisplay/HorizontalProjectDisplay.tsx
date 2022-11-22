@@ -604,8 +604,6 @@ const IndicatorItem: React.FC<IndicatorItemProps> = ({
 };
 
 const ProjectNavigator: React.FC = () => {
-  const [input, setInput] = useState();
-
   const autoCompleteRef = useRef(null);
 
   const changeView = (view: "horizontal" | "grid") => {
