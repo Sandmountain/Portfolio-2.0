@@ -140,7 +140,7 @@ export const ProjectDescription: React.FC<ProjectDescriptionProps> = ({ projects
         </Box>
       )}
       <Dialog fullWidth maxWidth={"xl"} open={openDialog} onClose={handleCloseDialog}>
-        <ProjectContent project={projectDetails} dialog />
+        <ProjectContent project={projectDetails} projects={projects} dialog />
       </Dialog>
     </>
   );

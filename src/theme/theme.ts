@@ -6,6 +6,7 @@ export const defaultTheme = {
     secondary: "#F24333",
     white: "#EBF8FF",
     black: "#030D12",
+    darkGray: "#202025",
     shade: {
       primary: {
         100: "D6F1FF",

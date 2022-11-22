@@ -89,14 +89,16 @@ function Model({ position, project }: ModelProps) {
   }, [isTrackPadHover]);
 
   useEffect(() => {
-    if (project && currentImage === project?.images.length) {
+    // Using + 1 because the thumbnail image is included
+
+    if (project && currentImage === project?.images.length + 1) {
       setCurrentImage(0);
     }
 
     resetTimeout();
 
     const ref = setTimeout(
-      () => setCurrentImage(prevIndex => (project && prevIndex === project?.images.length ? 0 : prevIndex + 1)),
+      () => setCurrentImage(prevIndex => (project && prevIndex === project?.images.length + 1 ? 0 : prevIndex + 1)),
       3000,
     );
 

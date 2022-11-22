@@ -10,6 +10,7 @@ import "swiper/css/pagination";
 import { Swiper, SwiperProps, SwiperSlide, useSwiper } from "swiper/react";
 
 import { theme } from "../../../../theme/mui-theme";
+import { defaultTheme } from "../../../../theme/theme";
 import { ContentfulImageType, Project } from "../../../../types/Project";
 
 interface Props {
@@ -60,6 +61,7 @@ const ProjectImages: React.FC<Props> = ({ project, isExpanded, setIsExpanded }) 
           alignItems: "center",
           height: "100%",
           width: "100%",
+
           padding: theme.spacing(1),
           justifyContent: "space-between",
           overflow: "hidden",
@@ -72,8 +74,8 @@ const ProjectImages: React.FC<Props> = ({ project, isExpanded, setIsExpanded }) 
             pointerEvents: "none",
             opacity: 0.1,
             zIndex: 0,
-            filter: "blur(5px) grayscale(1)",
-            boxShadow: "0 0 200px rgba(32, 32, 37, 1) inset",
+
+            filter: "blur(5px) grayscale(0.4)",
           }}
           layout="fill"
           objectFit="cover"
@@ -135,6 +137,7 @@ const ProjectImages: React.FC<Props> = ({ project, isExpanded, setIsExpanded }) 
             display: "grid",
             gridTemplateColumns: "repeat(3, 1fr)",
             gap: theme.spacing(1),
+            marginTop: theme.spacing(3),
             justifyContent: "center",
             overflow: "hidden",
             zIndex: 1,

@@ -7,6 +7,7 @@ import { Box, Divider, IconButton, Paper, Typography } from "@mui/material";
 import { SwiperProps } from "swiper/react";
 
 import { theme } from "../../../theme/mui-theme";
+import { defaultTheme } from "../../../theme/theme";
 import { Project } from "../../../types/Project";
 import { externalResource } from "../../../utils/url-helpers";
 import LanguageLogos from "../../LanguageLogos/LanguageLogos";
@@ -22,13 +23,19 @@ const DescriptionView: React.FC<Props> = ({ project, isInView }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <Box component="div" style={{ display: "flex", height: "100%", width: "100%" }}>
+    <Box
+      component="div"
+      style={{
+        display: "flex",
+        height: "100%",
+        width: "100%",
+      }}>
       <Box
         component="div"
         style={{
           flex: isExpanded ? 0.8 : 0.3,
           transition: "flex 0.10s ease-out",
-          background: "#202025",
+          background: defaultTheme.palette.darkGray,
           boxShadow: "0px 0px 5px 2px rgba(0,0,0,.5)",
         }}>
         <ProjectImages project={project} setIsExpanded={setIsExpanded} isExpanded={isExpanded} />
@@ -58,6 +65,7 @@ const DescriptionView: React.FC<Props> = ({ project, isInView }) => {
             </Typography>
           </Box>
         </Box>
+
         <Box component="div" style={{ overflowY: "auto" }}>
           <Typography component="h3">ABOUT THE PROJECT</Typography>
           <MDParser document={project.description}></MDParser>

@@ -12,9 +12,13 @@ interface SlideshowProps {
 }
 
 const ProjectSlideshow: React.FC<SlideshowProps> = ({ project, currentImage }) => {
+  if (!project) return <></>;
+
+  const images = [project.thumbnail, ...project.images];
+
   return (
     <div style={{ userSelect: "none" }}>
-      {project?.images.map((img, idx) => {
+      {images.map((img, idx) => {
         if (idx === currentImage) {
           return (
             <Image

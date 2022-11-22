@@ -7,6 +7,7 @@ export interface Project {
   screencast: string;
   status: ProjectStatusType;
   finished: string;
+  primaryColor: string;
   githubUrl: string;
   images: ContentfulImageType[];
   keywords: string[];
