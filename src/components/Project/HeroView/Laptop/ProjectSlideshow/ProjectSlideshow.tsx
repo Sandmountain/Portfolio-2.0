@@ -17,7 +17,7 @@ const ProjectSlideshow: React.FC<SlideshowProps> = ({ project, currentImage }) =
   const images = [project.thumbnail, ...project.images];
 
   return (
-    <div style={{ userSelect: "none" }}>
+    <div style={{ position: "relative", height: "100%", width: "100%" }}>
       {images.map((img, idx) => {
         if (idx === currentImage) {
           return (

@@ -1,21 +1,24 @@
 import React, { ReactNode } from "react";
 
-import { Project } from "../../types/Project";
-import { externalResource } from "../../utils/url-helpers";
-
 import { GitHub, OpenInBrowser, YouTube } from "@mui/icons-material/";
 import { Icon, IconButton } from "@mui/material";
 
+import { Project } from "../../types/Project";
+import { externalResource } from "../../utils/url-helpers";
+
 interface ResourceLogosProps {
-  project: Project;
+  project?: Project;
+  overlay?: boolean;
 }
-const ResourceLogos: React.FC<ResourceLogosProps> = ({ project }) => {
+const ResourceLogos: React.FC<ResourceLogosProps> = ({ project, overlay = false }) => {
   const getResource = () => {
+    if (!project) return <></>;
+
     const resources: ReactNode[] = [];
 
     if (project.demoUrl) {
       resources.push(
-        <IconButton size="small" onClick={() => externalResource(project.demoUrl)}>
+        <IconButton key={project.demoUrl} size="small" onClick={() => externalResource(project.demoUrl)}>
           <OpenInBrowser />
         </IconButton>,
       );
@@ -24,7 +27,7 @@ const ResourceLogos: React.FC<ResourceLogosProps> = ({ project }) => {
     if (project.screencast) {
       // TODO: lägg till player
       resources.push(
-        <IconButton size="small" onClick={() => externalResource(project.screencast)}>
+        <IconButton key={project.screencast} size="small" onClick={() => externalResource(project.screencast)}>
           <YouTube />
         </IconButton>,
       );
@@ -32,15 +35,15 @@ const ResourceLogos: React.FC<ResourceLogosProps> = ({ project }) => {
 
     if (project.githubUrl) {
       resources.push(
-        <IconButton size="small" onClick={() => externalResource(project.githubUrl)}>
+        <IconButton key={project.githubUrl} size="small" onClick={() => externalResource(project.githubUrl)}>
           <GitHub />
         </IconButton>,
       );
     }
 
-    if (project.report) {
+    if (project.report && !overlay) {
       resources.push(
-        <IconButton size="small" onClick={() => externalResource(project.report)}>
+        <IconButton key={project.report} size="small" onClick={() => externalResource(project.report)}>
           <Icon>description</Icon>
         </IconButton>,
       );
@@ -49,9 +52,7 @@ const ResourceLogos: React.FC<ResourceLogosProps> = ({ project }) => {
     return resources;
   };
 
-  getResource();
-
-  return <div>{getResource()} </div>;
+  return <>{getResource()}</>;
 };
 
 export default ResourceLogos;

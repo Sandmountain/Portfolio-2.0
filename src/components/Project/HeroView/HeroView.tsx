@@ -1,14 +1,14 @@
 import React from "react";
 
-import { Article, OpenInBrowser, YouTube } from "@mui/icons-material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import { Box, Divider, IconButton, Paper, Typography } from "@mui/material";
+import { Box, Divider, Paper, Typography } from "@mui/material";
 
 import { theme } from "../../../theme/mui-theme";
 import { defaultTheme } from "../../../theme/theme";
 import { Project } from "../../../types/Project";
-import { externalResource } from "../../../utils/url-helpers";
 import LanguageLogos from "../../LanguageLogos/LanguageLogos";
+import ResourceLogos from "../../ResourceLogos/ResourceLogos";
+import ThreeLoader from "../../ThreeLoader/ThreeLoader";
 import Laptop from "./Laptop/Laptop";
 
 interface Props {
@@ -105,27 +105,19 @@ const HeroView: React.FC<Props> = ({ project, isInView, dialog, active = dialog 
                   {(project.screencast || project.demoUrl || project.report) && (
                     <Divider variant="middle" orientation="vertical" flexItem />
                   )}
-                  {project.screencast && (
-                    <IconButton size="small" onClick={() => externalResource(project.screencast)}>
-                      <YouTube />
-                    </IconButton>
-                  )}
-                  {project.demoUrl && (
-                    <IconButton size="small" onClick={() => externalResource(project.demoUrl)}>
-                      <OpenInBrowser />
-                    </IconButton>
-                  )}
-                  {project.report && (
-                    <IconButton size="small" onClick={() => externalResource(project.report)}>
-                      <Article />
-                    </IconButton>
-                  )}
+                  <ResourceLogos project={project} />
                 </Box>
               </Paper>
             </Box>
           </Box>
         </Box>
-        <div style={{ height: "100%", width: "100%" }}>{active && <Laptop project={project} />}</div>
+        <div style={{ height: "100%", width: "100%" }}>
+          {active && (
+            <ThreeLoader>
+              <Laptop project={project} />{" "}
+            </ThreeLoader>
+          )}
+        </div>
       </Box>
     </Box>
   );

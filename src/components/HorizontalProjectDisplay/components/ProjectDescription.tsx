@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 
 import { useRouter } from "next/router";
 
-import { GitHub, OpenInBrowser, YouTube } from "@mui/icons-material";
+import { GitHub } from "@mui/icons-material";
 import { Box, Button, Dialog, IconButton, Paper, Theme, Typography, useTheme } from "@mui/material";
 
 import { ProjectStatusType, Project as ProjectType } from "../../../types/Project";
 import { externalResource } from "../../../utils/url-helpers";
 import LanguageLogos from "../../LanguageLogos/LanguageLogos";
 import ProjectContent from "../../Project/ProjectContent";
+import ResourceLogos from "../../ResourceLogos/ResourceLogos";
 
 interface ProjectDescriptionProps {
   projects: ProjectType[];
@@ -79,64 +80,40 @@ export const ProjectDescription: React.FC<ProjectDescriptionProps> = ({ projects
   return (
     <>
       {open && (
-        <Box
-          component="div"
-          sx={{
-            position: "absolute",
-            top: theme.spacing(1),
-            left: theme.spacing(1),
-            width: "400px",
-          }}>
-          <Paper
-            sx={theme => ({
-              padding: theme.spacing(2),
-            })}
-            elevation={3}>
-            <>
-              <Box component="div" sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <Typography variant="h6"> {projectDetails?.title} </Typography>
-                {projectDetails?.githubUrl && (
-                  <IconButton size={"small"} onClick={() => externalResource(projectDetails.githubUrl)}>
-                    <GitHub />
-                  </IconButton>
-                )}
-              </Box>
-              <Box component="div" sx={{ flexDirection: "row" }}>
-                <Typography variant="caption"> Status: </Typography>
-                {renderStatus(projectDetails?.status)}
-              </Box>
-              <Box component="div" sx={{ margin: `${theme.spacing(2)} 0` }}>
-                <Typography variant="body1"> {projectDetails?.shortDescription} </Typography>
-              </Box>
-              <Box
-                component="div"
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}>
-                <LanguageLogos languages={projectDetails?.languages} dialog={dialog} />
-                <Box component="div" sx={{ display: "flex", gap: theme.spacing(1), alignSelf: "end" }}>
-                  {projectDetails?.screencast && (
-                    <IconButton size="small" onClick={() => externalResource(projectDetails.screencast)}>
-                      <YouTube />
-                    </IconButton>
-                  )}
-                  {projectDetails?.demoUrl && (
-                    <IconButton size="small" onClick={() => externalResource(projectDetails.demoUrl)}>
-                      <OpenInBrowser />
-                    </IconButton>
-                  )}
-                  <Button variant="contained" size="small" onClick={onReadMore}>
-                    <Typography variant="button" sx={{ color: theme.palette.common.white }}>
-                      Read More
-                    </Typography>
-                  </Button>
-                </Box>
-              </Box>
-            </>
-          </Paper>
-        </Box>
+        <Paper component="div" sx={{ height: "100%", width: "100%", position: "relative" }}>
+          <Box component="div" sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <Typography variant="h6"> {projectDetails?.title} </Typography>
+            {projectDetails?.githubUrl && (
+              <IconButton size={"small"} onClick={() => externalResource(projectDetails.githubUrl)}>
+                <GitHub />
+              </IconButton>
+            )}
+          </Box>
+          <Box component="div" sx={{ flexDirection: "row" }}>
+            <Typography variant="caption"> Status: </Typography>
+            {renderStatus(projectDetails?.status)}
+          </Box>
+          <Box component="div" sx={{ margin: `${theme.spacing(2)} 0` }}>
+            <Typography variant="body1"> {projectDetails?.shortDescription} </Typography>
+          </Box>
+          <Box
+            component="div"
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}>
+            <LanguageLogos languages={projectDetails?.languages} dialog={dialog} />
+            <Box component="div" sx={{ display: "flex", gap: theme.spacing(1), alignSelf: "end" }}>
+              <ResourceLogos project={projectDetails} overlay />
+              <Button variant="contained" size="small" onClick={onReadMore}>
+                <Typography variant="button" sx={{ color: theme.palette.common.white }}>
+                  Read More
+                </Typography>
+              </Button>
+            </Box>
+          </Box>
+        </Paper>
       )}
       <Dialog fullWidth maxWidth={"xl"} open={openDialog} onClose={handleCloseDialog}>
         <ProjectContent project={projectDetails} projects={projects} dialog />

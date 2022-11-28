@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 
-import { Article, KeyboardArrowUp, OpenInBrowser, YouTube } from "@mui/icons-material";
-import { Box, IconButton, Typography } from "@mui/material";
+import { KeyboardArrowUp } from "@mui/icons-material";
+import { Box, Typography } from "@mui/material";
 
 import { theme } from "../../../theme/mui-theme";
 import { defaultTheme } from "../../../theme/theme";
 import { Project } from "../../../types/Project";
-import { externalResource } from "../../../utils/url-helpers";
 import LanguageLogos from "../../LanguageLogos/LanguageLogos";
 import { MDParser } from "../../MDParser/MDParser";
+import ResourceLogos from "../../ResourceLogos/ResourceLogos";
 import ProjectImages from "./ProjectImages/ProjectImages";
 
 interface Props {
@@ -45,7 +45,7 @@ const DescriptionView: React.FC<Props> = ({ project, isInView }) => {
           background: "white",
           display: "inline-flex",
           flexDirection: "column",
-          padding: `${theme.spacing(1)} ${theme.spacing(2)}`,
+          padding: `${theme.spacing(1)} ${theme.spacing(2.5)}`,
           justifyContent: "space-between",
           gap: theme.spacing(2),
         }}>
@@ -123,21 +123,7 @@ const DescriptionView: React.FC<Props> = ({ project, isInView }) => {
             </Typography>
           </Box>
           <div style={{ flex: 1, display: "flex", justifyContent: "end" }}>
-            {project.screencast && (
-              <IconButton size="small" onClick={() => externalResource(project.screencast)}>
-                <YouTube />
-              </IconButton>
-            )}
-            {project.demoUrl && (
-              <IconButton size="small" onClick={() => externalResource(project.demoUrl)}>
-                <OpenInBrowser />
-              </IconButton>
-            )}
-            {project.report && (
-              <IconButton size="small" onClick={() => externalResource(project.report)}>
-                <Article />
-              </IconButton>
-            )}
+            <ResourceLogos project={project} />
           </div>
         </div>
       </Box>

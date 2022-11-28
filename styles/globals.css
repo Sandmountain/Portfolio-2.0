@@ -204,6 +204,17 @@ blockquote:before {
   background-color: var(--primary-color) !important;
 }
 
+.horizontalProjectView-overlay {
+  display: flex;
+  align-items: flex-end;
+  opacity: 1;
+  animation: fade-in 0.4s ease-in forwards;
+  animation-delay: 0;
+  transition: height, width 0.1s ease-in;
+  height: 333px;
+  width: 593px;
+}
+
 .slideshow-content {
   width: 334px;
   height: 216px;
@@ -216,7 +227,7 @@ blockquote:before {
 }
 
 .slideshowImage {
-  position: absolute;
+  position: relative;
 }
 
 .slideshowImage-slide-in {
