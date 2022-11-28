@@ -1,10 +1,10 @@
 import React, { ReactNode } from "react";
 
-import { ContentfulMD, ContentfulMDLine, ContentfulMDcontent } from "../../types/Project";
-
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import { BLOCKS, Block, Inline } from "@contentful/rich-text-types";
 import { Typography } from "@mui/material";
+
+import { ContentfulMD, ContentfulMDLine, ContentfulMDcontent } from "../../types/Project";
 
 const RICHTEXT_OPTIONS = {
   renderNode: {
@@ -52,8 +52,8 @@ const RICHTEXT_OPTIONS = {
 
   renderText: (text: string) => {
     return text.split("\n").reduce((children, textSegment, index) => {
-      return [...children, index > 0 && <br key={index} />, textSegment];
-    }, [] as string[]);
+      return [...children, index > 0 ? <br key={index} /> : "", textSegment];
+    }, [] as any[]);
   },
 };
 //
