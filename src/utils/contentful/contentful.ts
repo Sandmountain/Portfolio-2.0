@@ -19,7 +19,9 @@ export const initContentful = async (query?: string): Promise<ContentfulResponse
       })
       .then(res => {
         return {
-          items: res.items.filter(prj => prj.fields["urlName"] === query),
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          items: res.items.filter(prj => prj.fields?.["urlName"] === query),
         };
       })) as unknown as ContentfulResponse;
   } else {
