@@ -4,9 +4,10 @@ import { animated as a, useSpring as useSprng } from "react-spring";
 
 import router from "next/router";
 
+import { ChevronLeft, ChevronRight } from "@mui/icons-material";
 import { Autocomplete, Dialog, Icon, IconButton, Popover, TextField } from "@mui/material";
 import { SpringValue, animated, useTransition } from "@react-spring/three";
-import { Environment, Html, MeshReflectorMaterial, Stars, useCursor } from "@react-three/drei";
+import { Environment, Html, MeshReflectorMaterial, Sky, Stars, useCursor } from "@react-three/drei";
 import { Canvas, ThreeEvent, useFrame, useLoader, useThree } from "@react-three/fiber";
 import { Box, Flex } from "@react-three/flex";
 import * as THREE from "three";
@@ -95,6 +96,7 @@ const HorizontalProjectDisplay: React.FC<HorizontalProjectDisplayProps> = ({ ima
           <ambientLight intensity={2} />
           <Environment preset="city" />
           {/* <Stars /> */}
+
           {/* Align group in center of frame */}
           <group position={[0, -0.8, 0]}>
             <ProjectDisplay images={images} />
@@ -340,12 +342,13 @@ const GridDisplay: React.FC<GridDisplayProps> = ({
 
     /* margin centers the grid*/
 
+    // TODO: implement pagination here. Should probably be 20 per page.
     return (
       <Flex justifyContent="center" alignItems="center" margin={-0.36}>
         {result.map((val, rowId) => (
           <Box key={rowId} flexDirection="row" width="auto" height="auto" flexGrow={1}>
-            {val.map((proj, index) => (
-              <Box flexDirection="column" key={index} margin={0.04}>
+            {val.map(proj => (
+              <Box flexDirection="column" key={proj.id} margin={0.04}>
                 <Frame url={proj.url} focused={clickedImage?.name === proj.id} key={proj.id} id={proj.id} mode="grid" />
               </Box>
             ))}
@@ -592,6 +595,23 @@ const Indicators: React.FC<IndicatorProps> = ({ projects }) => {
     }
   };
 
+  const changeProject = (back: boolean) => {
+    // convert from proxy to js-object
+    const projects = JSON.parse(JSON.stringify(snap.allProjects)) as ProjectImageType[];
+
+    const idx = projects.findIndex(proj => proj.id === snap.currentProject?.id);
+
+    if (idx === -1) {
+      return;
+    }
+
+    const newIndex = idx + (back ? -1 : 1);
+
+    const newProject = state.allProjects?.[newIndex];
+
+    state.currentProject = newProject ?? null;
+  };
+
   return (
     <>
       {state.currentProject && snap.currentView === "horizontal" && (
@@ -606,15 +626,16 @@ const Indicators: React.FC<IndicatorProps> = ({ projects }) => {
           }}>
           <div
             style={{
-              padding: 6,
+              padding: 2,
               opacity: 0.6,
               gap: 4,
               backgroundColor: "#cacaca20",
               display: "flex",
               flexDirection: "row",
               justifyContent: "center",
+              alignItems: "center",
             }}>
-            {hoveredProject && (
+            {hoveredProject || focusedIdx !== undefined ? (
               <div
                 style={{
                   position: "absolute",
@@ -622,9 +643,17 @@ const Indicators: React.FC<IndicatorProps> = ({ projects }) => {
                   top: -30,
                   whiteSpace: "nowrap",
                 }}>
-                <p style={{ fontSize: "0.8rem" }}>{hoveredProject}</p>
+                <p style={{ fontSize: "0.8rem" }}>{hoveredProject ?? state.currentProject?.title}</p>
               </div>
+            ) : (
+              <></>
             )}
+            <IconButton
+              sx={{ height: "16px", width: "16px", padding: "2px" }}
+              color="white"
+              onClick={() => changeProject(true)}>
+              <ChevronLeft sx={{ height: "12px", width: "12px" }} />
+            </IconButton>
             {projects.map((proj, idx) => {
               return (
                 <IndicatorItem
@@ -637,6 +666,12 @@ const Indicators: React.FC<IndicatorProps> = ({ projects }) => {
                 />
               );
             })}
+            <IconButton
+              sx={{ height: "16px", width: "16px", padding: "2px" }}
+              color="white"
+              onClick={() => changeProject(false)}>
+              <ChevronRight sx={{ height: "12px", width: "12px" }} />
+            </IconButton>
           </div>
         </div>
       )}
