@@ -2,17 +2,22 @@
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { animated as a, useSpring as useSprng } from "react-spring";
 
-import { Autocomplete, Icon, IconButton, Popover, TextField } from "@mui/material";
+import router from "next/router";
+
+import { Autocomplete, Dialog, Icon, IconButton, Popover, TextField } from "@mui/material";
 import { SpringValue, animated, useTransition } from "@react-spring/three";
-import { Environment, MeshReflectorMaterial, useCursor } from "@react-three/drei";
+import { Environment, Html, MeshReflectorMaterial, Stars, useCursor } from "@react-three/drei";
 import { Canvas, ThreeEvent, useFrame, useLoader, useThree } from "@react-three/fiber";
 import { Box, Flex } from "@react-three/flex";
 import * as THREE from "three";
-import { Object3D } from "three";
+import { Object3D, Vector3 } from "three";
 import { proxy, useSnapshot } from "valtio";
+import { subscribeKey } from "valtio/utils";
 
 import { Project, ProjectImageType } from "../../types/Project";
-import { ProjectDescription } from "./components/ProjectDescription";
+import ProjectContent from "../Project/ProjectContent";
+import SwipeCapturer from "../SwipeCapturer/SwipeCapturer";
+import { ProjectResourceOverlay } from "./components/ProjectResourceOverlay";
 import { moveProjectFramesOnFocus, resetProjectsPosition } from "./handleProjects";
 
 const GOLDENRATIO = 16 / 9;
@@ -24,13 +29,17 @@ interface ProjectState {
   currentProject: null | ProjectImageType;
   currentView: "horizontal" | "grid";
   allProjects: null | ProjectImageType[];
+  projectsData: null | Project[];
+  isProjectDialogOpen: boolean;
 }
 
 export const state = proxy<ProjectState>({
   current: null,
   currentProject: null,
   allProjects: null,
+  projectsData: null,
   currentView: "horizontal",
+  isProjectDialogOpen: false,
 });
 
 interface HorizontalProjectDisplayProps {
@@ -39,7 +48,16 @@ interface HorizontalProjectDisplayProps {
 }
 
 const HorizontalProjectDisplay: React.FC<HorizontalProjectDisplayProps> = ({ images, projects }) => {
+  const [openDialog, setOpenDialog] = useState(false);
+
   const snap = useSnapshot(state);
+
+  const getProject = (): Project | undefined => {
+    if (snap.projectsData && snap.currentProject) {
+      const project = snap.projectsData.filter(proj => snap.currentProject?.id === proj.uuid);
+      return project[0] as Project;
+    }
+  };
 
   const styles = useSprng({
     to: [{ opacity: 1 }],
@@ -49,27 +67,49 @@ const HorizontalProjectDisplay: React.FC<HorizontalProjectDisplayProps> = ({ ima
 
   useEffect(() => {
     state.allProjects = images;
-  }, [images]);
+    state.projectsData = projects;
+  }, [images, projects]);
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    router.push(`/portfolio`, undefined, {
+      shallow: true,
+    });
+    state.isProjectDialogOpen = false;
+  };
+
+  subscribeKey(state, "isProjectDialogOpen", () => {
+    if (state.isProjectDialogOpen && !openDialog) {
+      router.push(`?name=${snap.currentProject?.title.toLocaleLowerCase().replaceAll(" ", "-")}`, undefined, {
+        shallow: true,
+      });
+      setOpenDialog(true);
+    }
+  });
 
   return (
     <div id="canvas-container" style={{ width: "100%", height: "100%", position: "relative" }}>
-      <Canvas dpr={[1, 2]} camera={{ fov: 70, position: [0, 10, 15] }}>
-        <fog attach="fog" args={["#151515", 0, 5]} />
-        <ambientLight intensity={2} />
-        <Environment preset="city" />
-        {/* <Stars /> */}
-        {/* Align group in center of frame */}
-        <group position={[0, -0.8, 0]}>
-          <ProjectDisplay images={images} />
-        </group>
-      </Canvas>
+      <SwipeCapturer>
+        <Canvas dpr={[1, 2]} camera={{ fov: 70, position: [0, 10, 15] }}>
+          <fog attach="fog" args={["#151515", 0, 5]} />
+          <ambientLight intensity={2} />
+          <Environment preset="city" />
+          {/* <Stars /> */}
+          {/* Align group in center of frame */}
+          <group position={[0, -0.8, 0]}>
+            <ProjectDisplay images={images} />
+          </group>
+        </Canvas>
+      </SwipeCapturer>
       <a.div style={styles}>
         <ProjectNavigator />
       </a.div>
-      {snap.currentProject && (
-        <ProjectDescription projects={projects} projectId={snap.currentProject.id} dialog={true} />
-      )}
-      <SwitchArrows />
+
+      <Dialog fullWidth maxWidth={"xl"} open={openDialog} onClose={handleCloseDialog}>
+        <ProjectContent project={getProject()} projects={projects} dialog />
+      </Dialog>
+
+      {/* <SwitchArrows /> */}
       <Indicators projects={images} />
     </div>
   );
@@ -158,9 +198,7 @@ const HorizontalDisplay: React.FC<HorizontalDisplayProps> = ({
 
       if (snap.currentProject?.id) {
         // Reset positions before moving focus
-        if (ref.current && ref.current?.children) {
-          resetProjectsPosition(images, ref.current.children);
-        }
+
         setClickedImage(groupRef.getObjectByName(snap.currentProject.id) ?? null);
       } else {
         // reset if arrow selection goes out of bounds
@@ -171,7 +209,8 @@ const HorizontalDisplay: React.FC<HorizontalDisplayProps> = ({
 
   // Animate camera on load and on new focus animation
   useFrame(state => {
-    state.camera.position.lerp(p, 0.05);
+    // Only animate the x position of the camera,
+    state.camera.position.lerp(new Vector3(p.x, state.camera.position.y, state.camera.position.z), 0.05);
     state.camera.quaternion.slerp(q, 0.1);
 
     // Only wobble camera if a project is not in focus
@@ -181,8 +220,8 @@ const HorizontalDisplay: React.FC<HorizontalDisplayProps> = ({
   });
 
   const handleOnClick = (target: ThreeEvent<MouseEvent> | null) => {
-    // if clicked outside or clicked on the same project, reset
-    if (!target || target.object.name === clickedImage?.name) {
+    // if clicked outside, reset
+    if (!target) {
       setClickedImage(null);
       state.currentProject = null;
       return;
@@ -203,8 +242,13 @@ const HorizontalDisplay: React.FC<HorizontalDisplayProps> = ({
         e.stopPropagation();
         handleOnClick(e);
       }}
-      onPointerMissed={() => {
-        handleOnClick(null);
+      onPointerMissed={e => {
+        if ((e.target as HTMLElement).classList.contains("clickable")) {
+          // If an element with the class clickable (buttons, and html), don't reset.
+          return;
+        } else {
+          handleOnClick(null);
+        }
       }}>
       {images.map(props => (
         <Frame focused={clickedImage?.name === props.id} key={props.url} {...props} />
@@ -338,6 +382,7 @@ interface FrameProps {
 
 const Frame: React.FC<FrameProps> = ({ url, id, focused, c = new THREE.Color(), mode = "horizontal", ...props }) => {
   const [hovered, setHovered] = useState(false);
+  const snap = useSnapshot(state);
   // const [rnd] = useState(() => Math.random());
   const image = useRef<THREE.Mesh<THREE.BufferGeometry, THREE.Material | THREE.Material[]>>(null);
   const frame = useRef<THREE.Mesh<THREE.BufferGeometry, THREE.Material | THREE.Material[]>>(null);
@@ -370,6 +415,7 @@ const Frame: React.FC<FrameProps> = ({ url, id, focused, c = new THREE.Color(), 
       }
     }
   });
+
   return (
     <group {...props}>
       <mesh ref={project}>
@@ -383,6 +429,37 @@ const Frame: React.FC<FrameProps> = ({ url, id, focused, c = new THREE.Color(), 
           <meshStandardMaterial color="#8f8f8f" metalness={0.5} roughness={0.5} envMapIntensity={2} />
         </mesh>
 
+        <mesh raycast={() => null}>
+          {focused && (
+            <Html
+              scale={100}
+              raycast={() => null}
+              position={[-GOLDENRATIO / 1.99, GOLDENRATIO / 1.277, 0.69]}
+              zIndexRange={[200, 300]}>
+              <div
+                className={`${focused ? "show-on-delay" : "hidden"} clickable`}
+                style={{
+                  position: "relative",
+                  display: "flex",
+                  alignItems: "end",
+                  opacity: 0,
+                  animation: "fade-in 0.4s ease-in forwards",
+                  animationDelay: "0", //"0.4s",
+                  transition: "height, width 0.1s ease-in",
+                  minWidth: "500px",
+
+                  // height: 256 * 1.3,
+                  // width: 453 * 1.31,
+                }}>
+                <ProjectResourceOverlay
+                  projects={JSON.parse(JSON.stringify(state.projectsData))}
+                  projectId={snap.currentProject?.id}
+                  dialog={true}
+                />
+              </div>
+            </Html>
+          )}
+        </mesh>
         <mesh ref={image} raycast={() => null} scale={[GOLDENRATIO, 1, 0.6]} position={[0, GOLDENRATIO / 2, 0.7]}>
           <planeBufferGeometry attach="geometry" />
           <meshBasicMaterial attach="material" map={imageTexture} fog={false} />
@@ -428,69 +505,69 @@ const Ground: React.FC<GroundProps> = ({ opacity }) => {
   );
 };
 
-const SwitchArrows: React.FC = () => {
-  const snap = useSnapshot(state);
+// const SwitchArrows: React.FC = () => {
+//   const snap = useSnapshot(state);
 
-  const changeProject = (back: boolean) => {
-    // convert from proxy to js-object
-    const projects = JSON.parse(JSON.stringify(snap.allProjects)) as ProjectImageType[];
+//   const changeProject = (back: boolean) => {
+//     // convert from proxy to js-object
+//     const projects = JSON.parse(JSON.stringify(snap.allProjects)) as ProjectImageType[];
 
-    const idx = projects.findIndex(proj => proj.id === snap.currentProject?.id);
+//     const idx = projects.findIndex(proj => proj.id === snap.currentProject?.id);
 
-    if (idx === -1) {
-      return;
-    }
+//     if (idx === -1) {
+//       return;
+//     }
 
-    const newIndex = idx + (back ? -1 : 1);
+//     const newIndex = idx + (back ? -1 : 1);
 
-    const newProject = state.allProjects?.[newIndex];
+//     const newProject = state.allProjects?.[newIndex];
 
-    state.currentProject = newProject ?? null;
-  };
+//     state.currentProject = newProject ?? null;
+//   };
 
-  return (
-    <>
-      {snap.currentProject !== null && snap.currentView === "horizontal" && (
-        <div
-          style={{
-            width: "100%",
-            position: "absolute",
-            left: "0",
-            top: "calc(50% - 50px)",
-            display: "flex",
-            justifyContent: "space-between",
-          }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              width: 60,
-              height: 60,
-              background: "gray",
-              borderRadius: "50%",
-            }}
-            onClick={() => changeProject(true)}>
-            <span style={{ pointerEvents: "none" }}>⇦</span>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              width: 60,
-              height: 60,
-              background: "gray",
-              borderRadius: "50%",
-            }}
-            onClick={() => changeProject(false)}>
-            <span style={{ pointerEvents: "none" }}>⇨</span>
-          </div>
-        </div>
-      )}
-    </>
-  );
-};
+//   return (
+//     <>
+//       {snap.currentProject !== null && snap.currentView === "horizontal" && (
+//         <div
+//           style={{
+//             width: "100%",
+//             position: "absolute",
+//             left: "0",
+//             top: "calc(50% - 50px)",
+//             display: "flex",
+//             justifyContent: "space-between",
+//           }}>
+//           <div
+//             style={{
+//               display: "flex",
+//               justifyContent: "center",
+//               alignItems: "center",
+//               width: 60,
+//               height: 60,
+//               background: "gray",
+//               borderRadius: "50%",
+//             }}
+//             onClick={() => changeProject(true)}>
+//             <span style={{ pointerEvents: "none" }}>⇦</span>
+//           </div>
+//           <div
+//             style={{
+//               display: "flex",
+//               justifyContent: "center",
+//               alignItems: "center",
+//               width: 60,
+//               height: 60,
+//               background: "gray",
+//               borderRadius: "50%",
+//             }}
+//             onClick={() => changeProject(false)}>
+//             <span style={{ pointerEvents: "none" }}>⇨</span>
+//           </div>
+//         </div>
+//       )}
+//     </>
+//   );
+// };
 
 interface IndicatorProps {
   projects: ProjectImageType[];
