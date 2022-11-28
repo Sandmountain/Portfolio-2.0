@@ -81,8 +81,16 @@ const ProjectImages: React.FC<Props> = ({ project, isExpanded, setIsExpanded }) 
         <Box component="div" sx={{ display: "flex", width: "100%", justifyContent: "end", zIndex: 1 }}>
           {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
           {/* @ts-ignore */}
-          <IconButton size="small" color="white" onClick={onExpandedClick}>
-            {isExpanded ? <KeyboardDoubleArrowLeft /> : <KeyboardDoubleArrowRight />}
+          <IconButton
+            size="small"
+            onClick={onExpandedClick}
+            color="inherit"
+            sx={{ "&:hover": { backgroundColor: "#FFFFFF10" } }}>
+            {isExpanded ? (
+              <KeyboardDoubleArrowLeft htmlColor="#FFFFFF" />
+            ) : (
+              <KeyboardDoubleArrowRight htmlColor="#FFFFFF" />
+            )}
           </IconButton>
         </Box>
 

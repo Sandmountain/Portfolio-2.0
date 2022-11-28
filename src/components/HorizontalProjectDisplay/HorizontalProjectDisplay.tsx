@@ -649,10 +649,10 @@ const Indicators: React.FC<IndicatorProps> = ({ projects }) => {
               <></>
             )}
             <IconButton
-              sx={{ height: "16px", width: "16px", padding: "2px" }}
-              color="white"
-              onClick={() => changeProject(true)}>
-              <ChevronLeft sx={{ height: "12px", width: "12px" }} />
+              sx={{ height: "16px", width: "16px", padding: "2px", "&:hover": { backgroundColor: "#FFFFFF10" } }}
+              onClick={() => changeProject(true)}
+              color="inherit">
+              <ChevronLeft sx={{ height: "12px", width: "12px" }} htmlColor="#FFFFFF" />
             </IconButton>
             {projects.map((proj, idx) => {
               return (
@@ -667,10 +667,10 @@ const Indicators: React.FC<IndicatorProps> = ({ projects }) => {
               );
             })}
             <IconButton
-              sx={{ height: "16px", width: "16px", padding: "2px" }}
-              color="white"
-              onClick={() => changeProject(false)}>
-              <ChevronRight sx={{ height: "12px", width: "12px" }} />
+              sx={{ height: "16px", width: "16px", padding: "2px", "&:hover": { backgroundColor: "#FFFFFF10" } }}
+              onClick={() => changeProject(false)}
+              color="inherit">
+              <ChevronRight sx={{ height: "12px", width: "12px" }} htmlColor="#FFFFFF" />
             </IconButton>
           </div>
         </div>

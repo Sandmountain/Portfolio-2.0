@@ -2,11 +2,6 @@ import { createTheme } from "@mui/material/styles";
 
 import { defaultTheme } from "./theme";
 
-const { palette } = createTheme();
-const { augmentColor } = palette;
-
-const createColor = (mainColor: string) => augmentColor({ color: { main: mainColor } });
-
 const theme = createTheme({
   palette: {
     primary: {
@@ -23,11 +18,6 @@ const theme = createTheme({
       white: defaultTheme.palette.white,
       black: defaultTheme.palette.black,
     },
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    white: createColor("#FFF"),
-    text: {},
   },
   spacing: 8,
   typography: {
