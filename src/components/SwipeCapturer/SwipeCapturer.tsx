@@ -14,9 +14,9 @@ const SwipeCapturer: React.FC<Props> = ({ children }) => {
   const [touchEnd, setTouchEnd] = useState(0);
 
   const snap = useSnapshot(state);
-  const minSwipeDistance = 100;
+  const minSwipeDistance = 50;
 
-  const isActive = snap && snap.currentProject && snap.currentView !== "grid";
+  const isActive = snap && snap.currentView !== "grid";
 
   const onTouchStart = (
     e: React.TouchEvent<HTMLDivElement> | React.MouseEvent<HTMLDivElement, MouseEvent>,
@@ -49,21 +49,21 @@ const SwipeCapturer: React.FC<Props> = ({ children }) => {
 
     const isLeftSwipe = distance > minSwipeDistance;
 
-    if (state.currentProject) {
-      if (isLeftSwipe) {
-        state.currentProject = state.allProjects?.[focusedIdx + 1] ?? null;
-        console.log("swiping left");
-      } else {
-        state.currentProject = state.allProjects?.[focusedIdx - 1] ?? null;
-        console.log("swiping right");
-      }
+    // if (state.currentProject) {
+    if (isLeftSwipe) {
+      state.currentProject = state.allProjects?.[focusedIdx + 1] ?? null;
+      setFocusedIdx(prev => prev + 1);
+    } else {
+      state.currentProject = state.allProjects?.[focusedIdx - 1] ?? null;
+      setFocusedIdx(prev => prev - 1);
     }
+    // }
 
     // add your conditional logic here
   };
 
   useEffect(() => {
-    if (snap.projectsData) {
+    if (snap.projectsData && snap.currentProject) {
       setFocusedIdx(snap.projectsData.findIndex(proj => proj.uuid === snap.currentProject?.id));
     }
   }, [snap.projectsData, snap.currentProject]);

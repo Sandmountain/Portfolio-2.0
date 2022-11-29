@@ -1,10 +1,9 @@
 /* eslint-disable jsx-a11y/alt-text */
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { animated as a, useSpring as useSprng } from "react-spring";
 
 import router from "next/router";
 
-import { ChevronLeft, ChevronRight } from "@mui/icons-material";
 import { Autocomplete, Dialog, Icon, IconButton, Popover, TextField } from "@mui/material";
 import { SpringValue, animated, useTransition } from "@react-spring/three";
 import { Environment, Html, MeshReflectorMaterial, Sky, Stars, useCursor } from "@react-three/drei";
@@ -19,6 +18,7 @@ import { Project, ProjectImageType } from "../../types/Project";
 import ProjectContent from "../Project/ProjectContent";
 import SwipeCapturer from "../SwipeCapturer/SwipeCapturer";
 import { ProjectResourceOverlay } from "./components/ProjectResourceOverlay";
+import { Indicators } from "./components/SlideIndicators";
 import { moveProjectFramesOnFocus, resetProjectsPosition } from "./handleProjects";
 
 const GOLDENRATIO = 16 / 9;
@@ -95,7 +95,6 @@ const HorizontalProjectDisplay: React.FC<HorizontalProjectDisplayProps> = ({ ima
           <fog attach="fog" args={["#151515", 0, 5]} />
           <ambientLight intensity={2} />
           <Environment preset="city" />
-          {/* <Stars /> */}
 
           {/* Align group in center of frame */}
           <group position={[0, -0.8, 0]}>
@@ -111,7 +110,6 @@ const HorizontalProjectDisplay: React.FC<HorizontalProjectDisplayProps> = ({ ima
         <ProjectContent project={getProject()} projects={projects} dialog />
       </Dialog>
 
-      {/* <SwitchArrows /> */}
       <Indicators projects={images} />
     </div>
   );
@@ -121,8 +119,9 @@ export default HorizontalProjectDisplay;
 
 interface HorizontalDisplayProps {
   images: ProjectImageType[];
+  v?: THREE.Vector3;
 }
-const ProjectDisplay: React.FC<HorizontalDisplayProps> = ({ images }) => {
+const ProjectDisplay: React.FC<HorizontalDisplayProps> = ({ images, v = new THREE.Vector3() }) => {
   const snap = useSnapshot(state);
 
   const transition = useTransition(snap.currentView, {
@@ -135,10 +134,12 @@ const ProjectDisplay: React.FC<HorizontalDisplayProps> = ({ images }) => {
   return transition(({ scale, opacity }, view) => (
     <>
       {view === "horizontal" && (
-        <animated.mesh scale={scale}>
-          <HorizontalDisplay images={images} />
-          {snap.currentView !== "grid" && <Ground opacity={opacity} />}
-        </animated.mesh>
+        <>
+          <animated.mesh scale={scale}>
+            <HorizontalDisplay images={images} />
+            <Ground />
+          </animated.mesh>
+        </>
       )}
       {view === "grid" && (
         <animated.mesh scale={scale}>
@@ -165,16 +166,25 @@ const HorizontalDisplay: React.FC<HorizontalDisplayProps> = ({
   const [clickedImage, setClickedImage] = useState<Object3D | null>(null);
   const snap = useSnapshot(state);
   const camera = useThree(state => state.camera);
+  const priorPosition = useRef<Vector3>();
   // get current viewport
   // const { width, height } = useThree(state => state.viewport);
 
   const ref = useRef<THREE.Group>(null);
   const clicked = useRef<Object3D | null>(null);
 
-  useEffect(() => {
-    clicked.current = clickedImage;
+  const setPriorPosition = (obj: THREE.Object3D<THREE.Event>) => {
+    const pos = new THREE.Vector3();
+    pos.copy(obj.position);
+    priorPosition.current = obj?.parent?.localToWorld(pos);
+  };
 
-    if (clicked?.current?.parent) {
+  useEffect(() => {
+    if (clickedImage?.parent) {
+      clicked.current = clickedImage;
+
+      if (!clicked.current.parent) return;
+
       clicked.current.parent.updateWorldMatrix(true, true);
       clicked.current.parent.localToWorld(p.set(0, GOLDENRATIO / 2, 3));
       clicked.current.parent.getWorldQuaternion(q);
@@ -184,10 +194,12 @@ const HorizontalDisplay: React.FC<HorizontalDisplayProps> = ({
         moveProjectFramesOnFocus(images, ref.current.children, clickedImage?.name ?? "");
       }
     } else {
+      // p.set(0, 0, 5.7);
+
       p.set(0, 0, 5.7);
       q.identity();
 
-      if (ref.current && ref.current?.children) {
+      if (ref.current && ref.current?.parent?.children) {
         // A project is enlarged when focused, other projects needs to move a tad.
         resetProjectsPosition(images, ref.current.children);
       }
@@ -200,8 +212,13 @@ const HorizontalDisplay: React.FC<HorizontalDisplayProps> = ({
 
       if (snap.currentProject?.id) {
         // Reset positions before moving focus
+        const obj = groupRef.getObjectByName(snap.currentProject.id);
 
-        setClickedImage(groupRef.getObjectByName(snap.currentProject.id) ?? null);
+        if (obj) {
+          setPriorPosition(obj);
+
+          setClickedImage(obj);
+        }
       } else {
         // reset if arrow selection goes out of bounds
         setClickedImage(null);
@@ -211,14 +228,26 @@ const HorizontalDisplay: React.FC<HorizontalDisplayProps> = ({
 
   // Animate camera on load and on new focus animation
   useFrame(state => {
-    // Only animate the x position of the camera,
-    state.camera.position.lerp(new Vector3(p.x, state.camera.position.y, state.camera.position.z), 0.05);
-    state.camera.quaternion.slerp(q, 0.1);
-
     // Only wobble camera if a project is not in focus
-    if (!clicked.current) {
-      state.camera.position.lerp(v.set(state.mouse.x / 4, state.mouse.y / 4, p.z), 0.05);
+    if (!snap.currentProject) {
+      if (priorPosition.current) {
+        state.camera.position.lerp(
+          new Vector3(
+            priorPosition.current.x + state.mouse.x / 6,
+            (state.camera.position.y + state.mouse.y / 6) / 4,
+            p.z,
+          ),
+          0.05,
+        );
+      } else {
+        state.camera.position.lerp(new Vector3(p.x + state.mouse.x / 6, p.y + state.mouse.y / 6, p.z), 0.05);
+      }
+
+      //state.camera.position.lerp(v.set(state.mouse.x / 4, state.mouse.y / 4, p.z), 0.05);
+    } else {
+      state.camera.position.lerp(new Vector3(p.x, state.camera.position.y, state.camera.position.z), 0.05);
     }
+    state.camera.quaternion.slerp(q, 0.2);
   });
 
   const handleOnClick = (target: ThreeEvent<MouseEvent> | null) => {
@@ -226,6 +255,7 @@ const HorizontalDisplay: React.FC<HorizontalDisplayProps> = ({
     if (!target) {
       setClickedImage(null);
       state.currentProject = null;
+      clicked.current = null;
       return;
     }
 
@@ -235,6 +265,8 @@ const HorizontalDisplay: React.FC<HorizontalDisplayProps> = ({
 
     setClickedImage(target.object);
     state.currentProject = project;
+
+    setPriorPosition(target.object);
   };
 
   return (
@@ -487,17 +519,17 @@ interface GroundProps {
 
 const Ground: React.FC<GroundProps> = ({ opacity }) => {
   return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.25, 0]}>
-      <planeGeometry args={[150, 150]} />
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.2, 0]}>
+      <planeGeometry args={[120, 120]} />
       <MeshReflectorMaterial
         blur={[300, 100]}
         resolution={2048}
-        mixBlur={1}
+        mixBlur={0.7}
         mixStrength={2.3}
         roughness={1}
         depthScale={1.5}
         minDepthThreshold={0.2}
-        maxDepthThreshold={1.5}
+        maxDepthThreshold={1.6}
         color="#101010"
         metalness={0.8}
         mirror={1}
@@ -505,213 +537,6 @@ const Ground: React.FC<GroundProps> = ({ opacity }) => {
         transparent
       />
     </mesh>
-  );
-};
-
-// const SwitchArrows: React.FC = () => {
-//   const snap = useSnapshot(state);
-
-//   const changeProject = (back: boolean) => {
-//     // convert from proxy to js-object
-//     const projects = JSON.parse(JSON.stringify(snap.allProjects)) as ProjectImageType[];
-
-//     const idx = projects.findIndex(proj => proj.id === snap.currentProject?.id);
-
-//     if (idx === -1) {
-//       return;
-//     }
-
-//     const newIndex = idx + (back ? -1 : 1);
-
-//     const newProject = state.allProjects?.[newIndex];
-
-//     state.currentProject = newProject ?? null;
-//   };
-
-//   return (
-//     <>
-//       {snap.currentProject !== null && snap.currentView === "horizontal" && (
-//         <div
-//           style={{
-//             width: "100%",
-//             position: "absolute",
-//             left: "0",
-//             top: "calc(50% - 50px)",
-//             display: "flex",
-//             justifyContent: "space-between",
-//           }}>
-//           <div
-//             style={{
-//               display: "flex",
-//               justifyContent: "center",
-//               alignItems: "center",
-//               width: 60,
-//               height: 60,
-//               background: "gray",
-//               borderRadius: "50%",
-//             }}
-//             onClick={() => changeProject(true)}>
-//             <span style={{ pointerEvents: "none" }}>⇦</span>
-//           </div>
-//           <div
-//             style={{
-//               display: "flex",
-//               justifyContent: "center",
-//               alignItems: "center",
-//               width: 60,
-//               height: 60,
-//               background: "gray",
-//               borderRadius: "50%",
-//             }}
-//             onClick={() => changeProject(false)}>
-//             <span style={{ pointerEvents: "none" }}>⇨</span>
-//           </div>
-//         </div>
-//       )}
-//     </>
-//   );
-// };
-
-interface IndicatorProps {
-  projects: ProjectImageType[];
-}
-
-const Indicators: React.FC<IndicatorProps> = ({ projects }) => {
-  const [hoveredProject, setHoveredProject] = useState<string>();
-  const [focusedIdx, setFocusedIdx] = useState<number>();
-
-  const snap = useSnapshot(state);
-
-  useEffect(() => {
-    setFocusedIdx(projects.findIndex(proj => proj.id === snap.currentProject?.id));
-  }, [projects, snap.currentProject]);
-
-  const onIndicatorClick = (index: number) => {
-    // Reset if same project is clicked again
-    if (state.currentProject?.id === projects[index].id) {
-      state.currentProject = null;
-    } else {
-      state.currentProject = projects[index];
-    }
-  };
-
-  const changeProject = (back: boolean) => {
-    // convert from proxy to js-object
-    const projects = JSON.parse(JSON.stringify(snap.allProjects)) as ProjectImageType[];
-
-    const idx = projects.findIndex(proj => proj.id === snap.currentProject?.id);
-
-    if (idx === -1) {
-      return;
-    }
-
-    const newIndex = idx + (back ? -1 : 1);
-
-    const newProject = state.allProjects?.[newIndex];
-
-    state.currentProject = newProject ?? null;
-  };
-
-  return (
-    <>
-      {state.currentProject && snap.currentView === "horizontal" && (
-        <div
-          style={{
-            position: "absolute",
-            width: "100%",
-            bottom: "10%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}>
-          <div
-            style={{
-              padding: 2,
-              opacity: 0.6,
-              gap: 4,
-              backgroundColor: "#cacaca20",
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "center",
-              alignItems: "center",
-            }}>
-            {hoveredProject || focusedIdx !== undefined ? (
-              <div
-                style={{
-                  position: "absolute",
-                  pointerEvents: "none",
-                  top: -30,
-                  whiteSpace: "nowrap",
-                }}>
-                <p style={{ fontSize: "0.8rem" }}>{hoveredProject ?? state.currentProject?.title}</p>
-              </div>
-            ) : (
-              <></>
-            )}
-            <IconButton
-              sx={{ height: "16px", width: "16px", padding: "2px", "&:hover": { backgroundColor: "#FFFFFF10" } }}
-              onClick={() => changeProject(true)}
-              color="inherit">
-              <ChevronLeft sx={{ height: "12px", width: "12px" }} htmlColor="#FFFFFF" />
-            </IconButton>
-            {projects.map((proj, idx) => {
-              return (
-                <IndicatorItem
-                  key={idx}
-                  project={proj}
-                  focused={focusedIdx === idx}
-                  index={idx}
-                  onIndicatorClick={onIndicatorClick}
-                  setHoveredProject={setHoveredProject}
-                />
-              );
-            })}
-            <IconButton
-              sx={{ height: "16px", width: "16px", padding: "2px", "&:hover": { backgroundColor: "#FFFFFF10" } }}
-              onClick={() => changeProject(false)}
-              color="inherit">
-              <ChevronRight sx={{ height: "12px", width: "12px" }} htmlColor="#FFFFFF" />
-            </IconButton>
-          </div>
-        </div>
-      )}
-    </>
-  );
-};
-
-interface IndicatorItemProps {
-  project: ProjectImageType;
-  focused: boolean;
-  index: number;
-  onIndicatorClick: (index: number) => void;
-  setHoveredProject: Dispatch<SetStateAction<string | undefined>>;
-}
-
-const IndicatorItem: React.FC<IndicatorItemProps> = ({
-  project,
-  focused,
-  index,
-  onIndicatorClick,
-  setHoveredProject,
-}) => {
-  // const theme = useTheme();
-
-  /* Add hover effect when creating SC of this */
-
-  return (
-    <div
-      onMouseEnter={() => setHoveredProject(project.title)}
-      onMouseLeave={() => setHoveredProject(undefined)}
-      onClick={() => onIndicatorClick(index)}
-      key={project.id}
-      style={{
-        cursor: "pointer",
-        width: 7,
-        height: 7,
-        borderRadius: "50%",
-        backgroundColor: focused ? "#00A6FB" : "rgba(255,255,255,.3)",
-      }}
-    />
   );
 };
 
