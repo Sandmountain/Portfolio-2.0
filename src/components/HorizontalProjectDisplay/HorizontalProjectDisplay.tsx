@@ -543,6 +543,8 @@ const Ground: React.FC<GroundProps> = ({ opacity }) => {
 const ProjectNavigator: React.FC = () => {
   const autoCompleteRef = useRef(null);
 
+  const snap = useSnapshot(state);
+
   const changeView = (view: "horizontal" | "grid") => {
     state.currentProject = null;
     state.currentView = view;
@@ -560,7 +562,26 @@ const ProjectNavigator: React.FC = () => {
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
 
-  // const filterProject = () => {};
+  const filterProjects = (options: Project[], { inputValue }: any) => {
+    const projects = options.filter(
+      item =>
+        item.title.includes(inputValue) ||
+        item.keywords.filter(keyword => keyword.toLowerCase().includes(inputValue.toLowerCase())).length > 0,
+    );
+
+    return projects;
+  };
+
+  const changeProject = (e: React.SyntheticEvent<Element, Event>, val: Project | null) => {
+    if (val) {
+      const projects = JSON.parse(JSON.stringify(snap.allProjects)) as ProjectImageType[];
+
+      const [project] = projects.filter(proj => proj.id === val.uuid);
+      if (project) {
+        state.currentProject = JSON.parse(JSON.stringify(project));
+      }
+    }
+  };
 
   return (
     <div
@@ -606,58 +627,20 @@ const ProjectNavigator: React.FC = () => {
           horizontal: "right",
         }}
         onClose={handleClose}>
-        <Autocomplete
-          ref={autoCompleteRef}
-          sx={{ width: 400 }}
-          size="small"
-          options={[{ label: "Forrest Gump", year: 1994 }]}
-          renderInput={params => (
-            <TextField {...params} placeholder="Search for projects, libraries or techniques" />
-          )}></Autocomplete>
+        {snap.projectsData && (
+          <Autocomplete
+            onChange={changeProject}
+            ref={autoCompleteRef}
+            filterOptions={filterProjects}
+            getOptionLabel={(opt: Project) => opt.title}
+            sx={{ width: 400 }}
+            size="small"
+            options={snap.projectsData as Project[]}
+            renderInput={params => (
+              <TextField {...params} placeholder="Search for projects, libraries or techniques" />
+            )}></Autocomplete>
+        )}
       </Popover>
     </div>
   );
 };
-
-/* 
-
-  // TODO: Tomorrow- create a new component or update Frame to have a "grid prop". It will either render the horizonal or the grid.
-  // Keep track of the current setting in valtio. Add some tools in the top right corner or something similar, 
-  // Should have a carousel icon, a grid icon and a search. 
-  // When a project is in focus: there should be a window showing the "short text" and some other info. 
-  // Should be accompanied with a button to read the full project - similar to what was done on the old portfolio.
-  // This should route to a new page viktorsandberg.com/project/<title>
-  // Make sure this actually works.
-
-  <Flex justifyContent="center">
-        <Box flexDirection="row">
-          {images.slice(0, 3).map((props, index) => (
-            <Box flexDirection="column" key={index}>
-              <Frame url={props.url} focused={clickedImage?.name === props.id} key={props.url} />
-            </Box>
-          ))}
-        </Box>
-        <Box flexDirection="row">
-          {images.slice(3, 6).map((props, index) => (
-            <Box flexDirection="column" key={index}>
-              <Frame url={props.url} focused={clickedImage?.name === props.id} key={props.url} />
-            </Box>
-          ))}
-        </Box>
-      </Flex>
-*/
-
-/*
-Centered box
- <div
-        style={{
-          position: "absolute",
-          width: "100%",
-          top: "50%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}>
-        <div style={{ backgroundColor: "red", height: 50, width: 50, position: "relative" }}></div>
-      </div>
-*/
