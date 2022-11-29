@@ -1,10 +1,10 @@
 /* eslint-disable jsx-a11y/alt-text */
-import { useEffect, useRef, useState } from "react";
+import { MutableRefObject, useEffect, useRef, useState } from "react";
 import { animated as a, useSpring as useSprng } from "react-spring";
 
 import router from "next/router";
 
-import { Autocomplete, Dialog, Icon, IconButton, Popover, TextField } from "@mui/material";
+import { Autocomplete, Button, Dialog, Icon, IconButton, Popover, TextField } from "@mui/material";
 import { SpringValue, animated, useTransition } from "@react-spring/three";
 import { Environment, Html, MeshReflectorMaterial, Sky, Stars, useCursor } from "@react-three/drei";
 import { Canvas, ThreeEvent, useFrame, useLoader, useThree } from "@react-three/fiber";
@@ -39,7 +39,7 @@ export const state = proxy<ProjectState>({
   currentProject: null,
   allProjects: null,
   projectsData: null,
-  currentView: "horizontal",
+  currentView: "grid",
   isProjectDialogOpen: false,
 });
 
@@ -310,6 +310,9 @@ const GridDisplay: React.FC<GridDisplayProps> = ({
   const ref = useRef<THREE.Group>(null);
   const clicked = useRef<Object3D | null>(null);
 
+  // Used to lock clicking project in Grid view because of weird raycast bug over HTML.
+  const lockedClick = useRef(false);
+
   useEffect(() => {
     clicked.current = clickedImage;
 
@@ -376,12 +379,19 @@ const GridDisplay: React.FC<GridDisplayProps> = ({
 
     // TODO: implement pagination here. Should probably be 20 per page.
     return (
-      <Flex justifyContent="center" alignItems="center" margin={-0.36}>
+      <Flex justifyContent="center" alignItems="center" margin={-0.36} raycast={() => null}>
         {result.map((val, rowId) => (
-          <Box key={rowId} flexDirection="row" width="auto" height="auto" flexGrow={1}>
+          <Box key={rowId} flexDirection="row" width="auto" height="auto" flexGrow={1} raycast={() => null}>
             {val.map(proj => (
-              <Box flexDirection="column" key={proj.id} margin={0.04}>
-                <Frame url={proj.url} focused={clickedImage?.name === proj.id} key={proj.id} id={proj.id} mode="grid" />
+              <Box flexDirection="column" key={proj.id} margin={0.04} raycast={() => null}>
+                <Frame
+                  url={proj.url}
+                  focused={clickedImage?.name === proj.id}
+                  key={proj.id}
+                  id={proj.id}
+                  lockedClick={lockedClick}
+                  mode="grid"
+                />
               </Box>
             ))}
           </Box>
@@ -397,10 +407,18 @@ const GridDisplay: React.FC<GridDisplayProps> = ({
       ref={ref}
       onClick={e => {
         e.stopPropagation();
-        handleOnClick(e);
+
+        if (!lockedClick.current) {
+          handleOnClick(e);
+        }
       }}
-      onPointerMissed={() => {
-        handleOnClick(null);
+      onPointerMissed={(e: MouseEvent) => {
+        if ((e.target as HTMLElement).classList.contains("clickable")) {
+          // If an element with the class clickable (buttons, and html), don't reset.
+          return;
+        } else {
+          handleOnClick(null);
+        }
       }}>
       {renderGrid(images)}
     </group>
@@ -412,10 +430,20 @@ interface FrameProps {
   focused: boolean;
   id: string;
   c?: THREE.Color;
+  // Using Ref to lock click if hovering the HTML.
+  lockedClick?: MutableRefObject<boolean>;
   mode?: "horizontal" | "grid";
 }
 
-const Frame: React.FC<FrameProps> = ({ url, id, focused, c = new THREE.Color(), mode = "horizontal", ...props }) => {
+const Frame: React.FC<FrameProps> = ({
+  url,
+  id,
+  focused,
+  c = new THREE.Color(),
+  mode = "horizontal",
+  lockedClick,
+  ...props
+}) => {
   const [hovered, setHovered] = useState(false);
   const snap = useSnapshot(state);
   // const [rnd] = useState(() => Math.random());
@@ -464,41 +492,38 @@ const Frame: React.FC<FrameProps> = ({ url, id, focused, c = new THREE.Color(), 
           <meshStandardMaterial color="#8f8f8f" metalness={0.5} roughness={0.5} envMapIntensity={2} />
         </mesh>
 
-        <mesh raycast={() => null}>
-          {focused && (
-            <Html
-              scale={100}
-              raycast={() => null}
-              position={[-GOLDENRATIO / 1.99, GOLDENRATIO / 1.277, 0.69]}
-              zIndexRange={[200, 300]}>
-              <div
-                className={`${focused ? "show-on-delay" : "hidden"} clickable`}
-                style={{
-                  position: "relative",
-                  display: "flex",
-                  alignItems: "end",
-                  opacity: 0,
-                  animation: "fade-in 0.4s ease-in forwards",
-                  animationDelay: "0", //"0.4s",
-                  transition: "height, width 0.1s ease-in",
-                  minWidth: "500px",
-
-                  // height: 256 * 1.3,
-                  // width: 453 * 1.31,
-                }}>
-                <ProjectResourceOverlay
-                  projects={JSON.parse(JSON.stringify(state.projectsData))}
-                  projectId={snap.currentProject?.id}
-                  dialog={true}
-                />
-              </div>
-            </Html>
-          )}
-        </mesh>
         <mesh ref={image} raycast={() => null} scale={[GOLDENRATIO, 1, 0.6]} position={[0, GOLDENRATIO / 2, 0.7]}>
           <planeBufferGeometry attach="geometry" />
           <meshBasicMaterial attach="material" map={imageTexture} fog={false} />
         </mesh>
+        {focused && (
+          <Html
+            scale={100}
+            raycast={() => null}
+            position={[-GOLDENRATIO / 1.99, GOLDENRATIO / 1.277, 0.69]}
+            zIndexRange={[200, 300]}>
+            <div
+              onMouseEnter={() => (lockedClick.current = true)}
+              onMouseLeave={() => (lockedClick.current = false)}
+              className={`${focused ? "show-on-delay" : "hidden"} clickable`}
+              style={{
+                position: "relative",
+                display: "flex",
+                alignItems: "end",
+                opacity: 0,
+                animation: "fade-in 0.4s ease-in forwards",
+                animationDelay: "0", //"0.4s",
+                transition: "height, width 0.1s ease-in",
+                minWidth: "500px",
+              }}>
+              <ProjectResourceOverlay
+                projects={JSON.parse(JSON.stringify(state.projectsData))}
+                projectId={snap.currentProject?.id}
+                dialog={true}
+              />
+            </div>
+          </Html>
+        )}
 
         <mesh
           ref={frame}
