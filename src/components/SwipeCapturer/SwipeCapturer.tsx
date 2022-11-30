@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { debounce } from "@mui/material";
 import { useSnapshot } from "valtio";
+import { subscribeKey } from "valtio/utils";
 
 import { state } from "../HorizontalProjectDisplay/HorizontalProjectDisplay";
 
@@ -9,12 +11,14 @@ interface Props {
 }
 
 const SwipeCapturer: React.FC<Props> = ({ children }) => {
-  const [focusedIdx, setFocusedIdx] = useState<number>(0);
+  //const [focusedIdx, setFocusedIdx] = useState<number>(0);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
 
   const snap = useSnapshot(state);
   const minSwipeDistance = 50;
+
+  const focusedIdx = useRef<number>(-1);
 
   const isActive = snap && snap.currentView !== "grid";
 
@@ -49,36 +53,58 @@ const SwipeCapturer: React.FC<Props> = ({ children }) => {
 
     const isLeftSwipe = distance > minSwipeDistance;
 
-    // if (state.currentProject) {
     if (isLeftSwipe) {
-      state.currentProject = state.allProjects?.[focusedIdx + 1] ?? null;
-      setFocusedIdx(prev => prev + 1);
-    } else {
-      state.currentProject = state.allProjects?.[focusedIdx - 1] ?? null;
-      setFocusedIdx(prev => prev - 1);
-    }
-    // }
+      state.currentProject = state.allProjects?.[focusedIdx.current + 1] ?? null;
 
-    // add your conditional logic here
+      focusedIdx.current = focusedIdx.current + 1;
+    } else {
+      state.currentProject = state.allProjects?.[focusedIdx.current - 1] ?? null;
+      focusedIdx.current = focusedIdx.current + 1;
+    }
   };
 
   useEffect(() => {
     if (snap.projectsData && snap.currentProject) {
-      setFocusedIdx(snap.projectsData.findIndex(proj => proj.uuid === snap.currentProject?.id));
+      focusedIdx.current = snap.projectsData.findIndex(proj => proj.uuid === snap.currentProject?.id);
     }
   }, [snap.projectsData, snap.currentProject]);
 
-  // const onIndicatorClick = (index: number) => {
-  //   // Reset if same project is clicked again
-  //   if (state.currentProject?.id === projects[index].id) {
-  //     state.currentProject = null;
-  //   } else {
-  //     state.currentProject = projects[index];
-  //   }
-  // };
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const onScrollBounce = useCallback(
+    (e: WheelEvent) => {
+      if (state.currentView === "grid" || state.isProjectDialogOpen) return;
+
+      if (e.deltaY > 0) {
+        state.currentProject = state.allProjects?.[focusedIdx.current + 1] ?? null;
+        focusedIdx.current = focusedIdx.current + 1;
+      } else {
+        state.currentProject = state.allProjects?.[focusedIdx.current - 1] ?? null;
+        focusedIdx.current = focusedIdx.current - 1;
+      }
+    },
+    [focusedIdx],
+  );
+
+  const onScroll = useMemo(() => debounce(onScrollBounce, 100), [onScrollBounce]);
+
+  useEffect(() => {
+    window.addEventListener("wheel", onScroll);
+    return () => {
+      window.removeEventListener("wheel", onScroll);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  subscribeKey(state, "currentView", () => {
+    if (state.currentView === "horizontal") {
+      focusedIdx.current = -1;
+    }
+  });
 
   return (
     <div
+      ref={scrollRef}
       style={{ height: "100%", width: "100%" }}
       onMouseDown={e => isActive && onTouchStart(e, false)}
       onMouseMove={e => isActive && onTouchMove(e, false)}
