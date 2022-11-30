@@ -4,9 +4,9 @@ import { animated as a, useSpring as useSprng } from "react-spring";
 
 import router from "next/router";
 
-import { Autocomplete, Button, Dialog, Icon, IconButton, Popover, TextField } from "@mui/material";
+import { Autocomplete, Dialog, Icon, IconButton, Popover, TextField } from "@mui/material";
 import { SpringValue, animated, useTransition } from "@react-spring/three";
-import { Environment, Html, MeshReflectorMaterial, Sky, Stars, useCursor } from "@react-three/drei";
+import { Environment, Html, MeshReflectorMaterial, useCursor } from "@react-three/drei";
 import { Canvas, ThreeEvent, useFrame, useLoader, useThree } from "@react-three/fiber";
 import { Box, Flex } from "@react-three/flex";
 import * as THREE from "three";
@@ -39,7 +39,7 @@ export const state = proxy<ProjectState>({
   currentProject: null,
   allProjects: null,
   projectsData: null,
-  currentView: "grid",
+  currentView: "horizontal",
   isProjectDialogOpen: false,
 });
 
@@ -164,6 +164,7 @@ const HorizontalDisplay: React.FC<HorizontalDisplayProps> = ({
   v = new THREE.Vector3(),
 }) => {
   const [clickedImage, setClickedImage] = useState<Object3D | null>(null);
+
   const snap = useSnapshot(state);
   const camera = useThree(state => state.camera);
   const priorPosition = useRef<Vector3>();
@@ -243,7 +244,7 @@ const HorizontalDisplay: React.FC<HorizontalDisplayProps> = ({
         state.camera.position.lerp(new Vector3(p.x + state.mouse.x / 6, p.y + state.mouse.y / 6, p.z), 0.05);
       }
 
-      //state.camera.position.lerp(v.set(state.mouse.x / 4, state.mouse.y / 4, p.z), 0.05);
+      state.camera.position.lerp(v.set(state.mouse.x / 4, state.mouse.y / 4, p.z), 0.05);
     } else {
       state.camera.position.lerp(new Vector3(p.x, state.camera.position.y, state.camera.position.z), 0.05);
     }
@@ -285,7 +286,7 @@ const HorizontalDisplay: React.FC<HorizontalDisplayProps> = ({
         }
       }}>
       {images.map(props => (
-        <Frame focused={clickedImage?.name === props.id} key={props.url} {...props} />
+        <Frame key={props.url} focused={clickedImage?.name === props.id} {...props} />
       ))}
     </group>
   );
@@ -454,7 +455,7 @@ const Frame: React.FC<FrameProps> = ({
   const imageTexture = useLoader(THREE.TextureLoader, url);
 
   useCursor(hovered);
-  useFrame(() => {
+  useFrame((_state, delta) => {
     if (image?.current?.material) {
       // TODO: doesn't work, look into how to move the zoom level on the basic material.
       // const zoomLevel = 1.2 - Math.sin(rnd * 10000 + state.clock.elapsedTime / 6) / 7;
@@ -464,21 +465,26 @@ const Frame: React.FC<FrameProps> = ({
     }
 
     if (project?.current?.scale && mode !== "grid") {
-      project.current.scale.x = THREE.MathUtils.lerp(project.current.scale.x, focused ? 1.2 : 1, 0.4);
-      project.current.scale.y = THREE.MathUtils.lerp(project.current.scale.y, focused ? 1.2 : 1, 0.4);
+      // Make project scale slowly instead of immediately
+      if (focused) {
+        project.current.scale.x = THREE.MathUtils.damp(project.current.scale.x, 1.2, 6, delta);
+        project.current.scale.y = THREE.MathUtils.damp(project.current.scale.y, 1.2, 6, delta);
+      } else {
+        project.current.scale.x = THREE.MathUtils.damp(project.current.scale.x, 1, 6, delta);
+        project.current.scale.y = THREE.MathUtils.damp(project.current.scale.y, 1, 6, delta);
+      }
     }
 
     if (frame.current) {
       if (focused && !hovered) {
-        (frame.current.material as unknown as THREE.MeshBasicMaterial).color.lerp(c.set("#00A6FB"), 0.1);
+        (frame.current.material as unknown as THREE.MeshBasicMaterial)?.color.lerp(c.set("#00A6FB"), 0.1);
       } else if (!focused && !hovered) {
-        (frame.current.material as unknown as THREE.MeshBasicMaterial).color.lerp(c.set("white"), 0.1);
+        (frame.current.material as unknown as THREE.MeshBasicMaterial)?.color.lerp(c.set("white"), 0.1);
       } else {
-        (frame.current.material as unknown as THREE.MeshBasicMaterial).color.lerp(c.set("#00A6FB"), 0.1);
+        (frame.current.material as unknown as THREE.MeshBasicMaterial)?.color.lerp(c.set("#00A6FB"), 0.1);
       }
     }
   });
-
   return (
     <group {...props}>
       <mesh ref={project}>
@@ -503,8 +509,12 @@ const Frame: React.FC<FrameProps> = ({
             position={[-GOLDENRATIO / 1.99, GOLDENRATIO / 1.277, 0.69]}
             zIndexRange={[200, 300]}>
             <div
-              onMouseEnter={() => (lockedClick.current = true)}
-              onMouseLeave={() => (lockedClick.current = false)}
+              onMouseEnter={() => {
+                if (lockedClick?.current) lockedClick.current = true;
+              }}
+              onMouseLeave={() => {
+                if (lockedClick?.current) lockedClick.current = false;
+              }}
               className={`${focused ? "show-on-delay" : "hidden"} clickable`}
               style={{
                 position: "relative",

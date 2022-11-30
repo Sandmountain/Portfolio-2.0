@@ -1,7 +1,7 @@
+import { createContext, useContext } from "react";
+
 import { makeAutoObservable, toJS } from "mobx";
 import getUuid from "uuid-by-string";
-
-import { createContext, useContext } from "react";
 
 import { getImages } from "../components/HorizontalProjectDisplay/handleProjects";
 import { ContentfulResponse, Project } from "../types/Project";
