@@ -1,6 +1,6 @@
 import React, { Suspense } from "react";
 
-import ProjectContent from "../../src/components/Project/ProjectContent";
+import ProjectContent from "../../src/components/PortfolioDisplay/ProjectDialog/ProjectContent";
 import { Project as ProjectType } from "../../src/types/Project";
 import { initContentful } from "../../src/utils/contentful/contentful";
 

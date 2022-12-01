@@ -1,6 +1,5 @@
 import { createClient } from "contentful";
 
-import Project from "../../components/Project/Project";
 import { ContentfulResponse } from "../../types/Project";
 
 export const initContentful = async (query?: string): Promise<ContentfulResponse> => {
