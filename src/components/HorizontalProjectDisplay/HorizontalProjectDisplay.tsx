@@ -121,7 +121,7 @@ interface HorizontalDisplayProps {
   images: ProjectImageType[];
   v?: THREE.Vector3;
 }
-const ProjectDisplay: React.FC<HorizontalDisplayProps> = ({ images, v = new THREE.Vector3() }) => {
+const ProjectDisplay: React.FC<HorizontalDisplayProps> = ({ images }) => {
   const snap = useSnapshot(state);
 
   const transition = useTransition(snap.currentView, {
@@ -131,7 +131,7 @@ const ProjectDisplay: React.FC<HorizontalDisplayProps> = ({ images, v = new THRE
     config: { mass: 100, duration: 100 },
   });
 
-  return transition(({ scale, opacity }, view) => (
+  return transition(({ scale }, view) => (
     <>
       {view === "horizontal" && (
         <>
@@ -161,7 +161,6 @@ const HorizontalDisplay: React.FC<HorizontalDisplayProps> = ({
   images,
   q = new THREE.Quaternion(),
   p = new THREE.Vector3(),
-  v = new THREE.Vector3(),
 }) => {
   const [clickedImage, setClickedImage] = useState<Object3D | null>(null);
 
