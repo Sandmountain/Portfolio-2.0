@@ -73,7 +73,7 @@ const SwipeCapturer: React.FC<Props> = ({ children }) => {
 
   const onScrollBounce = useCallback(
     (e: WheelEvent) => {
-      if (state.currentView === "grid" || state.isProjectDialogOpen) return;
+      if (state.currentView === "grid" || state.isProjectDialogOpen || state.isSearchFocused) return;
 
       if (e.deltaY > 0) {
         state.currentProject = state.allProjects?.[focusedIdx.current + 1] ?? null;

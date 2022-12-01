@@ -103,7 +103,12 @@ export const ProjectNavigator: React.FC = () => {
             size="small"
             options={snap.projectsData as Project[]}
             renderInput={params => (
-              <TextField {...params} placeholder="Search for projects, libraries or techniques" />
+              <TextField
+                {...params}
+                onFocus={() => (state.isSearchFocused = true)}
+                onBlur={() => (state.isSearchFocused = false)}
+                placeholder="Search for projects, libraries or techniques"
+              />
             )}></Autocomplete>
         )}
       </Popover>
