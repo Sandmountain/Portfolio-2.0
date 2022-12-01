@@ -189,35 +189,22 @@ const HorizontalDisplay: React.FC<HorizontalDisplayProps> = ({
       clicked.current.parent.updateWorldMatrix(true, true);
       clicked.current.parent.localToWorld(p.set(0, GOLDENRATIO / 2, 3));
       clicked.current.parent.getWorldQuaternion(q);
-
-      if (ref.current && ref.current?.children) {
-        // A project is enlarged when focused, other projects needs to move a tad.
-        moveProjectFramesOnFocus(images, ref.current.children, clickedImage?.name ?? "");
-      }
     } else {
-      // p.set(0, 0, 5.7);
-
       p.set(0, 0, 5.7);
       q.identity();
-
-      if (ref.current && ref.current?.parent?.children) {
-        // A project is enlarged when focused, other projects needs to move a tad.
-        resetProjectsPosition(images, ref.current.children);
-      }
     }
   }, [camera, clickedImage, images, p, q]);
 
   useEffect(() => {
-    if (snap.currentProject?.id !== clickedImage?.name) {
+    if (state.currentProject?.id !== clickedImage?.name) {
       const groupRef = (ref.current ?? null) as unknown as Object3D<Event>;
 
-      if (snap.currentProject?.id) {
+      if (state.currentProject?.id) {
         // Reset positions before moving focus
-        const obj = groupRef.getObjectByName(snap.currentProject.id);
+        const obj = groupRef.getObjectByName(state.currentProject.id);
 
         if (obj) {
           setPriorPosition(obj);
-
           setClickedImage(obj);
         }
       } else {
@@ -228,7 +215,7 @@ const HorizontalDisplay: React.FC<HorizontalDisplayProps> = ({
   }, [clickedImage?.name, images, snap.currentProject]);
 
   // Animate camera on load and on new focus animation
-  useFrame(state => {
+  useFrame((state, delta) => {
     // Only wobble camera if a project is not in focus
     if (!snap.currentProject) {
       if (priorPosition.current) {
@@ -243,12 +230,23 @@ const HorizontalDisplay: React.FC<HorizontalDisplayProps> = ({
       } else {
         state.camera.position.lerp(new Vector3(p.x + state.mouse.x / 6, p.y + state.mouse.y / 6, p.z), 0.05);
       }
-
-      state.camera.position.lerp(v.set(state.mouse.x / 4, state.mouse.y / 4, p.z), 0.05);
     } else {
       state.camera.position.lerp(new Vector3(p.x, state.camera.position.y, state.camera.position.z), 0.05);
     }
     state.camera.quaternion.slerp(q, 0.2);
+
+    // Move image's position smoothly when a project is in focus and when resetting.
+    // This is called on every frame and goes through all projects. Could be very cpu intensive.
+    if (clickedImage?.parent) {
+      if (ref.current && ref.current?.children) {
+        // A project is enlarged when focused, other projects needs to move a tad.
+        moveProjectFramesOnFocus(images, ref.current.children, clickedImage?.name ?? "", delta);
+      }
+    } else {
+      if (ref.current && ref.current?.parent?.children) {
+        resetProjectsPosition(images, ref.current.children, delta);
+      }
+    }
   });
 
   const handleOnClick = (target: ThreeEvent<MouseEvent> | null) => {
