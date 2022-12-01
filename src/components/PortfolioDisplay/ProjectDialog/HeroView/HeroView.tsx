@@ -92,9 +92,9 @@ const HeroView: React.FC<Props> = ({ project, isInView, dialog, active = dialog 
                 <Typography variant="overline" style={{ lineHeight: 1, color: "white" }}>
                   Swipe down
                 </Typography>
-                <div className="bouncing-arrow">
+                <Box component="div" className="bouncing-arrow">
                   <KeyboardArrowDownIcon viewBox="0 0 20 20" htmlColor="#FFF" />
-                </div>
+                </Box>
               </Box>
             )}
             <Box component="div" sx={{ display: "flex", justifyContent: "end", flex: 1 }}>
@@ -111,13 +111,7 @@ const HeroView: React.FC<Props> = ({ project, isInView, dialog, active = dialog 
             </Box>
           </Box>
         </Box>
-        <div style={{ height: "100%", width: "100%" }}>
-          {active && (
-            <ThreeLoader>
-              <Laptop project={project} />{" "}
-            </ThreeLoader>
-          )}
-        </div>
+        <div style={{ height: "100%", width: "100%" }}>{active && <Laptop project={project} />}</div>
       </Box>
     </Box>
   );
