@@ -1,4 +1,4 @@
-import React, { MutableRefObject, useRef, useState } from "react";
+import React, { Dispatch, MutableRefObject, SetStateAction, useRef, useState } from "react";
 
 import { Html, useCursor } from "@react-three/drei";
 import { useFrame, useLoader } from "@react-three/fiber";
@@ -13,8 +13,7 @@ interface FrameProps {
   focused: boolean;
   id: string;
   c?: THREE.Color;
-  // Using Ref to lock click if hovering the HTML.
-  lockedClick?: MutableRefObject<boolean>;
+
   mode?: "horizontal" | "grid";
 }
 
@@ -24,7 +23,7 @@ export const ProjectFrame: React.FC<FrameProps> = ({
   focused,
   c = new THREE.Color(),
   mode = "horizontal",
-  lockedClick,
+
   ...props
 }) => {
   const [hovered, setHovered] = useState(false);
@@ -67,6 +66,7 @@ export const ProjectFrame: React.FC<FrameProps> = ({
       }
     }
   });
+
   return (
     <group {...props}>
       <mesh ref={project}>
@@ -92,10 +92,10 @@ export const ProjectFrame: React.FC<FrameProps> = ({
             zIndexRange={[200, 300]}>
             <div
               onMouseEnter={() => {
-                if (lockedClick?.current) lockedClick.current = true;
+                if (snap.currentView === "grid") state.isFrameLocked = true;
               }}
               onMouseLeave={() => {
-                if (lockedClick?.current) lockedClick.current = false;
+                if (snap.currentView === "grid") state.isFrameLocked = false;
               }}
               className={`${focused ? "show-on-delay" : "hidden"} clickable`}
               style={{

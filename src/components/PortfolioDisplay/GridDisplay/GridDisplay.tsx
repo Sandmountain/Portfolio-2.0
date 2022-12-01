@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 
 import { ThreeEvent, useFrame } from "@react-three/fiber";
 import { Box, Flex } from "@react-three/flex";
-import THREE, { Object3D } from "three";
+import * as THREE from "three";
+import { Object3D } from "three";
 import { useSnapshot } from "valtio";
 
 import { ProjectImageType } from "../../../types/Project";
@@ -67,6 +68,7 @@ export const GridDisplay: React.FC<GridDisplayProps> = ({
     if (!target || target.object.name === clickedImage?.name) {
       setClickedImage(null);
       state.currentProject = null;
+      state.isFrameLocked = false;
       return;
     }
 
@@ -109,7 +111,6 @@ export const GridDisplay: React.FC<GridDisplayProps> = ({
                   focused={clickedImage?.name === proj.id}
                   key={proj.id}
                   id={proj.id}
-                  lockedClick={lockedClick}
                   mode="grid"
                 />
               </Box>
@@ -128,7 +129,7 @@ export const GridDisplay: React.FC<GridDisplayProps> = ({
       onClick={e => {
         e.stopPropagation();
 
-        if (!lockedClick.current) {
+        if (!state.isFrameLocked) {
           handleOnClick(e);
         }
       }}

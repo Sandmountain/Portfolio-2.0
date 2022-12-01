@@ -29,6 +29,7 @@ interface ProjectState {
   projectsData: null | Project[];
   isProjectDialogOpen: boolean;
   isSearchFocused: boolean;
+  isFrameLocked: boolean;
 }
 
 export const state = proxy<ProjectState>({
@@ -39,6 +40,7 @@ export const state = proxy<ProjectState>({
   currentView: "horizontal",
   isProjectDialogOpen: false,
   isSearchFocused: false,
+  isFrameLocked: false,
 });
 
 interface PortfolioView {
