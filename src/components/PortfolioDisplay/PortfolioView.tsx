@@ -5,7 +5,7 @@ import { animated as a, useSpring as useSprng } from "react-spring";
 import router from "next/router";
 
 import { Dialog } from "@mui/material";
-import { Environment } from "@react-three/drei";
+import { Cloud, Environment, Loader } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { proxy, useSnapshot } from "valtio";
 import { subscribeKey } from "valtio/utils";
@@ -91,16 +91,21 @@ const PortfolioView: React.FC<PortfolioView> = ({ images, projects }) => {
   return (
     <div id="canvas-container" style={{ width: "100%", height: "100%", position: "relative" }}>
       <SwipeCapturer>
-        <Canvas dpr={[1, 2]} camera={{ fov: 70, position: [0, 10, 15] }}>
-          <fog attach="fog" args={["#151515", 0, 5]} />
-          <ambientLight intensity={2} />
-          <Environment preset="city" />
+        <Canvas dpr={[1, 2]} camera={{ fov: 70, position: [0, 10, 50] }}>
+          <fog attach="fog" args={["black", 5, 20]} />
+          <ambientLight intensity={1} />
+
+          <Environment preset="city" blur={10} far={20} />
+          <group position={[0, 0, -5]} scale={[5, 5, 1]}>
+            <Cloud width={15} opacity={0.2} speed={0.1}></Cloud>
+          </group>
 
           {/* Align group in center of frame */}
           <group position={[0, -0.8, 0]}>
             <ProjectDisplaySwitcher images={images} />
           </group>
         </Canvas>
+        <Loader />
       </SwipeCapturer>
       <a.div style={styles}>
         <ProjectNavigator />
