@@ -27,8 +27,9 @@ export const ProjectFrame: React.FC<FrameProps> = ({
   ...props
 }) => {
   const [hovered, setHovered] = useState(false);
-  // const [rnd] = useState(() => Math.random());
+  const [rnd] = useState(() => Math.random());
   const image = useRef<THREE.Mesh<THREE.BufferGeometry, THREE.Material | THREE.Material[]>>(null);
+  const imgTextRef = useRef<THREE.MeshBasicMaterial>(null);
   const frame = useRef<THREE.Mesh<THREE.BufferGeometry, THREE.Material | THREE.Material[]>>(null);
   const project = useRef<THREE.Mesh<THREE.BufferGeometry, THREE.Material | THREE.Material[]>>(null);
 
@@ -37,22 +38,26 @@ export const ProjectFrame: React.FC<FrameProps> = ({
 
   useCursor(hovered);
   useFrame((_state, delta) => {
-    if (image?.current?.material) {
-      // TODO: doesn't work, look into how to move the zoom level on the basic material.
-      // const zoomLevel = 1.2 - Math.sin(rnd * 10000 + state.clock.elapsedTime / 6) / 7;
-      // (image.current.material as unknown as THREE.PerspectiveCamera).zoom = zoomLevel;
-      // image.current.scale.x = THREE.MathUtils.lerp(image.current.scale.x, GOLDENRATIO * (hovered ? 0.99 : 1), 0.4);
-      // image.current.scale.y = THREE.MathUtils.lerp(image.current.scale.y, 1 * (hovered ? 0.98 : 1), 0.4);
-    }
-
     if (project?.current?.scale && mode !== "grid") {
       // Make project scale slowly instead of immediately
       if (focused) {
         project.current.scale.x = THREE.MathUtils.damp(project.current.scale.x, 1.2, 6, delta);
         project.current.scale.y = THREE.MathUtils.damp(project.current.scale.y, 1.2, 6, delta);
+
+        const zoomLevel = 0.9 - Math.sin(rnd * 10000 + _state.clock.elapsedTime / 6) / 12;
+
+        imgTextRef.current?.map?.repeat.set(
+          THREE.MathUtils.damp(imgTextRef.current?.map?.repeat.x, zoomLevel, 6, delta),
+          THREE.MathUtils.damp(imgTextRef.current?.map?.repeat.y, zoomLevel, 6, delta),
+        );
       } else {
         project.current.scale.x = THREE.MathUtils.damp(project.current.scale.x, 1, 6, delta);
         project.current.scale.y = THREE.MathUtils.damp(project.current.scale.y, 1, 6, delta);
+
+        imgTextRef.current?.map?.repeat.set(
+          THREE.MathUtils.damp(imgTextRef.current?.map?.repeat.x, 1, 6, delta),
+          THREE.MathUtils.damp(imgTextRef.current?.map?.repeat.y, 1, 6, delta),
+        );
       }
     }
 
@@ -82,7 +87,7 @@ export const ProjectFrame: React.FC<FrameProps> = ({
 
         <mesh ref={image} raycast={() => null} scale={[GOLDENRATIO, 1, 0.6]} position={[0, GOLDENRATIO / 2, 0.7]}>
           <planeBufferGeometry attach="geometry" />
-          <meshBasicMaterial attach="material" map={imageTexture} fog={false} />
+          <meshBasicMaterial ref={imgTextRef} attach="material" map={imageTexture} fog={false} />
         </mesh>
         {focused && (
           <Html

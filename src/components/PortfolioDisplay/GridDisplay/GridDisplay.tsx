@@ -31,9 +31,6 @@ export const GridDisplay: React.FC<GridDisplayProps> = ({
   const ref = useRef<THREE.Group>(null);
   const clicked = useRef<Object3D | null>(null);
 
-  // Used to lock clicking project in Grid view because of weird raycast bug over HTML.
-  const lockedClick = useRef(false);
-
   useEffect(() => {
     clicked.current = clickedImage;
 
