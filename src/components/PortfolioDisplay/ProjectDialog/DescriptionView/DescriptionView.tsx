@@ -17,7 +17,7 @@ interface Props {
 }
 
 const DescriptionView: React.FC<Props> = ({ project, isInView }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
 
   return (
     <Box
@@ -112,13 +112,13 @@ const DescriptionView: React.FC<Props> = ({ project, isInView }) => {
               justifyContent: "center",
               flex: 1,
             }}>
-            <Box component="div" sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Box component="div" sx={{ display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
               <Typography variant="overline" fontSize={10} fontWeight="300" lineHeight={1.2} letterSpacing={1.1}>
-                title: {project.title}
+               {project.title}
               </Typography>
             </Box>
 
-            <Typography variant="overline" fontWeight="300" fontSize={10} lineHeight={1.2} letterSpacing={1.1}>
+            <Typography variant="body2" fontWeight="300" fontSize={10} lineHeight={1.2} letterSpacing={0.9} sx={{textTransform: "capitalize"}}>
               Project Size: {project.projectSize}
             </Typography>
           </Box>
