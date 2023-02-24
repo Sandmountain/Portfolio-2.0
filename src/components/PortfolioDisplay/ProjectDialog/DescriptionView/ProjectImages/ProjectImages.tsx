@@ -111,8 +111,7 @@ const ProjectImages: React.FC<Props> = ({ project, isExpanded, setIsExpanded }) 
             component="div"
             sx={{
               display: "flex",
-              flex: 0.8,
-              height: "auto",
+             flex: 1,
               position: "relative",
             }}>
             <Image
@@ -121,14 +120,14 @@ const ProjectImages: React.FC<Props> = ({ project, isExpanded, setIsExpanded }) 
               onClick={() => onFocusedImageClick()}
               style={{ cursor: "pointer" }}
               layout="fill"
-              objectFit="cover"
+              objectFit="contain"
               src={`http:${fullScreenImage.fields.file.url}`}
               alt={fullScreenImage.fields.title}
             />
           </Box>
-          <Paper component="div" elevation={5} sx={{ width: "100%", padding: theme.spacing(2), flex: 0.2 }}>
+          <Paper component="div" elevation={5} sx={{ width: "100%", padding: theme.spacing(2), flex: 0.1 }}>
             <Typography variant="subtitle2" sx={{ mt: theme.spacing(1) }}>
-              <strong>{fullScreenImage.fields.title}</strong>
+              <b>{fullScreenImage.fields.title}</b>
             </Typography>
             <Typography variant="caption">{fullScreenImage.fields.description}</Typography>
           </Paper>
@@ -139,26 +138,29 @@ const ProjectImages: React.FC<Props> = ({ project, isExpanded, setIsExpanded }) 
           sx={{
             position: "relative",
             display: "grid",
+            alignItems: "flex-end",
             gridTemplateColumns: "repeat(3, 1fr)",
             gap: theme.spacing(1),
             marginTop: theme.spacing(3),
             justifyContent: "center",
-            overflow: "hidden",
+         
             zIndex: 1,
           }}>
           {project.images.map((image, idx) => {
             return (
+              <Box sx={{maxHeight: "70px", overflow: "hidden"}} className={`galleryImage-thumbnail ${idx === activeImage ? "active" : ""}`}>
               <Image
                 key={idx}
                 onClick={() => onThumbnailClick(image, idx)}
-                className={`galleryImage-thumbnail ${idx === activeImage ? "active" : ""}`}
+                
                 width="420"
                 height="180"
                 objectFit="cover"
-                style={{ cursor: "pointer", aspectRatio: "16/2" }}
+                style={{ cursor: "pointer" }}
                 src={`http:${image.fields?.file.url}`}
                 alt={image.fields?.title}
               />
+              </Box>
             );
           })}
         </Box>

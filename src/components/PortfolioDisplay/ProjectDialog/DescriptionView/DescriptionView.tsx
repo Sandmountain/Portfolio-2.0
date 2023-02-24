@@ -73,7 +73,7 @@ const DescriptionView: React.FC<Props> = ({ project, isInView }) => {
 
           <Box component="div" sx={{ mt: theme.spacing(1) }}>
             <Typography variant="body2">
-              <strong>Keywords: </strong>
+              <b>Keywords: </b>
               {project.keywords.map((keyword, idx) => {
                 if (idx < project.keywords.length - 1) {
                   return `${keyword}, `;
