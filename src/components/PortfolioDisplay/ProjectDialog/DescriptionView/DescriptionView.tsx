@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import { KeyboardArrowUp } from "@mui/icons-material";
-import { Box, Typography } from "@mui/material";
+import { Box, Paper, Typography } from "@mui/material";
 
 import { theme } from "../../../../theme/mui-theme";
 import { defaultTheme } from "../../../../theme/theme";
@@ -45,7 +45,7 @@ const DescriptionView: React.FC<Props> = ({ project, isInView }) => {
           background: "white",
           display: "inline-flex",
           flexDirection: "column",
-          padding: `${theme.spacing(1)} ${theme.spacing(2.5)}`,
+         
           justifyContent: "space-between",
           gap: theme.spacing(2),
         }}>
@@ -63,16 +63,17 @@ const DescriptionView: React.FC<Props> = ({ project, isInView }) => {
           </Box>
         </Box>
 
-        <Box component="div" style={{ overflowY: "auto" }}>
+        <Box component="div" style={{ overflowY: "auto",  padding: `${theme.spacing(1)} ${theme.spacing(2.5)}` }}>
           <Typography component="h3">ABOUT THE PROJECT</Typography>
           <MDParser document={project.description}></MDParser>
-          <Typography component="h3" sx={{ mt: theme.spacing(2) }}>
+          <Typography sx={{ mt: theme.spacing(4), fontSize: 13 }}>
             DEVELOPMENT
           </Typography>
-          <MDParser document={project.development}></MDParser>
+          
+          <MDParser fontSize={14} document={project.development}></MDParser>
 
-          <Box component="div" sx={{ mt: theme.spacing(1) }}>
-            <Typography variant="body2">
+          <Box component="div" sx={{ mt: theme.spacing(2) }}>
+            <Typography variant="caption">
               <b>Keywords: </b>
               {project.keywords.map((keyword, idx) => {
                 if (idx < project.keywords.length - 1) {
@@ -84,13 +85,16 @@ const DescriptionView: React.FC<Props> = ({ project, isInView }) => {
           </Box>
         </Box>
 
-        <div
-          style={{
+        <Paper
+        elevation={5}
+          sx={{
+            padding: `0 ${theme.spacing(1)}`,
             display: "flex",
             position: "relative",
             justifyContent: "space-between",
             width: "100%",
             flexDirection: "row",
+          
           }}>
           <Box
             component="div"
@@ -125,7 +129,7 @@ const DescriptionView: React.FC<Props> = ({ project, isInView }) => {
           <div style={{ flex: 1, display: "flex", justifyContent: "end" }}>
             <ResourceLogos project={project} />
           </div>
-        </div>
+        </Paper>
       </Box>
     </Box>
   );

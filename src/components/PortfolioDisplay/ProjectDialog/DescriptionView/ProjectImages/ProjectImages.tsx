@@ -101,7 +101,7 @@ const ProjectImages: React.FC<Props> = ({ project, isExpanded, setIsExpanded }) 
             flexDirection: "column",
             background: "white",
             height: "70%",
-            width: "80%",
+            width: "90%",
             borderRadius: 3,
             overflow: "hidden",
             backgroundClip: "revert",
@@ -125,8 +125,8 @@ const ProjectImages: React.FC<Props> = ({ project, isExpanded, setIsExpanded }) 
               alt={fullScreenImage.fields.title}
             />
           </Box>
-          <Paper component="div" elevation={5} sx={{ width: "100%", padding: theme.spacing(2), flex: 0.1 }}>
-            <Typography variant="subtitle2" sx={{ mt: theme.spacing(1) }}>
+          <Paper component="div" elevation={5} sx={{ width: "100%", padding: `${theme.spacing(1)} ${theme.spacing(2)}`, display: "flex", flexDirection: "column" }}>
+            <Typography variant="overline" sx={{ mt: theme.spacing(1), lineHeight: 1 }}>
               <b>{fullScreenImage.fields.title}</b>
             </Typography>
             <Typography variant="caption">{fullScreenImage.fields.description}</Typography>
