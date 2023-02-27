@@ -148,18 +148,17 @@ const ProjectImages: React.FC<Props> = ({ project, isExpanded, setIsExpanded }) 
           }}>
           {project.images.map((image, idx) => {
             return (
-              <Box sx={{maxHeight: "70px", overflow: "hidden"}} className={`galleryImage-thumbnail ${idx === activeImage ? "active" : ""}`}>
-              <Image
-                key={idx}
-                onClick={() => onThumbnailClick(image, idx)}
-                
-                width="420"
-                height="180"
-                objectFit="cover"
-                style={{ cursor: "pointer" }}
-                src={`http:${image.fields?.file.url}`}
-                alt={image.fields?.title}
-              />
+              <Box key={image.fields.file.url} sx={{maxHeight: "70px", overflow: "hidden"}} className={`galleryImage-thumbnail ${idx === activeImage ? "active" : ""}`}>
+                <Image
+                  key={idx}
+                  onClick={() => onThumbnailClick(image, idx)}
+                  width="420"
+                  height="180"
+                  objectFit="cover"
+                  style={{ cursor: "pointer" }}
+                  src={`http:${image.fields?.file.url}`}
+                  alt={image.fields?.title}
+                />
               </Box>
             );
           })}

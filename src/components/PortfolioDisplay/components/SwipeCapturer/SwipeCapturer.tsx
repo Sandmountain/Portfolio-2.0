@@ -88,10 +88,25 @@ const SwipeCapturer: React.FC<Props> = ({ children }) => {
 
   const onScroll = useMemo(() => debounce(onScrollBounce, 100), [onScrollBounce]);
 
+  const onKeyDown = (e: KeyboardEvent) => {
+    if (state.currentView === "grid" || state.isProjectDialogOpen || state.isSearchFocused) return;
+    if(e.key === "ArrowRight") {
+      state.currentProject = state.allProjects?.[focusedIdx.current + 1] ?? null;
+      focusedIdx.current = focusedIdx.current + 1;
+    } 
+    if(e.key === "ArrowLeft") {
+      state.currentProject = state.allProjects?.[focusedIdx.current - 1] ?? null;
+      focusedIdx.current = focusedIdx.current - 1;
+    }
+  }
+
   useEffect(() => {
     window.addEventListener("wheel", onScroll);
+    window.addEventListener("keydown", onKeyDown);
+
     return () => {
       window.removeEventListener("wheel", onScroll);
+      window.removeEventListener("keydown", onKeyDown);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
