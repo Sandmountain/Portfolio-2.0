@@ -13,7 +13,6 @@ function Navbar() {
     <div
       style={{
         display: "flex",
-
         gap: 6,
         alignItems: "center",
         height: "50px",
@@ -29,8 +28,11 @@ function Navbar() {
           />
           <Divider orientation="vertical" flexItem sx={{ backgroundColor: "rgba(255, 255, 255, 0.4)" }} />
           <Box component="div" sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-            <Typography variant="caption" lineHeight={1} sx={{ ml: theme.spacing(1) }}>
-              viktorsandberg.com
+            <Typography variant="overline" lineHeight={1} sx={{ ml: theme.spacing(1) }}>
+              ViktorSandberg
+              <Typography variant="caption" sx={{ fontSize: 7 }}>
+                .com
+              </Typography>
             </Typography>
             <Typography variant="caption" lineHeight={1} fontSize={8} sx={{ ml: theme.spacing(1) }}>
               a portfolio page
@@ -40,8 +42,7 @@ function Navbar() {
       </Link>
       <Box component="div" sx={{ display: "flex", gap: 2 }}>
         <Link href="/portfolio">Home</Link>
-        <Link href="#">News</Link>
-        <Link href="#">About</Link>
+        <Link href="/about">About</Link>
       </Box>
     </div>
   );

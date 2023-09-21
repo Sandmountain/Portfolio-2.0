@@ -42,6 +42,26 @@ export interface ContentfulResponse {
     };
   }[];
 }
+export interface ContentfulAboutResponse {
+  items: {
+    metadata: { tags: string[] };
+    fields: {
+      about: ContentfulMD;
+      profilePicture: ContentfulImageType;
+      chatGpt?: boolean;
+      chatGptQuery?: ContentfulMD;
+      chatGptAnswer?: ContentfulMD;
+      chatGptAvatar?: ContentfulImageType;
+      chatGptSummarize?: ContentfulMD;
+      shortVersion?: ContentfulMD;
+    };
+    sys: {
+      contentType: { sys: { id: string } };
+      createdAt: string;
+      updatedAt: string;
+    };
+  }[];
+}
 
 export interface ContentfulLanguageType {
   fields: { name: string; icon?: string; img?: ContentfulImageType };

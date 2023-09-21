@@ -1,21 +1,18 @@
 import React, { ReactNode } from "react";
 
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
-import { BLOCKS, Block, Inline } from "@contentful/rich-text-types";
+import { BLOCKS, Block, INLINES, Inline } from "@contentful/rich-text-types";
 import { Box, Typography } from "@mui/material";
 
 import { ContentfulMD, ContentfulMDLine, ContentfulMDcontent } from "../../types/Project";
-
-
-
+import { externalResource } from "../../utils/url-helpers";
 
 interface MDParserProps {
-
   document: ContentfulMD;
   fontSize?: number;
+  paragraphMargin?: string;
 }
-export const MDParser: React.FC<MDParserProps> = ({ document, fontSize="auto" }) => {
-
+export const MDParser: React.FC<MDParserProps> = ({ document, fontSize = "auto", paragraphMargin = "0px" }) => {
   const mdRender = () => {
     return {
       renderNode: {
@@ -32,16 +29,30 @@ export const MDParser: React.FC<MDParserProps> = ({ document, fontSize="auto" })
             );
           }
           return (
-            <Typography variant="body1" sx={{ fontWeight: 300 }} fontSize={fontSize}>
+            <Typography
+              variant="body1"
+              sx={{
+                fontWeight: 300,
+                "&.MuiTypography-body1:not(:last-child)": { marginBottom: `${paragraphMargin}` },
+              }}
+              fontSize={fontSize}>
               {children}
             </Typography>
           );
         },
         [BLOCKS.HEADING_1]: (node: Block | Inline, children: ReactNode) => {
-          return <Typography variant="h1" fontSize={fontSize}>{children}</Typography>;
+          return (
+            <Typography variant="h1" fontSize={fontSize}>
+              {children}
+            </Typography>
+          );
         },
         [BLOCKS.HEADING_2]: (node: Block | Inline, children: ReactNode) => {
-          return <Typography variant="h2" fontSize={fontSize}>{children}</Typography>;
+          return (
+            <Typography variant="h2" fontSize={fontSize}>
+              {children}
+            </Typography>
+          );
         },
         [BLOCKS.HEADING_3]: (node: Block | Inline, children: ReactNode) => {
           return (
@@ -51,23 +62,46 @@ export const MDParser: React.FC<MDParserProps> = ({ document, fontSize="auto" })
           );
         },
         [BLOCKS.HEADING_4]: (node: Block | Inline, children: ReactNode) => {
-          return <Typography variant="h4" fontSize={fontSize}>{children}</Typography>;
+          return (
+            <Typography variant="h4" fontSize={fontSize}>
+              {children}
+            </Typography>
+          );
         },
         [BLOCKS.HEADING_5]: (node: Block | Inline, children: ReactNode) => {
-          return <Typography variant="h5" fontSize={fontSize}>{children}</Typography>;
+          return (
+            <Typography variant="h5" fontSize={fontSize}>
+              {children}
+            </Typography>
+          );
         },
         [BLOCKS.HEADING_6]: (node: Block | Inline, children: ReactNode) => {
-          return <Typography variant="h6" fontSize={fontSize}>{children}</Typography>;
+          return (
+            <Typography variant="h6" fontSize={fontSize}>
+              {children}
+            </Typography>
+          );
+        },
+        [INLINES.HYPERLINK]: (node: Block | Inline, children: ReactNode) => {
+          return (
+            <Typography component="a" sx={{ cursor: "pointer" }} onClick={() => externalResource(node.data.uri)}>
+              {children}
+            </Typography>
+          );
         },
       },
-    
+
       renderText: (text: string) => {
         return text.split("\n").reduce((children, textSegment, index) => {
           return [...children, index > 0 ? <br key={index} /> : "", textSegment];
         }, [] as any[]);
       },
     };
-  }
+  };
 
-  return <Box component="div" sx={{fontSize: fontSize}}>{documentToReactComponents(document as unknown as any, mdRender())}</Box>;
+  return (
+    <Box component="div" sx={{ fontSize: fontSize }}>
+      {documentToReactComponents(document as unknown as any, mdRender())}
+    </Box>
+  );
 };
