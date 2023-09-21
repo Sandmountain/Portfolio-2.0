@@ -75,7 +75,7 @@ const ProjectImages: React.FC<Props> = ({ project, isExpanded, setIsExpanded }) 
           }}
           layout="fill"
           objectFit="cover"
-          src={`http:${fullScreenImage.fields.file.url}`}
+          src={`http:${fullScreenImage.fields?.file.url}`}
           alt={fullScreenImage.fields.title}
         />
         <Box component="div" sx={{ display: "flex", width: "100%", justifyContent: "end", zIndex: 1 }}>
@@ -111,7 +111,7 @@ const ProjectImages: React.FC<Props> = ({ project, isExpanded, setIsExpanded }) 
             component="div"
             sx={{
               display: "flex",
-             flex: 1,
+              flex: 1,
               position: "relative",
             }}>
             <Image
@@ -121,11 +121,19 @@ const ProjectImages: React.FC<Props> = ({ project, isExpanded, setIsExpanded }) 
               style={{ cursor: "pointer" }}
               layout="fill"
               objectFit="contain"
-              src={`http:${fullScreenImage.fields.file.url}`}
+              src={`http:${fullScreenImage.fields?.file.url}`}
               alt={fullScreenImage.fields.title}
             />
           </Box>
-          <Paper component="div" elevation={5} sx={{ width: "100%", padding: `${theme.spacing(1)} ${theme.spacing(2)}`, display: "flex", flexDirection: "column" }}>
+          <Paper
+            component="div"
+            elevation={5}
+            sx={{
+              width: "100%",
+              padding: `${theme.spacing(1)} ${theme.spacing(2)}`,
+              display: "flex",
+              flexDirection: "column",
+            }}>
             <Typography variant="overline" sx={{ mt: theme.spacing(1), lineHeight: 1 }}>
               <b>{fullScreenImage.fields.title}</b>
             </Typography>
@@ -143,12 +151,15 @@ const ProjectImages: React.FC<Props> = ({ project, isExpanded, setIsExpanded }) 
             gap: theme.spacing(1),
             marginTop: theme.spacing(3),
             justifyContent: "center",
-         
+
             zIndex: 1,
           }}>
           {project.images.map((image, idx) => {
             return (
-              <Box key={image.fields.file.url} sx={{maxHeight: "70px", overflow: "hidden"}} className={`galleryImage-thumbnail ${idx === activeImage ? "active" : ""}`}>
+              <Box
+                key={image.fields.file.url}
+                sx={{ maxHeight: "70px", overflow: "hidden" }}
+                className={`galleryImage-thumbnail ${idx === activeImage ? "active" : ""}`}>
                 <Image
                   key={idx}
                   onClick={() => onThumbnailClick(image, idx)}
@@ -175,7 +186,7 @@ const ProjectImages: React.FC<Props> = ({ project, isExpanded, setIsExpanded }) 
           height={fullScreenImage.fields.file.details.image.height}
           width={fullScreenImage.fields.file.details.image.width}
           quality={100}
-          src={`http:${fullScreenImage.fields.file.url}`}
+          src={`http:${fullScreenImage.fields?.file.url}`}
           alt={fullScreenImage.fields.title}
         />
       </Dialog>

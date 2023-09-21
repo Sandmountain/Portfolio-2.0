@@ -9,11 +9,7 @@ interface ProjectPageDetailsProps {
 }
 
 const ProjectPageDetails: React.FC<ProjectPageDetailsProps> = ({ project }) => {
-  return (
-    <Suspense fallback={null}>
-      <ProjectContent project={project} dialog={false} />
-    </Suspense>
-  );
+  return <ProjectContent project={project} dialog={false} />;
 };
 
 export default ProjectPageDetails;

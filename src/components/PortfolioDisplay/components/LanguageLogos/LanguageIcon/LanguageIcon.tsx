@@ -28,7 +28,7 @@ const LanguageIcon: React.FC<LanguageIconProps> = ({ language, size = "medium" }
           width={size === "small" ? 21 : 21}
           height={size === "small" ? 21 : 21}
           quality="75"
-          src={`https:${language.fields.img.fields.file.url}${size === "small" ? "?w=32" : "?w=48"}`}
+          src={`https:${language.fields.img.fields?.file.url}${size === "small" ? "?w=32" : "?w=48"}`}
           alt={language.fields.name}></Image>
       )}
     </>
