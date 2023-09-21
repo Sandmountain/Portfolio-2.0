@@ -31,7 +31,6 @@ export const GridDisplay: React.FC<GridDisplayProps> = ({
   const ref = useRef<THREE.Group>(null);
   const clicked = useRef<Object3D | null>(null);
 
-  
   useEffect(() => {
     clicked.current = clickedImage;
 

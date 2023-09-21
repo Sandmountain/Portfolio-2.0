@@ -31,6 +31,7 @@ const index: React.FC<IIndex> = ({
 }) => {
   return (
     <Box
+      component="div"
       sx={{
         height: "calc(100vh - 50px)",
         position: "relative",
@@ -49,7 +50,9 @@ const index: React.FC<IIndex> = ({
         shortVersion={shortVersion}
       />
 
-      <Box sx={{ width: "100%", height: "100%", position: "absolute", filter: "blur(5)", opacity: 0.25 }}>
+      <Box
+        component="div"
+        sx={{ width: "100%", height: "100%", position: "absolute", filter: "blur(5)", opacity: 0.25 }}>
         <Suspense fallback={null}>
           <Canvas dpr={[1, 2]} camera={{ fov: 70, position: [0, 0, 5] }}>
             <ambientLight intensity={1} />

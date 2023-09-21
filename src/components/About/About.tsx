@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import Image from "next/image";
 
-import { Box, FormControlLabel, FormGroup, Paper, Slide, Switch, ToggleButton, Typography } from "@mui/material";
+import { Box, FormControlLabel, FormGroup, Paper, Slide, Switch, Typography } from "@mui/material";
 
 import { theme } from "../../theme/mui-theme";
 import { ContentfulImageType, ContentfulMD } from "../../types/Project";
@@ -44,7 +44,7 @@ const About: React.FC<IAbout> = ({
         overflowX: "hidden",
       }}
       elevation={15}>
-      <Box sx={{ display: "flex", justifyContent: "space-between", marginBottom: theme.spacing(2) }}>
+      <Box component="div" sx={{ display: "flex", justifyContent: "space-between", marginBottom: theme.spacing(2) }}>
         <Typography variant="h3" sx={{ display: "flex", gap: 1, alignItems: "center" }}>
           About Me <Typography>{isShortVersion && "(Short Version)"}</Typography>
         </Typography>
@@ -56,9 +56,9 @@ const About: React.FC<IAbout> = ({
         </FormGroup>
       </Box>
       <Slide direction="right" in={isShortVersion} appear={!isShortVersion}>
-        <Box sx={{ position: "relative", height: 0 }}>
-          <Box sx={{ position: "absolute", display: !isShortVersion ? "none" : "auto" }}>
-            <Box>
+        <Box component="div" sx={{ position: "relative", height: 0 }}>
+          <Box component="div" sx={{ position: "absolute", display: !isShortVersion ? "none" : "auto" }}>
+            <Box component="div">
               <Image
                 width="100px"
                 height="100px"
@@ -72,15 +72,16 @@ const About: React.FC<IAbout> = ({
         </Box>
       </Slide>
       <Slide direction="left" in={!isShortVersion} appear={isShortVersion}>
-        <Box sx={{ position: "relative", height: 0 }}>
-          <Box sx={{ position: "absolute", display: isShortVersion ? "none" : "auto" }}>
+        <Box component="div" sx={{ position: "relative", height: 0 }}>
+          <Box component="div" sx={{ position: "absolute", display: isShortVersion ? "none" : "auto" }}>
             <MDParser document={about} paragraphMargin="1em" />
             {chatGpt && (
-              <Box>
+              <Box component="div">
                 <Paper
                   sx={{ borderRadius: theme.spacing(1), overflow: "hidden", marginBottom: theme.spacing(2) }}
                   elevation={3}>
                   <Box
+                    component="div"
                     sx={{
                       display: "flex",
                       backgroundColor: theme.palette.grey[800],
@@ -90,6 +91,7 @@ const About: React.FC<IAbout> = ({
                       borderBottom: "1px solid black",
                     }}>
                     <Box
+                      component="div"
                       sx={{
                         maxHeight: "30px",
                         maxWidth: "30px",
@@ -108,6 +110,7 @@ const About: React.FC<IAbout> = ({
                     <MDParser document={chatGptQuery} />
                   </Box>
                   <Box
+                    component="div"
                     sx={{
                       display: "flex",
                       gap: theme.spacing(2),
@@ -115,7 +118,7 @@ const About: React.FC<IAbout> = ({
                       color: theme.palette.common.white,
                       padding: theme.spacing(2),
                     }}>
-                    <Box sx={{ minHeight: "30px", minWidth: "30px" }}>
+                    <Box component="div" sx={{ minHeight: "30px", minWidth: "30px" }}>
                       <Image
                         width="100px"
                         height="100px"
@@ -124,7 +127,7 @@ const About: React.FC<IAbout> = ({
                         alt={chatGptAvatar.fields?.title}
                       />
                     </Box>
-                    <Box>
+                    <Box component="div">
                       <MDParser document={chatGptAnswer} paragraphMargin="1em" />
                       <WritingIndicator />
                     </Box>

@@ -157,6 +157,7 @@ const ProjectImages: React.FC<Props> = ({ project, isExpanded, setIsExpanded }) 
           {project.images.map((image, idx) => {
             return (
               <Box
+                component="div"
                 key={image.fields.file.url}
                 sx={{ maxHeight: "70px", overflow: "hidden" }}
                 className={`galleryImage-thumbnail ${idx === activeImage ? "active" : ""}`}>
