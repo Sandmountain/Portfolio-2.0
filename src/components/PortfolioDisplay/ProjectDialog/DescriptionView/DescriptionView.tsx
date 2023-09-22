@@ -45,7 +45,7 @@ const DescriptionView: React.FC<Props> = ({ project, isInView }) => {
           background: "white",
           display: "inline-flex",
           flexDirection: "column",
-         
+
           justifyContent: "space-between",
           gap: theme.spacing(2),
         }}>
@@ -63,13 +63,11 @@ const DescriptionView: React.FC<Props> = ({ project, isInView }) => {
           </Box>
         </Box>
 
-        <Box component="div" style={{ overflowY: "auto",  padding: `${theme.spacing(1)} ${theme.spacing(2.5)}` }}>
+        <Box component="div" style={{ overflowY: "auto", padding: `${theme.spacing(1)} ${theme.spacing(2.5)}` }}>
           <Typography component="h3">ABOUT THE PROJECT</Typography>
           <MDParser document={project.description}></MDParser>
-          <Typography sx={{ mt: theme.spacing(4), fontSize: 13 }}>
-            DEVELOPMENT
-          </Typography>
-          
+          <Typography sx={{ mt: theme.spacing(4), fontSize: 13 }}>DEVELOPMENT</Typography>
+
           <MDParser fontSize={14} document={project.development}></MDParser>
 
           <Box component="div" sx={{ mt: theme.spacing(2) }}>
@@ -86,7 +84,7 @@ const DescriptionView: React.FC<Props> = ({ project, isInView }) => {
         </Box>
 
         <Paper
-        elevation={5}
+          elevation={5}
           sx={{
             padding: `0 ${theme.spacing(1)}`,
             display: "flex",
@@ -94,7 +92,6 @@ const DescriptionView: React.FC<Props> = ({ project, isInView }) => {
             justifyContent: "space-between",
             width: "100%",
             flexDirection: "row",
-          
           }}>
           <Box
             component="div"
@@ -116,13 +113,21 @@ const DescriptionView: React.FC<Props> = ({ project, isInView }) => {
               justifyContent: "center",
               flex: 1,
             }}>
-            <Box component="div" sx={{ display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
+            <Box
+              component="div"
+              sx={{ display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
               <Typography variant="overline" fontSize={10} fontWeight="300" lineHeight={1.2} letterSpacing={1.1}>
-               {project.title}
+                {project.title}
               </Typography>
             </Box>
 
-            <Typography variant="body2" fontWeight="300" fontSize={10} lineHeight={1.2} letterSpacing={0.9} sx={{textTransform: "capitalize"}}>
+            <Typography
+              variant="body2"
+              fontWeight="300"
+              fontSize={10}
+              lineHeight={1.2}
+              letterSpacing={0.9}
+              sx={{ textTransform: "capitalize" }}>
               Project Size: {project.projectSize}
             </Typography>
           </Box>

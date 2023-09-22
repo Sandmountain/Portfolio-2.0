@@ -90,15 +90,15 @@ const SwipeCapturer: React.FC<Props> = ({ children }) => {
 
   const onKeyDown = (e: KeyboardEvent) => {
     if (state.currentView === "grid" || state.isProjectDialogOpen || state.isSearchFocused) return;
-    if(e.key === "ArrowRight") {
+    if (e.key === "ArrowRight") {
       state.currentProject = state.allProjects?.[focusedIdx.current + 1] ?? null;
       focusedIdx.current = focusedIdx.current + 1;
-    } 
-    if(e.key === "ArrowLeft") {
+    }
+    if (e.key === "ArrowLeft") {
       state.currentProject = state.allProjects?.[focusedIdx.current - 1] ?? null;
       focusedIdx.current = focusedIdx.current - 1;
     }
-  }
+  };
 
   useEffect(() => {
     window.addEventListener("wheel", onScroll);
