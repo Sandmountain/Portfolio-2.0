@@ -41,8 +41,9 @@ function Navbar() {
         </Box>
       </Link>
       <Box component="div" sx={{ display: "flex", gap: 2 }}>
-        <Link href="/portfolio">Home</Link>
+        <Link href="/portfolio">Portfolio</Link>
         <Link href="/about">About</Link>
+        <Link href="/career">Career</Link>
       </Box>
     </div>
   );

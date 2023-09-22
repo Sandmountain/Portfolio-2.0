@@ -1,10 +1,9 @@
 import { createContext, useContext } from "react";
 
 import { makeAutoObservable, toJS } from "mobx";
-import getUuid from "uuid-by-string";
 
 import { getImages } from "../components/PortfolioDisplay/HorizontalDisplay/helpers/handleProjects";
-import { ContentfulResponse, Project } from "../types/Project";
+import { Project } from "../types/Project";
 
 class ProjectStore {
   projects: Project[] = [];

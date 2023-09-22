@@ -44,6 +44,7 @@ const HeroView: React.FC<Props> = ({ project, isInView, dialog, active = dialog 
           }}>
           <Typography
             variant="h4"
+            textTransform="uppercase"
             style={{
               margin: 0,
               letterSpacing: 0,
