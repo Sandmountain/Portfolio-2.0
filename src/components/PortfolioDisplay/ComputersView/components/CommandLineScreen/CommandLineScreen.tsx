@@ -1,9 +1,9 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import { Html, PerspectiveCamera, RenderTexture, useGLTF } from "@react-three/drei";
 import { ForwardRefComponent } from "@react-three/drei/helpers/ts-utils";
 import { HtmlProps } from "@react-three/drei/web/Html";
-import { GroupProps } from "@react-three/fiber";
+import { GroupProps, useFrame } from "@react-three/fiber";
 import { Bloom, EffectComposer, Outline, Scanline, Select, Selection } from "@react-three/postprocessing";
 import * as THREE from "three";
 
@@ -26,10 +26,17 @@ const CommandLineScreen: React.FC<ICommandLineProps> = ({ text, ...props }) => {
 
   const endOfTextRef = React.useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    // Scroll to the end of the text whenever it updates
-    // endOfTextRef.current?.scrollTop = 40;
-  }, []);
+  const flimmerRef = useRef<THREE.MeshPhysicalMaterial | null>(null);
+
+  useFrame(() => {
+    if (!flimmerRef.current) return;
+    const rand = Math.random();
+    if (rand > 0.9) {
+      flimmerRef.current.opacity = THREE.MathUtils.lerp(flimmerRef.current.opacity, 1 * rand, 0.1);
+    } else {
+      flimmerRef.current.opacity = THREE.MathUtils.lerp(flimmerRef.current.opacity, 1.5 * rand, 0.1);
+    }
+  });
 
   // useEffect(() => {
   //   const sentences = text.split(/(?<=[.!?])\s/); // Splits the text by sentence-ending punctuation followed by whitespace
@@ -101,25 +108,15 @@ const CommandLineScreen: React.FC<ICommandLineProps> = ({ text, ...props }) => {
             <span ref={endOfTextRef} />
           </div>
         </Html>
-        <meshPhysicalMaterial
-          transmission={1}
-          roughness={0.6}
-          ior={2}
-          // transparent
-          opacity={0.8}
-          color="#ffffff"
-          thickness={1}></meshPhysicalMaterial>
+        <meshPhysicalMaterial transmission={1} roughness={0.8} ior={2} opacity={1} thickness={1}></meshPhysicalMaterial>
       </mesh>
-      <mesh castShadow receiveShadow geometry={nodes["Object_219"].geometry}>
-        <meshBasicMaterial toneMapped={false} transparent opacity={0.01}>
-          <RenderTexture width={1280} height={720} attach="map" anisotropy={16}>
-            <PerspectiveCamera makeDefault aspect={1 / 1} position={[-5, 0, 15]} />
-            <color attach="background" args={["rgba(255,255,255, 1)"]} />
-            <ambientLight intensity={0.5} />
-            <directionalLight position={[10, 10, 10]} />
+      {/* <mesh castShadow receiveShadow geometry={nodes["Object_219"].geometry} position={[0, 0, -0.0005]}>
+        <meshStandardMaterial emissive="white" emissiveIntensity={10} transparent opacity={0.3} toneMapped={false}>
+          <RenderTexture width={1280} height={720} attach="background" anisotropy={16}>
+            <color attach="background" args={["#3cff00"]} />
           </RenderTexture>
-        </meshBasicMaterial>
-      </mesh>
+        </meshStandardMaterial>
+      </mesh> */}
       {/* </Select>
       </Selection> */}
     </group>
