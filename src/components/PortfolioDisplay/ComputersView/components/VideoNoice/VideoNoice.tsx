@@ -25,15 +25,15 @@ const VideoNoice: React.FC<IVideoNoice> = ({ frame, panel, x = 0, y = 0, ...prop
   );
 
   useEffect(() => void video.play(), [video]);
-  const textRef = useRef<THREE.MeshBasicMaterial | null>(null);
+  const flimmerRef = useRef<THREE.MeshBasicMaterial | null>(null);
 
-  useFrame(state => {
-    if (!textRef.current) return;
+  useFrame(() => {
+    if (!flimmerRef.current) return;
     const rand = Math.random();
     if (rand > 0.4) {
-      textRef.current.opacity = THREE.MathUtils.lerp(textRef.current.opacity, 2, 0.1);
+      flimmerRef.current.opacity = THREE.MathUtils.lerp(flimmerRef.current.opacity, 2, 0.1);
     } else {
-      textRef.current.opacity = THREE.MathUtils.lerp(textRef.current.opacity, 8, 0.1);
+      flimmerRef.current.opacity = THREE.MathUtils.lerp(flimmerRef.current.opacity, 8, 0.1);
     }
   });
 
@@ -42,7 +42,7 @@ const VideoNoice: React.FC<IVideoNoice> = ({ frame, panel, x = 0, y = 0, ...prop
       <mesh castShadow receiveShadow geometry={nodes[frame].geometry} material={materials.Texture} />
 
       <mesh geometry={nodes[panel].geometry} castShadow receiveShadow>
-        <meshBasicMaterial toneMapped={true} ref={textRef} transparent>
+        <meshBasicMaterial toneMapped={true} ref={flimmerRef} transparent>
           <videoTexture attach="map" args={[video]} encoding={THREE.sRGBEncoding} />
         </meshBasicMaterial>
       </mesh>

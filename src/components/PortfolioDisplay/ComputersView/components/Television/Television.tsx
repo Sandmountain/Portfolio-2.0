@@ -6,9 +6,10 @@ License: CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
 Source: https://sketchfab.com/3d-models/lowpoly-old-tv-1ab0b494e6e4424eb629ad1963356461
 Title: Lowpoly Old TV
 */
-import React from "react";
+import React, { useRef } from "react";
 
 import { Image, PerspectiveCamera, RenderTexture, useGLTF } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { GLTF } from "three-stdlib";
 
@@ -31,6 +32,18 @@ type GLTFResult = GLTF & {
 export function Television({ ...props }: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF("/television/scene.gltf") as GLTFResult;
 
+  const flimmerRef = useRef<THREE.MeshPhysicalMaterial | null>(null);
+
+  useFrame(() => {
+    if (!flimmerRef.current) return;
+    const rand = Math.random();
+    if (rand > 0.9) {
+      flimmerRef.current.opacity = THREE.MathUtils.lerp(flimmerRef.current.opacity, 1 * rand, 0.1);
+    } else {
+      flimmerRef.current.opacity = THREE.MathUtils.lerp(flimmerRef.current.opacity, 1.5 * rand, 0.1);
+    }
+  });
+
   return (
     <group {...props} castShadow receiveShadow dispose={null}>
       <group rotation={[-Math.PI / 2, 0, -Math.PI / 2]}>
@@ -41,7 +54,14 @@ export function Television({ ...props }: JSX.IntrinsicElements["group"]) {
             geometry={nodes.defaultMaterial.geometry}
             // material={materials.lambert2SG}
             rotation={[Math.PI / 2, 0, 0]}>
-            <meshPhysicalMaterial clearcoat={2} transmission={2.3} color="#FFFFFF" thickness={1}>
+            <meshPhysicalMaterial
+              clearcoat={2}
+              transmission={2.3}
+              color="#FFFFFF"
+              thickness={1}
+              ref={flimmerRef}
+              opacity={0.4}
+              transparent>
               <RenderTexture height={512} width={512} attach="map" anisotropy={16}>
                 <PerspectiveCamera makeDefault manual aspect={1 / 1} position={[0, 0, 6]} />
                 {/* eslint-disable-next-line jsx-a11y/alt-text */}
