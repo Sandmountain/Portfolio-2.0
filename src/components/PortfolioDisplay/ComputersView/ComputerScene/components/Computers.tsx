@@ -1,6 +1,6 @@
 import { useContext } from "react";
 
-import { GroupProps } from "@react-three/fiber";
+import { GroupProps, useFrame } from "@react-three/fiber";
 
 import { MeshContext } from "../context/MeshContext";
 import BackgroundComputers from "./BackgroundComputers/BackgroundComputers";
@@ -72,7 +72,7 @@ export const Computers: React.FC<GroupProps> = ({ ...props }) => {
 
       {/* Screen Right */}
       <CommandLineScreen
-        text={`React \n Machine Learning \n Node \n Pro`}
+        text={`React, Machine Learning, Node, Pro`}
         position={[3.11, 2.15, -0.18]}
         rotation={[0, -0.79, 0]}
         scale={0.81}

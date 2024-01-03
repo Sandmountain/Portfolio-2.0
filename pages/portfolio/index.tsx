@@ -2,9 +2,11 @@ import { useEffect } from "react";
 
 import type { NextPage } from "next";
 
+import { Loader } from "@react-three/drei";
 import getUuid from "uuid-by-string";
 
-import { ComputersView } from "../../src/components/PortfolioDisplay/ComputersView/ComputersView";
+import { ComputerScene } from "../../src/components/PortfolioDisplay/ComputersView/ComputerScene/ComputersScene";
+import ComputerView from "../../src/components/PortfolioDisplay/ComputersView/ComputerView";
 import { getImages } from "../../src/components/PortfolioDisplay/HorizontalDisplay/helpers/handleProjects";
 import PortfolioView from "../../src/components/PortfolioDisplay/PortfolioView";
 import ThreeLoader from "../../src/components/PortfolioDisplay/components/ThreeLoader/ThreeLoader";
@@ -22,12 +24,11 @@ const Home: NextPage<{ projects: Project[]; projectImages: ProjectImageType[] }>
 
   return (
     <div style={{ height: "100%" }}>
-      <ThreeLoader>
-        <div style={{ height: "calc(100vh - 50px)", background: "black", color: "white" }}>
-          {/* <PortfolioView images={projectImages} projects={projects} /> */}
-          <ComputersView />
-        </div>
-      </ThreeLoader>
+      {/* <ThreeLoader> */}
+      <div style={{ height: "calc(100vh - 50px)", background: "black", color: "white" }}>
+        {/* <PortfolioView images={projectImages} projects={projects} /> */}
+        <ComputerView images={projectImages} projects={projects} />
+      </div>
     </div>
   );
 };
