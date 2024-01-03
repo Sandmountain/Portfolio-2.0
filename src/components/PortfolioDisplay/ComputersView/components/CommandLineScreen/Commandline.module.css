@@ -1,0 +1,45 @@
+.typewriter {
+  color: #0f0; /* Classic green text color */
+  height: 100%;
+  font-family: "Courier New", Courier, monospace; /* Monospace font for that classic look */
+  font-size: 4px; /* Adjust the size as needed */
+  padding: 2px;
+  border-radius: 5px; /* Optional: if you want rounded corners */
+  line-height: 1.1; /* Adjust line height for better readability */
+}
+
+/* .typewriter ::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(black, 0.15),
+    rgba(black, 0.15) 1px,
+    transparent 0.1px,
+    transparent 1px
+  );
+  pointer-events: none;
+} */
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.paragraph {
+  margin: 0;
+  margin-top: 1px;
+}
+
+.inner-paragraph {
+  margin-top: 1px;
+}

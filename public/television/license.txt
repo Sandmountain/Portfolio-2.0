@@ -1,0 +1,11 @@
+Model Information:
+* title:	Lowpoly Old TV
+* source:	https://sketchfab.com/3d-models/lowpoly-old-tv-1ab0b494e6e4424eb629ad1963356461
+* author:	matoteus (https://sketchfab.com/matoteus)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Lowpoly Old TV" (https://sketchfab.com/3d-models/lowpoly-old-tv-1ab0b494e6e4424eb629ad1963356461) by matoteus (https://sketchfab.com/matoteus) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

@@ -1,0 +1,403 @@
+{
+  "accessors": [
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 2015,
+      "max": [
+        0.5335060358047485,
+        4.956211566925049,
+        0.5519519448280334
+      ],
+      "min": [
+        -0.5335057377815247,
+        -0.5603150129318237,
+        -0.5519580841064453
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 24180,
+      "componentType": 5126,
+      "count": 2015,
+      "max": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "min": [
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 2015,
+      "max": [
+        0.9980078935623169,
+        0.909021258354187
+      ],
+      "min": [
+        0.00199203216470778,
+        0.0018310707528144121
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "componentType": 5125,
+      "count": 6960,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 48360,
+      "componentType": 5126,
+      "count": 433,
+      "max": [
+        0.436578631401062,
+        5.004523754119873,
+        0.26197198033332825
+      ],
+      "min": [
+        -0.436578631401062,
+        4.029236793518066,
+        -0.39488157629966736
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 53556,
+      "componentType": 5126,
+      "count": 433,
+      "max": [
+        1.0,
+        0.6517283320426941,
+        0.9999918341636658
+      ],
+      "min": [
+        -1.0,
+        -0.0040618558414280415,
+        -0.9999918341636658
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 16120,
+      "componentType": 5126,
+      "count": 433,
+      "max": [
+        0.9980080723762512,
+        0.9173664450645447
+      ],
+      "min": [
+        0.4017223119735718,
+        0.1002766489982605
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 27840,
+      "componentType": 5125,
+      "count": 1116,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 58752,
+      "componentType": 5126,
+      "count": 485,
+      "max": [
+        0.3575267791748047,
+        4.782989025115967,
+        0.16457010805606842
+      ],
+      "min": [
+        -0.35712769627571106,
+        4.08820104598999,
+        -0.1999443918466568
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 64572,
+      "componentType": 5126,
+      "count": 485,
+      "max": [
+        1.0,
+        0.8107730746269226,
+        0.9999918341636658
+      ],
+      "min": [
+        -1.0,
+        -0.0040616136975586414,
+        -0.9999918341636658
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 19584,
+      "componentType": 5126,
+      "count": 485,
+      "max": [
+        0.9685447812080383,
+        0.9162576198577881
+      ],
+      "min": [
+        0.5063732266426086,
+        0.11553987115621567
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 32304,
+      "componentType": 5125,
+      "count": 1380,
+      "type": "SCALAR"
+    }
+  ],
+  "asset": {
+    "extras": {
+      "author": "elouisetrewartha (https://sketchfab.com/etrewartha)",
+      "license": "CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)",
+      "source": "https://sketchfab.com/3d-models/snes-09af5794ddf2414f98fbe7bdc7620ac5",
+      "title": "SNES"
+    },
+    "generator": "Sketchfab-12.66.0",
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 37824,
+      "name": "floatBufferViews",
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 23464,
+      "byteOffset": 37824,
+      "byteStride": 8,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 70392,
+      "byteOffset": 61288,
+      "byteStride": 12,
+      "name": "floatBufferViews",
+      "target": 34962
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 131680,
+      "uri": "scene.bin"
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "name": "SNES_Gray",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.602,
+          0.581856,
+          0.567084,
+          1.0
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.6
+      }
+    },
+    {
+      "doubleSided": true,
+      "name": "SNES_Dark_Gray",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.324,
+          0.31914,
+          0.315576,
+          1.0
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.6
+      }
+    },
+    {
+      "doubleSided": true,
+      "name": "SNES_Black",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.153,
+          0.153,
+          0.153,
+          1.0
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.6
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "SNES_SNES_Gray_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 1,
+            "POSITION": 0,
+            "TEXCOORD_0": 2
+          },
+          "indices": 3,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "SNES_SNES_Dark_Gray_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 5,
+            "POSITION": 4,
+            "TEXCOORD_0": 6
+          },
+          "indices": 7,
+          "material": 1,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "SNES_SNES_Black_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 9,
+            "POSITION": 8,
+            "TEXCOORD_0": 10
+          },
+          "indices": 11,
+          "material": 2,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "children": [
+        1
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.220446049250313e-16,
+        -1.0,
+        0.0,
+        0.0,
+        1.0,
+        2.220446049250313e-16,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "Sketchfab_model"
+    },
+    {
+      "children": [
+        2
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        -1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "bd78d13b325e437b94358ba80492bb1e.fbx"
+    },
+    {
+      "children": [
+        3
+      ],
+      "name": "RootNode"
+    },
+    {
+      "children": [
+        4,
+        5,
+        6
+      ],
+      "matrix": [
+        17.474443435668945,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        17.474443435668945,
+        0.0,
+        -2.603894927233341e-06,
+        0.5603150129318237,
+        5.3640236728824675e-05,
+        1.0
+      ],
+      "name": "SNES"
+    },
+    {
+      "mesh": 0,
+      "name": "SNES_SNES_Gray_0"
+    },
+    {
+      "mesh": 1,
+      "name": "SNES_SNES_Dark_Gray_0"
+    },
+    {
+      "mesh": 2,
+      "name": "SNES_SNES_Black_0"
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Sketchfab_Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ]
+}

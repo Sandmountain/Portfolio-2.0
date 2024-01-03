@@ -7,6 +7,7 @@ import router from "next/router";
 import { Dialog } from "@mui/material";
 import { Cloud, Environment, Loader } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
+import { Bloom, DepthOfField, EffectComposer } from "@react-three/postprocessing";
 import { proxy, useSnapshot } from "valtio";
 import { subscribeKey } from "valtio/utils";
 
@@ -104,6 +105,11 @@ const PortfolioView: React.FC<PortfolioView> = ({ images, projects }) => {
           <group position={[0, -0.8, 0]}>
             <ProjectDisplaySwitcher images={images} />
           </group>
+          {/* Postprocessing */}
+          <EffectComposer disableNormalPass>
+            <Bloom luminanceThreshold={0} mipmapBlur luminanceSmoothing={0.4} intensity={0.5} />
+            <DepthOfField target={[0, 0, 13]} focalLength={0.3} bokehScale={15} height={700} />
+          </EffectComposer>
         </Canvas>
         <Loader />
       </SwipeCapturer>

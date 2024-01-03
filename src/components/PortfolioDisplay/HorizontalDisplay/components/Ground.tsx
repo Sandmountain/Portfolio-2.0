@@ -16,10 +16,10 @@ const Ground: React.FC<GroundProps> = ({ opacity }) => {
   const floor = useLoader(THREE.TextureLoader, "/SurfaceImperfections003_1K_var1.jpg");
 
   return (
-    <>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.19, 3]}>
+    <group position={[0, 0.11, 2.5]}>
+      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]}>
         <boxGeometry args={[100, 0.5, 0.2]} />
-
+        {/* Shelf  */}
         <MeshReflectorMaterial
           blur={[300, 100]}
           resolution={2048}
@@ -38,8 +38,9 @@ const Ground: React.FC<GroundProps> = ({ opacity }) => {
           mirror={1}
         />
       </mesh>
-      <mesh position={[0, 0.291, 3.24]}>
-        <boxGeometry args={[100, 0.01, 0.001]} />
+      {/* Silver border */}
+      <mesh position={[0, 0.1, 0.26]} rotation={[0, 0, 0]}>
+        <boxGeometry args={[100, 0.01, 0.01]} />
         <MeshReflectorMaterial
           resolution={1}
           mixBlur={0.5}
@@ -53,7 +54,7 @@ const Ground: React.FC<GroundProps> = ({ opacity }) => {
           mirror={0.8}
         />
       </mesh>
-    </>
+    </group>
   );
 };
 

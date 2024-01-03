@@ -4,6 +4,7 @@ import type { NextPage } from "next";
 
 import getUuid from "uuid-by-string";
 
+import { ComputersView } from "../../src/components/PortfolioDisplay/ComputersView/ComputersView";
 import { getImages } from "../../src/components/PortfolioDisplay/HorizontalDisplay/helpers/handleProjects";
 import PortfolioView from "../../src/components/PortfolioDisplay/PortfolioView";
 import ThreeLoader from "../../src/components/PortfolioDisplay/components/ThreeLoader/ThreeLoader";
@@ -23,7 +24,8 @@ const Home: NextPage<{ projects: Project[]; projectImages: ProjectImageType[] }>
     <div style={{ height: "100%" }}>
       <ThreeLoader>
         <div style={{ height: "calc(100vh - 50px)", background: "black", color: "white" }}>
-          <PortfolioView images={projectImages} projects={projects} />
+          {/* <PortfolioView images={projectImages} projects={projects} /> */}
+          <ComputersView />
         </div>
       </ThreeLoader>
     </div>
