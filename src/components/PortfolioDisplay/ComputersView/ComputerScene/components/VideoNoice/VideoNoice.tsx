@@ -9,11 +9,9 @@ import { MeshContext } from "../../context/MeshContext";
 interface IVideoNoice extends GroupProps {
   frame: string;
   panel: string;
-  x?: number;
-  y?: number;
 }
 
-const VideoNoice: React.FC<IVideoNoice> = ({ frame, panel, x = 0, y = 0, ...props }) => {
+const VideoNoice: React.FC<IVideoNoice> = ({ frame, panel, ...props }) => {
   const { nodes, materials } = useContext(MeshContext);
   const [video] = useState(() =>
     Object.assign(document.createElement("video"), {

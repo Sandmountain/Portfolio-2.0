@@ -35,7 +35,7 @@ export function Instances({ children }: { children: ReactNode }) {
   return (
     <Merged castShadow receiveShadow meshes={instances}>
       {(instances: Instances) => (
-        <MeshContext.Provider value={{ instances, nodes, materials }}> {children} </MeshContext.Provider>
+        <MeshContext.Provider value={{ instances, nodes, materials }}>{children}</MeshContext.Provider>
       )}
     </Merged>
   );

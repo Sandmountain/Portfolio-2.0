@@ -12,13 +12,13 @@ interface IComputerView {
 }
 
 const ComputerView: React.FC<IComputerView> = ({ images, projects }) => {
-  console.log(images);
+  // console.log(images);
 
   return (
     <>
       <ComputerScene />
       <Loader />
-      <Box
+      {/* <Box
         component="div"
         sx={{ width: "100vw", position: "absolute", bottom: 20, left: 0, display: "flex", justifyContent: "center" }}>
         <Box
@@ -33,7 +33,7 @@ const ComputerView: React.FC<IComputerView> = ({ images, projects }) => {
           }}>
           Hallo
         </Box>
-      </Box>
+      </Box> */}
     </>
   );
 };

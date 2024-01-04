@@ -25,8 +25,6 @@ type GLTFResult = GLTF & {
   };
 };
 
-type ContextType = Record<string, React.ForwardRefExoticComponent<JSX.IntrinsicElements["mesh"]>>;
-
 export function SNES(props: JSX.IntrinsicElements["group"]) {
   const { nodes, materials } = useGLTF("/snes/scene.gltf") as GLTFResult;
   return (

@@ -91,9 +91,9 @@ export const Computers: React.FC<GroupProps> = ({ ...props }) => {
       {/* Right Stack */}
       <Mesh.Object36 position={[2, 1.61, -1.7]} rotation={[0, -Math.PI / 3, 0]} />
       <Mesh.Object36 position={[1.8, 0, -1.94]} rotation={[0, -1.0, 0]} scale={[1.5, 1, 1.5]} />
-      <VideoNoice x={2} frame="Object_215" panel="Object_216" position={[1.84, 0.38, -1.3]} />
+      <VideoNoice frame="Object_215" panel="Object_216" position={[1.84, 0.38, -1.3]} />
 
-      <VideoNoice frame="Object_209" panel="Object_210" y={5} position={[-1.5, 2.5, -1.5]} rotation={[0, 0.8, 0]} />
+      <VideoNoice frame="Object_209" panel="Object_210" position={[-1.5, 2.5, -1.5]} rotation={[0, 0.8, 0]} />
 
       {/* Screen Left Stack */}
       <CommandLineScreen
