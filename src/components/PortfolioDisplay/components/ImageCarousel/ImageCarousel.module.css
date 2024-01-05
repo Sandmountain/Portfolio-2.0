@@ -1,0 +1,38 @@
+.carousel-container {
+  display: flex;
+  position: relative;
+  background: rgba(255, 255, 255, 0.2);
+  color: black;
+  border-radius: 5px;
+  overflow: hidden;
+  align-items: center;
+  width: 100%;
+  padding: 1em 0;
+}
+
+.carousel-inner-container {
+  width: fit-content;
+  height: 100%;
+  display: flex;
+}
+
+.carousel-inner-container > div:first-child {
+  margin-left: 1em;
+}
+.carousel-inner-container > div:last-child {
+  margin-right: 1em;
+}
+
+.carousel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+}
+
+.carousel-indicator {
+  height: 4px;
+  width: 4px;
+  border-radius: 3px;
+  background: gray;
+}
