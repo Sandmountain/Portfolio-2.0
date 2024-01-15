@@ -6,6 +6,8 @@
   padding: 2px;
   border-radius: 5px; /* Optional: if you want rounded corners */
   line-height: 1.1; /* Adjust line height for better readability */
+  word-spacing: -1px;
+  animation: zoomIn 0.5s ease-in;
 }
 
 /* .typewriter ::before {
@@ -25,6 +27,15 @@
   pointer-events: none;
 } */
 
+@keyframes zoomIn {
+  0% {
+    filter:blur(2px);
+  }
+  100% {
+    filter: blur(0px);
+  }
+}
+
 @keyframes blink {
   0%,
   100% {
@@ -37,7 +48,7 @@
 
 .paragraph {
   margin: 0;
-  margin-top: 1px;
+  margin-top: 0px;
   text-shadow: 0px 0px 1px rgba(0, 255, 0, 0.253);
 }
 

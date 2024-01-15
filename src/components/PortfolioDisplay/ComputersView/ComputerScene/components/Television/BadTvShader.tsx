@@ -38,7 +38,7 @@
 import { shaderMaterial } from "@react-three/drei";
 import { extend } from "@react-three/fiber";
 
-const BadTvShader = shaderMaterial(
+export const BadTvShader = shaderMaterial(
   {
     tDiffuse: null,
     time: 0.0,
@@ -132,7 +132,7 @@ const BadTvShader = shaderMaterial(
   `,
 );
 
-extend({ BadTvShader });
+//extend({ BadTvShader });
 
 // THREE.BadTVShader = {
 //   uniforms: {},

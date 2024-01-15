@@ -6,22 +6,21 @@ import { fab } from "@fortawesome/free-brands-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { ThemeProvider } from "@mui/material/styles";
 
+import { ProjectContextProvider } from "../src/components/PortfolioDisplay/ComputersView/context/ProjectContext";
 import PageLayout from "../src/layouts/PageLayout";
-import { ProjectStore, ProjectStoreProvider } from "../src/mobx/projectStore";
 import { theme } from "../src/theme/mui-theme";
 import "../styles/globals.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const projectStore = new ProjectStore();
   library.add(fab, fas);
 
   return (
     <ThemeProvider theme={theme}>
-      <ProjectStoreProvider store={projectStore}>
+      <ProjectContextProvider>
         <PageLayout>
           <Component {...pageProps} />
         </PageLayout>
-      </ProjectStoreProvider>
+      </ProjectContextProvider>
     </ThemeProvider>
   );
 }

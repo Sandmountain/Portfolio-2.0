@@ -30,9 +30,14 @@
   align-items: center;
 }
 
+.carousel-indicator-container {
+  height: 8px;
+  width: 8px;
+  cursor: pointer;
+}
+
 .carousel-indicator {
   height: 4px;
   width: 4px;
   border-radius: 3px;
-  background: gray;
 }

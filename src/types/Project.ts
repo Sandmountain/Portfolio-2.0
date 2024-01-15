@@ -15,6 +15,7 @@ export interface Project {
   report: string;
   shortDescription: string;
   thumbnail: ContentfulImageType;
+  squareThumbnail: ContentfulImageType;
   title: string;
   urlName: string;
   languages: ContentfulLanguageType[];

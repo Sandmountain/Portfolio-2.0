@@ -7,15 +7,17 @@ import { GroupProps, useFrame } from "@react-three/fiber";
 import { Bloom, EffectComposer, Outline, Scanline, Select, Selection } from "@react-three/postprocessing";
 import * as THREE from "three";
 
+import { useProjectContext } from "../../../context/ProjectContext";
 import { useBlinking } from "../../hooks/useBlinking";
 import styles from "./Commandline.module.css";
 import BlinkingDot from "./components/BlinkingDot";
 
 interface ICommandLineProps extends GroupProps {
-  text: string;
+  variant: "description" | "keywords";
 }
 
-const CommandLineScreen: React.FC<ICommandLineProps> = ({ text, ...props }) => {
+const CommandLineScreen: React.FC<ICommandLineProps> = ({ variant, ...props }) => {
+  const { selectedProject } = useProjectContext();
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   //@ts-ignore
   const { nodes, materials } = useGLTF("/computers_1-transformed.glb");
@@ -62,6 +64,17 @@ const CommandLineScreen: React.FC<ICommandLineProps> = ({ text, ...props }) => {
   //   return () => clearInterval(typingInterval);
   // }, [text]);
 
+  const renderKeywords = (keywords: string[]) => {
+    return keywords.map((word, index) => (
+      <>
+        <span>
+          {word}
+          {index < keywords.length - 1 ? ", " : "."}
+        </span>
+      </>
+    ));
+  };
+
   return (
     <group {...props}>
       <mesh castShadow receiveShadow geometry={nodes["Object_218"].geometry} material={materials.Texture} />
@@ -69,14 +82,18 @@ const CommandLineScreen: React.FC<ICommandLineProps> = ({ text, ...props }) => {
         <Html
           castShadow
           receiveShadow
-          style={{ height: 35, width: 47, overflow: "hidden", filter: "blur(0.2px)" }}
+          style={{ height: 35, width: 49, overflow: "hidden", filter: "blur(0.2px)" }}
           occlude
           transform
           distanceFactor={10}
           position={[0, 0.62, 0.2]}>
           <div className={styles.typewriter}>
             <p className={styles.paragraph}>
-              <span>{text}</span>
+              <span>
+                {variant === "description"
+                  ? selectedProject.shortDescription
+                  : renderKeywords(selectedProject.keywords)}
+              </span>
               <BlinkingDot />
             </p>
             <span ref={endOfTextRef} />

@@ -6,12 +6,19 @@ License: CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
 Source: https://sketchfab.com/3d-models/lowpoly-old-tv-1ab0b494e6e4424eb629ad1963356461
 Title: Lowpoly Old TV
 */
-import React, { useRef } from "react";
+import React, { RefObject, useRef } from "react";
 
-import { Image, PerspectiveCamera, RenderTexture, useGLTF } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
+import { useGLTF } from "@react-three/drei";
+import { shaderMaterial } from "@react-three/drei";
+import { useFrame, useLoader } from "@react-three/fiber";
+import { extend } from "@react-three/fiber";
 import * as THREE from "three";
+import { VideoTexture } from "three";
 import { GLTF } from "three-stdlib";
+
+import { useProjectContext } from "../../../context/ProjectContext";
+import { BadTvShader } from "./BadTvShader";
+import ProjectScreen from "./ProjectScreen";
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -29,18 +36,29 @@ type GLTFResult = GLTF & {
   };
 };
 
-export function Television({ ...props }: JSX.IntrinsicElements["group"]) {
+const TelevisionMesh = ({ ...props }: JSX.IntrinsicElements["group"]) => {
   const { nodes, materials } = useGLTF("/television/scene.gltf") as GLTFResult;
 
   const flimmerRef = useRef<THREE.MeshPhysicalMaterial | null>(null);
+  const imageRef: RefObject<THREE.Mesh<THREE.BufferGeometry, THREE.MeshBasicMaterial>> = useRef(null);
+  const shaderRef = useRef();
+
+  useFrame(() => {
+    if (imageRef.current) {
+      imageRef.current.scale.x = Math.max(
+        16,
+        Math.min(20, imageRef.current.scale.x + 0.001 * Math.sin(Date.now() * 0.001)),
+      );
+    }
+  });
 
   useFrame(() => {
     if (!flimmerRef.current) return;
     const rand = Math.random();
-    if (rand > 0.9) {
+    if (rand > 0.5) {
       flimmerRef.current.opacity = THREE.MathUtils.lerp(flimmerRef.current.opacity, 1 * rand, 0.1);
     } else {
-      flimmerRef.current.opacity = THREE.MathUtils.lerp(flimmerRef.current.opacity, 1.5 * rand, 0.1);
+      flimmerRef.current.opacity = 1;
     }
   });
 
@@ -51,31 +69,18 @@ export function Television({ ...props }: JSX.IntrinsicElements["group"]) {
           <mesh
             castShadow
             receiveShadow
+            position={[0, 0.1, -0.03]}
             geometry={nodes.defaultMaterial.geometry}
-            // material={materials.lambert2SG}
+            material={materials.lambert2SG}
             rotation={[Math.PI / 2, 0, 0]}>
-            <meshPhysicalMaterial
-              clearcoat={2}
-              transmission={2.3}
-              color="#FFFFFF"
-              thickness={1}
-              ref={flimmerRef}
-              opacity={0.4}
-              transparent>
-              <RenderTexture height={512} width={512} attach="map" anisotropy={16}>
-                <PerspectiveCamera makeDefault manual aspect={1 / 1} position={[0, 0, 6]} />
-                {/* eslint-disable-next-line jsx-a11y/alt-text */}
-                <Image
-                  url="/thumbnail.png"
-                  position={[0.3, 0, 0]}
-                  zoom={0.3}
-                  transparent={true}
-                  opacity={0.9}
-                  scale={[16, 2]}
-                />
-              </RenderTexture>
-            </meshPhysicalMaterial>
+            <ProjectScreen imageRef={imageRef} flimmerRef={flimmerRef} />
           </mesh>
+          {/* <mesh
+            castShadow
+            receiveShadow
+            geometry={nodes.defaultMaterial.geometry}
+            material={materials.lambert2SG}
+            rotation={[Math.PI / 2, 0, 0]}></mesh> */}
 
           <mesh
             castShadow
@@ -117,6 +122,8 @@ export function Television({ ...props }: JSX.IntrinsicElements["group"]) {
       </group>
     </group>
   );
-}
+};
+
+export const Television = React.memo(TelevisionMesh);
 
 useGLTF.preload("/television/scene.gltf");

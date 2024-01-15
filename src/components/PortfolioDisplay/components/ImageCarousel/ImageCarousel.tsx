@@ -25,12 +25,13 @@ const ImageCarousel: React.FC<IImageCarousel> = ({ onImageChange, width = "100%"
   const carouselRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
   const refs = useRef<React.RefObject<HTMLElement>[]>([]);
+  const hasOvershotRef = useRef(0);
 
   useEffect(() => {
     refs.current = Children.toArray(children).map((_, i) => refs.current[i] ?? createRef());
 
-    if (refs.current[0].current) {
-      setImageWidth((refs.current[0].current as HTMLDivElement).clientWidth);
+    if (refs.current[0]?.current) {
+      setImageWidth((refs.current[0]?.current as HTMLDivElement).clientWidth);
     }
   }, [children]);
 
@@ -59,7 +60,7 @@ const ImageCarousel: React.FC<IImageCarousel> = ({ onImageChange, width = "100%"
   };
 
   const scrollToClosestChild = (index?: number) => {
-    if (!carouselRef.current || !refs.current || !index) return;
+    if (!carouselRef.current || !refs.current || index === undefined) return;
 
     const carouselWidth = carouselRef.current.offsetWidth;
 
@@ -75,9 +76,8 @@ const ImageCarousel: React.FC<IImageCarousel> = ({ onImageChange, width = "100%"
     }
   };
 
-  const handleImageChange = (target: HTMLElement) => {
-    const index = refs.current.findIndex(ref => ref.current === target);
-    setSelectedImage(index ?? 0);
+  const handleImageChange = (index: number) => {
+    setSelectedImage(index);
     onImageChange && onImageChange(index);
   };
 
@@ -99,7 +99,7 @@ const ImageCarousel: React.FC<IImageCarousel> = ({ onImageChange, width = "100%"
 
       if (newScrollPosition < 0) {
         setOverShoot(-newScrollPosition / 10);
-
+        hasOvershotRef.current = -newScrollPosition / 10;
         return;
       }
 
@@ -109,6 +109,7 @@ const ImageCarousel: React.FC<IImageCarousel> = ({ onImageChange, width = "100%"
         const overshoot = -newScrollPosition + maxScrollableWidth;
         if (overshoot < imageWidth * 5) {
           setOverShoot(overshoot / 10);
+          hasOvershotRef.current = overshoot / 10;
         }
       }
     };
@@ -119,17 +120,24 @@ const ImageCarousel: React.FC<IImageCarousel> = ({ onImageChange, width = "100%"
       document.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseup", onMouseUp);
 
-      // Adding animation class when dropping the mouse
-      if (event.clientX !== initialMousePosition) {
+      // Due to React being react, a ref has to been used since the state sets weirdly.
+      if (hasOvershotRef.current !== 0) {
+        const overshootIndex = hasOvershotRef.current < 0 ? refs.current.length - 1 : 0;
+
+        setSelectedImage(overshootIndex);
+        onImageChange && onImageChange(overshootIndex);
+        scrollToClosestChild(overshootIndex);
+      } else if (event.clientX !== initialMousePosition) {
         const idx = getClosestChildIndex();
         scrollToClosestChild(idx);
 
         onImageChange && onImageChange(idx ?? 0);
       }
 
-      setIsMoving(false);
-
+      // Reset
       setOverShoot(0);
+      hasOvershotRef.current = 0;
+      setIsMoving(false);
     };
 
     // Add the mouse move and mouse up event listeners
@@ -141,7 +149,7 @@ const ImageCarousel: React.FC<IImageCarousel> = ({ onImageChange, width = "100%"
     if (React.isValidElement(child)) {
       const extendedChild = child as React.ReactElement<ExtendedProps>;
       return React.cloneElement(extendedChild, {
-        onMouseUp: (event: React.MouseEvent<HTMLElement>) => handleClickChild(event),
+        onMouseUp: (event: React.MouseEvent<HTMLElement>) => handleClickChild(event, index),
         ref: refs.current[index],
       });
     }
@@ -149,14 +157,21 @@ const ImageCarousel: React.FC<IImageCarousel> = ({ onImageChange, width = "100%"
     throw new Error(`Child at index ${index} is not a valid React element`);
   };
 
-  const handleClickChild = (event: React.MouseEvent) => {
+  const handleClickChild = (event: React.MouseEvent, index: number) => {
     if (!carouselRef.current) return;
     const imageElement = event.currentTarget as HTMLElement;
 
-    handleImageChange(imageElement);
+    handleImageChange(index);
 
     const scrollLeft = imageElement.offsetLeft - carouselRef.current.offsetWidth / 2 + imageElement.offsetWidth / 2;
     carouselRef.current.scroll({ left: scrollLeft, behavior: "smooth" });
+  };
+
+  const handleClickNavigator = (index: number) => {
+    setSelectedImage(index);
+    scrollToClosestChild(index);
+
+    onImageChange && onImageChange(index);
   };
 
   return (
@@ -174,15 +189,20 @@ const ImageCarousel: React.FC<IImageCarousel> = ({ onImageChange, width = "100%"
           {Children.map(children, renderChild)}
         </Box>
       </Box>
-      <Box component="div" sx={{ display: "flex", gap: 1 }}>
+      <Box component="div" sx={{ display: "flex", gap: "5px" }}>
         {Children.map(children, (_, idx) => (
           <Box
             component="div"
-            key={idx}
-            className={styles["carousel-indicator"]}
-            sx={{
-              border: idx === selectedImage ? "1px solid red" : "none",
-            }}></Box>
+            className={styles["carousel-indicator-container"]}
+            onClick={() => handleClickNavigator(idx)}>
+            <Box
+              component="div"
+              key={idx}
+              className={styles["carousel-indicator"]}
+              style={{
+                backgroundColor: idx === selectedImage ? "#0f0" : "gray",
+              }}></Box>
+          </Box>
         ))}
       </Box>
     </Box>

@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { memo, useContext } from "react";
 
 import { GroupProps, useFrame } from "@react-three/fiber";
 
@@ -23,7 +23,7 @@ Source: https://sketchfab.com/3d-models/old-computers-7bb6e720499a467b8e0427451d
 Title: Old Computers
 */
 
-export const Computers: React.FC<GroupProps> = ({ ...props }) => {
+const ComputerMeshes: React.FC<GroupProps> = ({ ...props }) => {
   const { instances: Mesh, nodes: n, materials: m } = useContext(MeshContext);
 
   if (!Mesh) return <></>;
@@ -71,12 +71,7 @@ export const Computers: React.FC<GroupProps> = ({ ...props }) => {
       <Mesh.Object3 position={[-3.79, 1.53, 1.66]} rotation={[0, 1.22, -Math.PI]} scale={-1.52} />
 
       {/* Screen Right */}
-      <CommandLineScreen
-        text={`React, Machine Learning, Node, Pro`}
-        position={[3.11, 2.15, -0.18]}
-        rotation={[0, -0.79, 0]}
-        scale={0.81}
-      />
+      <CommandLineScreen variant="keywords" position={[3.11, 2.15, -0.18]} rotation={[0, -0.79, 0]} scale={0.81} />
       <Mesh.Object23 position={[3.22, 0, -0.8]} rotation={[0, -1.32, 0]} scale={1.52} />
       <Mesh.Object23 position={[3.53, 1.83, 0.44]} rotation={[-Math.PI, 1.32, Math.PI / 2]} scale={1.52} />
       <Mesh.Computer position={[3.42, 0, 0]} rotation={[-Math.PI, 1.13, -Math.PI]} scale={1.52} />
@@ -96,11 +91,7 @@ export const Computers: React.FC<GroupProps> = ({ ...props }) => {
       <VideoNoice frame="Object_209" panel="Object_210" position={[-1.5, 2.5, -1.5]} rotation={[0, 0.8, 0]} />
 
       {/* Screen Left Stack */}
-      <CommandLineScreen
-        text="A web application replica with features similar to IMDB."
-        position={[-2.73, 0.63, -0.52]}
-        rotation={[0, 1.09, 0]}
-      />
+      <CommandLineScreen variant="description" position={[-2.73, 0.63, -0.52]} rotation={[0, 1.09, 0]} />
       <Mesh.Object23 position={[-2.9, 0.3, -1.47]} rotation={[Math.PI, -1.35, Math.PI / 2]} scale={1.52} />
 
       {/* 3d models */}
@@ -117,3 +108,5 @@ export const Computers: React.FC<GroupProps> = ({ ...props }) => {
     </group>
   );
 };
+
+export const Computers = memo(ComputerMeshes);

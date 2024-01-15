@@ -39,7 +39,6 @@
     "valtio": "^1.6.1"
   },
   "devDependencies": {
-    "r3f-perf": "^7.1.2",
     "@trivago/prettier-plugin-sort-imports": "^3.2.0",
     "@types/node": "18.0.0",
     "@types/react": "18.0.14",
@@ -54,6 +53,7 @@
     "eslint-plugin-unused-imports": "^2.0.0",
     "prettier": "^2.7.1",
     "prettier-eslint": "^15.0.1",
+    "r3f-perf": "^7.1.2",
     "typescript": "^4.8.4"
   }
 }
