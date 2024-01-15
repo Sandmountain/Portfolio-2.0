@@ -7,7 +7,8 @@ import { useProjectContext } from "../../../context/ProjectContext";
 
 type ProjectScreenProps = {
   flimmerRef: RefObject<THREE.MeshPhysicalMaterial | null>;
-  imageRef: Ref<Mesh<BufferGeometry, Material | Material[]>> | undefined;
+  // Linter goes crazy for typing this ref.
+  imageRef: unknown;
 };
 
 const ProjectScreen: React.FC<ProjectScreenProps> = ({ flimmerRef, imageRef }) => {

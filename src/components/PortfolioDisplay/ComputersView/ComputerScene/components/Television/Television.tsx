@@ -39,13 +39,18 @@ const TelevisionMesh = ({ ...props }: JSX.IntrinsicElements["group"]) => {
   const { nodes, materials } = useGLTF("/television/scene.gltf") as GLTFResult;
 
   const flimmerRef = useRef<THREE.MeshPhysicalMaterial | null>(null);
-  const imageRef: Ref<Mesh<BufferGeometry, Material | Material[]>> | undefined = useRef(null);
+  // Linter goes crazy for typing this ref.
+  const imageRef: Ref<unknown> | undefined = useRef(null);
 
   useFrame(() => {
     if (imageRef.current) {
-      imageRef.current.scale.x = Math.max(
+      (imageRef.current as Mesh<BufferGeometry, Material | Material[]>).scale.x = Math.max(
         16,
-        Math.min(20, imageRef.current.scale.x + 0.001 * Math.sin(Date.now() * 0.001)),
+        Math.min(
+          20,
+          (imageRef.current as Mesh<BufferGeometry, Material | Material[]>).scale.x +
+            0.001 * Math.sin(Date.now() * 0.001),
+        ),
       );
     }
   });
