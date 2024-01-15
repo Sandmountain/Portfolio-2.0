@@ -17,7 +17,6 @@ import { VideoTexture } from "three";
 import { GLTF } from "three-stdlib";
 
 import { useProjectContext } from "../../../context/ProjectContext";
-import { BadTvShader } from "./BadTvShader";
 import ProjectScreen from "./ProjectScreen";
 
 type GLTFResult = GLTF & {
