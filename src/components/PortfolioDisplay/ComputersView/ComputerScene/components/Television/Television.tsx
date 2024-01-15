@@ -6,14 +6,14 @@ License: CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
 Source: https://sketchfab.com/3d-models/lowpoly-old-tv-1ab0b494e6e4424eb629ad1963356461
 Title: Lowpoly Old TV
 */
-import React, { RefObject, useRef } from "react";
+import React, { Ref, RefObject, useRef } from "react";
 
 import { useGLTF } from "@react-three/drei";
 import { shaderMaterial } from "@react-three/drei";
 import { useFrame, useLoader } from "@react-three/fiber";
 import { extend } from "@react-three/fiber";
 import * as THREE from "three";
-import { VideoTexture } from "three";
+import { BufferGeometry, Material, Mesh, VideoTexture } from "three";
 import { GLTF } from "three-stdlib";
 
 import { useProjectContext } from "../../../context/ProjectContext";
@@ -39,8 +39,7 @@ const TelevisionMesh = ({ ...props }: JSX.IntrinsicElements["group"]) => {
   const { nodes, materials } = useGLTF("/television/scene.gltf") as GLTFResult;
 
   const flimmerRef = useRef<THREE.MeshPhysicalMaterial | null>(null);
-  const imageRef: RefObject<THREE.Mesh<THREE.BufferGeometry, THREE.MeshBasicMaterial>> = useRef(null);
-  const shaderRef = useRef();
+  const imageRef: Ref<Mesh<BufferGeometry, Material | Material[]>> | undefined = useRef(null);
 
   useFrame(() => {
     if (imageRef.current) {

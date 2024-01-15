@@ -1,12 +1,13 @@
-import React, { RefObject } from "react";
+import React, { Ref, RefObject } from "react";
 
 import { Image, PerspectiveCamera, RenderTexture } from "@react-three/drei";
+import { BufferGeometry, Material, Mesh } from "three";
 
 import { useProjectContext } from "../../../context/ProjectContext";
 
 type ProjectScreenProps = {
   flimmerRef: RefObject<THREE.MeshPhysicalMaterial | null>;
-  imageRef: RefObject<THREE.Mesh<THREE.BufferGeometry, THREE.MeshBasicMaterial>>;
+  imageRef: Ref<Mesh<BufferGeometry, Material | Material[]>> | undefined;
 };
 
 const ProjectScreen: React.FC<ProjectScreenProps> = ({ flimmerRef, imageRef }) => {
