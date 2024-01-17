@@ -1,14 +1,9 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React from "react";
 
-import { Html, PerspectiveCamera, RenderTexture, useGLTF } from "@react-three/drei";
-import { ForwardRefComponent } from "@react-three/drei/helpers/ts-utils";
-import { HtmlProps } from "@react-three/drei/web/Html";
-import { GroupProps, useFrame } from "@react-three/fiber";
-import { Bloom, EffectComposer, Outline, Scanline, Select, Selection } from "@react-three/postprocessing";
-import * as THREE from "three";
+import { Html, useGLTF } from "@react-three/drei";
+import { GroupProps } from "@react-three/fiber";
 
 import { useProjectContext } from "../../../context/ProjectContext";
-import { useBlinking } from "../../hooks/useBlinking";
 import styles from "./Commandline.module.css";
 import BlinkingDot from "./components/BlinkingDot";
 

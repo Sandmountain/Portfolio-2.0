@@ -6,17 +6,14 @@ License: CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
 Source: https://sketchfab.com/3d-models/lowpoly-old-tv-1ab0b494e6e4424eb629ad1963356461
 Title: Lowpoly Old TV
 */
-import React, { Ref, RefObject, useRef } from "react";
+import React, { Ref, useRef } from "react";
 
 import { useGLTF } from "@react-three/drei";
-import { shaderMaterial } from "@react-three/drei";
-import { useFrame, useLoader } from "@react-three/fiber";
-import { extend } from "@react-three/fiber";
+import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { BufferGeometry, Material, Mesh, VideoTexture } from "three";
+import { BufferGeometry, Material, Mesh } from "three";
 import { GLTF } from "three-stdlib";
 
-import { useProjectContext } from "../../../context/ProjectContext";
 import ProjectScreen from "./ProjectScreen";
 
 type GLTFResult = GLTF & {

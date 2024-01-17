@@ -2,11 +2,9 @@ import React, { Suspense } from "react";
 
 import { CameraControls, Loader, MeshReflectorMaterial } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { Bloom, DepthOfField, EffectComposer, Glitch } from "@react-three/postprocessing";
-import { GlitchMode } from "postprocessing";
-import * as THREE from "three";
-import { Vector2 } from "three";
+import { Bloom, DepthOfField, EffectComposer } from "@react-three/postprocessing";
 
+// import { GlitchMode } from "postprocessing";
 import { Computers } from "./components/Computers";
 import { Instances } from "./context/MeshContext";
 

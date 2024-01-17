@@ -1,13 +1,13 @@
-import React, { Ref, RefObject } from "react";
+import React, { RefObject } from "react";
 
 import { Image, PerspectiveCamera, RenderTexture } from "@react-three/drei";
-import { BufferGeometry, Material, Mesh } from "three";
 
 import { useProjectContext } from "../../../context/ProjectContext";
 
 type ProjectScreenProps = {
   flimmerRef: RefObject<THREE.MeshPhysicalMaterial | null>;
   // Linter goes crazy for typing this ref.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   imageRef: any;
 };
 
