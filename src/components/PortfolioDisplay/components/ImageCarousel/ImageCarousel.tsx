@@ -199,7 +199,7 @@ const ImageCarousel: React.FC<IImageCarousel> = ({ onImageChange, width = "100%"
               component="div"
               key={idx}
               className={styles["carousel-indicator"]}
-              style={{
+              sx={{
                 backgroundColor: idx === selectedImage ? "#0f0" : "gray",
               }}></Box>
           </Box>

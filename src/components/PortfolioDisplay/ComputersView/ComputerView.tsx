@@ -34,6 +34,7 @@ const ComputerView: React.FC = () => {
           left: 0,
           display: "flex",
           justifyContent: "center",
+          zIndex: 10,
         }}>
         <ImageCarousel onImageChange={onImageChange} width="50%">
           {projects.map((itm, idx) => {

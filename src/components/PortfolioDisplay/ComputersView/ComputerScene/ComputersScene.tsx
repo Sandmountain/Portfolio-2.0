@@ -77,7 +77,7 @@ export const Scene: React.FC = () => {
         {/* <BakeShadows />
         <Preload /> */}
       </Canvas>
-      <Loader />
+      <Loader containerStyles={{ zIndex: 1 }} />
     </>
   );
 };
